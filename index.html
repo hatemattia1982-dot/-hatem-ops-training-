@@ -2859,7 +2859,7 @@ async function loadVersions(){
     vs.sort((a,b)=>(b.version||0)-(a.version||0));
     if(!vs.length){box.innerHTML='<small style="color:var(--ink-soft)">لا إصدارات معتمدة بعد — يُنشأ إصدار تلقائيًا مع كل اعتماد</small>';return;}
     box.innerHTML='<table class="ver-t"><thead><tr><th>الإصدار</th><th>تاريخ الاعتماد</th><th>المعتمِد</th><th></th></tr></thead><tbody>'+
-      vs.map(v=>'<tr><td><b>v'+v.version+'</b></td><td>'+(v.at?new Date(v.at.seconds*1000).toLocaleDateString('ar-SA'):'—')+'</td><td>'+(v.approvedByName||'—')+'</td>'+
+      vs.map(v=>'<tr><td><b>v'+v.version+'</b></td><td>'+(v.at?new Date(v.at.seconds*1000).toLocaleDateString('ar-SA'):'—')+'</td><td>'+escH(v.approvedByName||'—')+'</td>'+
       '<td><button class="step-btns" style="border:1px solid var(--line);background:var(--beige-deep);border-radius:7px;padding:5px 12px;cursor:pointer;font-family:inherit;font-weight:700" onclick="printCard(\''+v.id+'\')">عرض / طباعة</button></td></tr>').join('')+'</tbody></table>';
   }catch(e){box.innerHTML='<small>تعذر تحميل الإصدارات: '+(e.code||e.message)+'</small>';}
 }
@@ -3797,7 +3797,7 @@ async function deleteTrainee(uid,name){
     const bq=await db.collection('submissions').where('uid','==',uid).get(); bq.forEach(d=>dels.push(d.ref));
     const xsq=await db.collection('assessments').where('uid','==',uid).get(); xsq.forEach(d=>dels.push(d.ref));
     const cfq=await db.collection('certificates').where('uid','==',uid).get(); cfq.forEach(d=>dels.push(d.ref));
-    dels.push(db.collection('ojt').doc(uid));
+    dels.push(db.collection('ojt').doc(uid)); dels.push(db.collection('ojt_signs').doc(uid));
     for(let i=0;i<dels.length;i+=400){const b=db.batch(); dels.slice(i,i+400).forEach(r=>b.delete(r)); await b.commit();}
     await db.collection('trainees').doc(uid).delete();
     openDash();
@@ -5167,7 +5167,7 @@ const SESS_KIND_IC={'حضوري':'🏫','عن بُعد (أونلاين)':'💻',
 const ATT_ST={present:'حاضر',late:'متأخر',absent:'غائب',excused:'معتذر'};
 const AS_LBL={todo:'مطلوب',late:'متأخر عن الموعد',submitted:'بانتظار التقييم',returned:'مُعاد للتعديل',graded:'مُقيَّم',closed:'مغلق'};
 const ASSESS_KIND={formative:'تقييم مرحلي',final:'التقييم النهائي'};
-let PF_TAB='', PF_TRAINEES=[], SESSIONS=[], ATT=[], ASGS=[], SUBS=[], ASSESS=[], CERTS=[], OJT={}, PFPRIV={}, PF_LOADED=false;
+let PF_TAB='', PF_TRAINEES=[], SESSIONS=[], ATT=[], ASGS=[], SUBS=[], ASSESS=[], CERTS=[], OJT={}, OJTS={}, PFPRIV={}, PF_LOADED=false;
 let PF_CUR_UID='', PF_CUR_SESS=null, PF_CUR_ASG=null, PF_CUR_SUB=null, PF_CUR_ASS=null, PF_ATT_DRAFT={}, PF_UNITS_SEL=[], PF_TGT_SEL=[], PF_IMG64='', PF_BACK='', PF_SESS_F='up', PF_ASG_F='', PF_ASS_F='', PF_BADGE_N=0;
 
 /* ==== أدوات مساعدة ==== */
@@ -5201,7 +5201,7 @@ function pfAsgState(a,uid){
 }
 function pfAsgCounts(a){const tg=pfAsgTargets(a); const c={total:tg.length,submitted:0,graded:0,returned:0,todo:0}; tg.forEach(u=>{const st=pfAsgState(a,u); if(st==='submitted')c.submitted++; else if(st==='graded')c.graded++; else if(st==='returned')c.returned++; else c.todo++;}); return c;}
 function pfLatestFinal(uid){return ASSESS.filter(x=>x.uid===uid&&x.status==='final'&&x.kind==='final').sort((a,b)=>((b.date||'').localeCompare(a.date||''))||(tsMs(b.finalizedAt)-tsMs(a.finalizedAt)))[0]||null;}
-function pfOjtDone(uid){const o=OJT[uid]; if(!o||!o.days) return 0; return Object.keys(o.days).filter(k=>o.days[k]&&o.days[k].st==='done').length;}
+function pfOjtDone(uid){const o=OJT[uid]; if(!o||!o.days) return 0; return Object.keys(o.days).filter(k=>o.days[k]&&o.days[k].st==='done'&&pfOjtSigned(uid,k)).length;}
 function pfValidCert(uid){return CERTS.find(c=>c.uid===uid&&c.status==='valid')||null;}
 function pfMyState(){return (ME&&pfTr(ME.uid))||MYDOC||{};}
 function pfReadiness(uid){
@@ -5238,18 +5238,19 @@ async function pfLoadAll(){
   const admin=isAdminUser(); const noq=()=>({forEach:()=>{},exists:false,data:()=>({})});
   const rows=q=>{const out=[]; q.forEach(d=>out.push({id:d.id,...d.data()})); return out;};
   if(admin){
-    const [tq,sq,aq,gq,bq,xq,cq,oq,pq]=await Promise.all([db.collection('trainees').get(),db.collection('sessions').get(),db.collection('attendance').get(),db.collection('assignments').get(),db.collection('submissions').get(),db.collection('assessments').get(),db.collection('certificates').get(),db.collection('ojt').get(),db.collection('trainee_private').get().catch(noq)]);
+    const [tq,sq,aq,gq,bq,xq,cq,oq,pq,osq]=await Promise.all([db.collection('trainees').get(),db.collection('sessions').get(),db.collection('attendance').get(),db.collection('assignments').get(),db.collection('submissions').get(),db.collection('assessments').get(),db.collection('certificates').get(),db.collection('ojt').get(),db.collection('trainee_private').get().catch(noq),db.collection('ojt_signs').get().catch(noq)]);
     PF_TRAINEES=[]; tq.forEach(d=>{const t=d.data(); if(ADMIN_EMAILS.includes((t.email||'').toLowerCase())) return; if(t.status==='pending'||t.status==='rejected') return; PF_TRAINEES.push({uid:d.id,...t});});
     PF_TRAINEES.sort((a,b)=>(((a.status||'active')==='active'?0:1)-((b.status||'active')==='active'?0:1))||((a.name||'').localeCompare(b.name||'','ar')));
     SESSIONS=rows(sq); ATT=rows(aq); ASGS=rows(gq); SUBS=rows(bq); ASSESS=rows(xq); CERTS=rows(cq);
-    OJT={}; oq.forEach(d=>OJT[d.id]=d.data()); PFPRIV={}; pq.forEach(d=>PFPRIV[d.id]=d.data());
+    OJT={}; oq.forEach(d=>OJT[d.id]=ojtNorm(d.data())); OJTS={}; osq.forEach(d=>OJTS[d.id]=d.data()); PFPRIV={}; pq.forEach(d=>PFPRIV[d.id]=d.data());
+    await pfMigrateOjtSigns();
   }else{
     const uid=ME.uid;
-    const [md,sq,aq,gq,bq,xq,cq,od]=await Promise.all([db.collection('trainees').doc(uid).get(),db.collection('sessions').get(),db.collection('attendance').where('uid','==',uid).get(),db.collection('assignments').get(),db.collection('submissions').where('uid','==',uid).get(),db.collection('assessments').where('uid','==',uid).where('status','==','final').get(),db.collection('certificates').where('uid','==',uid).get(),db.collection('ojt').doc(uid).get()]);
+    const [md,sq,aq,gq,bq,xq,cq,od,osd]=await Promise.all([db.collection('trainees').doc(uid).get(),db.collection('sessions').get(),db.collection('attendance').where('uid','==',uid).get(),db.collection('assignments').get(),db.collection('submissions').where('uid','==',uid).get(),db.collection('assessments').where('uid','==',uid).where('status','==','final').get(),db.collection('certificates').where('uid','==',uid).get(),db.collection('ojt').doc(uid).get(),db.collection('ojt_signs').doc(uid).get().catch(noq)]);
     if(md.exists) MYDOC=Object.assign(MYDOC||{},md.data());
     PF_TRAINEES=[{uid,...MYDOC}];
     SESSIONS=rows(sq); ATT=rows(aq); ASGS=rows(gq).filter(a=>pfAsgTargeted(a,uid)); SUBS=rows(bq); ASSESS=rows(xq); CERTS=rows(cq);
-    OJT={}; if(od.exists) OJT[uid]=od.data();
+    OJT={}; if(od.exists) OJT[uid]=ojtNorm(od.data()); OJTS={}; if(osd.exists) OJTS[uid]=osd.data();
   }
   SESSIONS.sort((a,b)=>((b.date||'').localeCompare(a.date||''))||((b.time||'').localeCompare(a.time||'')));
   ASGS.sort((a,b)=>((b.dueDate||'9999').localeCompare(a.dueDate||'9999'))||(tsMs(b.createdAt)-tsMs(a.createdAt)));
@@ -5939,6 +5940,31 @@ function pfPrintAssess(){
 
 /* ==== سجل التطبيق العملي — 30 يومًا (الوحدة 26) ==== */
 function pfOjtOf(uid){return (OJT[uid]&&OJT[uid].days)||{};}
+/* الاعتماد محفوظ في ojt_signs (يكتبه المدرب وحده) */
+function pfOjtSign(uid,d){const s=OJTS[uid]; return (s&&s.days&&s.days[d])||null;}
+function pfOjtSigned(uid,d){return !!pfOjtSign(uid,d);}
+/* الإصدار السابق كان يحفظ الأيام في حقول باسم "days.N" — ندمجها مع days */
+function ojtNorm(o){
+  o=Object.assign({},o); const days=Object.assign({},o.days||{});
+  Object.keys(o).forEach(k=>{const m=/^days\.(\d+)$/.exec(k); if(m){ if(o[k]&&!days[m[1]]) days[m[1]]=o[k]; delete o[k]; }});
+  Object.keys(days).forEach(d=>{if(!days[d]||!Object.keys(days[d]).length) delete days[d];}); // {} = يوم مُفرَّغ
+  o.days=days; return o;
+}
+/* نقل اعتمادات الإصدار السابق (days.N.signed داخل ojt) إلى ojt_signs — مرة واحدة */
+async function pfMigrateOjtSigns(){
+  try{
+    const flag=await db.collection('platform').doc('ojtSignsMigrated').get();
+    if(flag.exists) return;
+    const b=db.batch(); let n=0;
+    Object.keys(OJT).forEach(uid=>{
+      const days=(OJT[uid]&&OJT[uid].days)||{}; const add={};
+      Object.keys(days).forEach(d=>{const r=days[d]; if(r&&r.signed===true&&r.signedBy&&r.signedBy.uid===ME.uid&&!pfOjtSigned(uid,d)) add[d]={at:r.signedAt||firebase.firestore.FieldValue.serverTimestamp(),by:r.signedBy};});
+      if(Object.keys(add).length){ b.set(db.collection('ojt_signs').doc(uid),{days:add},{merge:true}); OJTS[uid]=OJTS[uid]||{days:{}}; OJTS[uid].days=Object.assign(OJTS[uid].days||{},add); n++; }
+    });
+    b.set(db.collection('platform').doc('ojtSignsMigrated'),{at:firebase.firestore.FieldValue.serverTimestamp(),trainees:n});
+    await b.commit();
+  }catch(e){console.warn('ojt migrate:',e.code||e.message);}
+}
 function pfRenderOjt(){
   const body=document.getElementById('pf-body'); if(!body||isAdminUser()) return;
   const uid=ME.uid, days=pfOjtOf(uid), done=pfOjtDone(uid);
@@ -5950,12 +5976,12 @@ function pfRenderOjt(){
   for(let d=1;d<=30;d++){
     const wk=ojtWeek(d);
     if(wk!==lastWk){h+='<tr class="wk"><td colspan="5">'+escH(OJT_WEEKS[wk])+'</td></tr>'; lastWk=wk;}
-    const rec=days[d]||{}; const st=rec.st||'';
+    const rec=days[d]||{}; const st=rec.st||''; const sg=pfOjtSign(uid,d);
     h+='<tr class="'+(st==='done'?'st-done':st==='absent'?'st-absent':'')+'"><td class="d">'+d+'</td><td class="task">'+escH(OJT_DAYS[d-1])+'</td>'+
-      '<td><input class="dt" type="date" id="ojt-dt-'+d+'" value="'+escH(rec.date||'')+'"'+(rec.signed?' disabled':'')+'></td>'+
-      '<td><select id="ojt-st-'+d+'"'+(rec.signed?' disabled':'')+'><option value="">لم يُنفَّذ بعد</option><option value="done"'+(st==='done'?' selected':'')+'>نُفِّذ</option><option value="absent"'+(st==='absent'?' selected':'')+'>لم يتيسر</option></select>'+
-      (rec.signed?'<div class="h-note" style="margin-top:2px">✅ اعتمده المشرف '+(rec.signedAt?fmtWhen(tsMs(rec.signedAt)):'')+'</div>':(rec.st?'<div class="h-note" style="margin-top:2px">بانتظار اعتماد المشرف</div>':''))+'</td>'+
-      '<td class="hm"><input class="att-note" id="ojt-nt-'+d+'" value="'+escH(rec.note||'')+'" placeholder="ما تم تنفيذه بإيجاز"'+(rec.signed?' disabled':'')+'></td></tr>';
+      '<td><input class="dt" type="date" id="ojt-dt-'+d+'" value="'+escH(rec.date||'')+'"'+(sg?' disabled':'')+'></td>'+
+      '<td><select id="ojt-st-'+d+'"'+(sg?' disabled':'')+'><option value="">لم يُنفَّذ بعد</option><option value="done"'+(st==='done'?' selected':'')+'>نُفِّذ</option><option value="absent"'+(st==='absent'?' selected':'')+'>لم يتيسر</option></select>'+
+      (sg?'<div class="h-note" style="margin-top:2px">✅ اعتمده المشرف '+(sg.at?fmtWhen(tsMs(sg.at)):'')+'</div>':(rec.st?'<div class="h-note" style="margin-top:2px">بانتظار اعتماد المشرف</div>':''))+'</td>'+
+      '<td class="hm"><input class="att-note" id="ojt-nt-'+d+'" value="'+escH(rec.note||'')+'" placeholder="ما تم تنفيذه بإيجاز"'+(sg?' disabled':'')+'></td></tr>';
   }
   h+='</tbody></table><div id="ojt-msg" style="margin-top:10px;font-weight:700"></div><div class="imod-actions" style="margin:12px 0 0"><button class="btn-save" onclick="pfSaveOjt()">💾 حفظ سجل اليوميات</button></div>';
   body.innerHTML=h;
@@ -5963,15 +5989,16 @@ function pfRenderOjt(){
 async function pfSaveOjt(){
   const uid=ME.uid; const cur=pfOjtOf(uid); const upd={};
   for(let d=1;d<=30;d++){
-    if(cur[d]&&cur[d].signed) continue;
+    if(pfOjtSigned(uid,d)) continue;
     const dt=document.getElementById('ojt-dt-'+d).value, st=document.getElementById('ojt-st-'+d).value, nt=document.getElementById('ojt-nt-'+d).value;
     if(!st&&!dt&&!nt){ if(cur[d]) upd[d]=null; continue; }
-    upd[d]={date:dt,st,note:nt,signed:false};
+    upd[d]={date:dt,st,note:nt};
   }
   const m=document.getElementById('ojt-msg');
   try{
-    const data={}; Object.keys(upd).forEach(k=>data['days.'+k]=upd[k]);
-    if(!Object.keys(data).length){if(m){m.style.color='#1d5a35';m.textContent='لا تغييرات لحفظها';} return;}
+    const days={}; Object.keys(upd).forEach(k=>days[k]=upd[k]===null?{}:upd[k]); // {} بدل الحذف كي لا يعود يوم قديم محفوظ بالصيغة السابقة
+    const data={days};
+    if(!Object.keys(days).length){if(m){m.style.color='#1d5a35';m.textContent='لا تغييرات لحفظها';} return;}
     data.updatedAt=firebase.firestore.FieldValue.serverTimestamp();
     await db.collection('ojt').doc(uid).set(data,{merge:true});
     OJT[uid]=OJT[uid]||{days:{}}; Object.keys(upd).forEach(k=>{OJT[uid].days=OJT[uid].days||{}; if(upd[k]===null) delete OJT[uid].days[k]; else OJT[uid].days[k]=upd[k];});
@@ -5986,26 +6013,27 @@ function pfOjtSignHTML(uid){
   let lastWk=-1;
   for(let d=1;d<=30;d++){
     const wk=ojtWeek(d); if(wk!==lastWk){h+='<tr class="wk"><td colspan="5">'+escH(OJT_WEEKS[wk])+'</td></tr>'; lastWk=wk;}
-    const rec=days[d]; if(!rec){h+='<tr><td class="d">'+d+'</td><td class="task">'+escH(OJT_DAYS[d-1])+'</td><td class="hm">—</td><td><span class="badge tp">لم يُسجَّل</span></td><td></td></tr>'; continue;}
-    h+='<tr class="'+(rec.signed?'st-done':'')+'"><td class="d">'+d+'</td><td class="task">'+escH(OJT_DAYS[d-1])+(rec.note?'<br><small style="color:var(--ink-soft)">'+escH(rec.note)+'</small>':'')+'</td><td class="hm">'+(rec.date?fmtD(rec.date):'—')+'</td>'+
-      '<td>'+(rec.signed?'<span class="badge st-approved">✅ معتمد</span>':(rec.st==='absent'?'<span class="badge st-suspended">لم يتيسر</span>':'<span class="badge st-review">بانتظار اعتمادك</span>'))+'</td>'+
-      '<td>'+(!rec.signed&&rec.st==='done'?'<button class="mbtn" style="background:#1d5a35;color:#fff;border-color:#1d5a35" onclick="pfSignOjtDay(\''+uid+'\','+d+')">اعتماد</button>':(rec.signed?'<button class="mbtn d" onclick="pfUnsignOjtDay(\''+uid+'\','+d+')">إلغاء الاعتماد</button>':''))+'</td></tr>';
+    const rec=days[d]; const sg=pfOjtSigned(uid,d); if(!rec){h+='<tr><td class="d">'+d+'</td><td class="task">'+escH(OJT_DAYS[d-1])+'</td><td class="hm">—</td><td><span class="badge tp">لم يُسجَّل</span></td><td></td></tr>'; continue;}
+    h+='<tr class="'+(sg?'st-done':'')+'"><td class="d">'+d+'</td><td class="task">'+escH(OJT_DAYS[d-1])+(rec.note?'<br><small style="color:var(--ink-soft)">'+escH(rec.note)+'</small>':'')+'</td><td class="hm">'+(rec.date?fmtD(rec.date):'—')+'</td>'+
+      '<td>'+(sg?'<span class="badge st-approved">✅ معتمد</span>':(rec.st==='absent'?'<span class="badge st-suspended">لم يتيسر</span>':'<span class="badge st-review">بانتظار اعتمادك</span>'))+'</td>'+
+      '<td>'+(!sg&&rec.st==='done'?'<button class="mbtn" style="background:#1d5a35;color:#fff;border-color:#1d5a35" onclick="pfSignOjtDay(\''+uid+'\','+d+')">اعتماد</button>':(sg?'<button class="mbtn d" onclick="pfUnsignOjtDay(\''+uid+'\','+d+')">إلغاء الاعتماد</button>':''))+'</td></tr>';
   }
   h+='</tbody></table>';
   return h;
 }
 async function pfSignOjtDay(uid,d){
   try{
-    await db.collection('ojt').doc(uid).set({days:{[d]:{signed:true,signedAt:firebase.firestore.FieldValue.serverTimestamp(),signedBy:{uid:ME.uid,name:whoName()}}}},{merge:true});
-    OJT[uid]=OJT[uid]||{days:{}}; OJT[uid].days=OJT[uid].days||{}; OJT[uid].days[d]=Object.assign({},OJT[uid].days[d],{signed:true,signedAt:{seconds:Math.floor(Date.now()/1000)}});
+    const by={uid:ME.uid,name:whoName()};
+    await db.collection('ojt_signs').doc(uid).set({days:{[d]:{at:firebase.firestore.FieldValue.serverTimestamp(),by}}},{merge:true});
+    OJTS[uid]=OJTS[uid]||{days:{}}; OJTS[uid].days=OJTS[uid].days||{}; OJTS[uid].days[d]={at:{seconds:Math.floor(Date.now()/1000)},by};
     pfOpenTrainee(uid,'ojt');
   }catch(e){alert('تعذر الاعتماد: '+(e.code||e.message));}
 }
 async function pfUnsignOjtDay(uid,d){
   if(!confirm('إلغاء اعتماد اليوم '+d+'؟')) return;
   try{
-    await db.collection('ojt').doc(uid).set({days:{[d]:{signed:false}}},{merge:true});
-    if(OJT[uid]&&OJT[uid].days&&OJT[uid].days[d]) OJT[uid].days[d].signed=false;
+    await db.collection('ojt_signs').doc(uid).set({days:{[d]:firebase.firestore.FieldValue.delete()}},{merge:true});
+    if(OJTS[uid]&&OJTS[uid].days) delete OJTS[uid].days[d];
     pfOpenTrainee(uid,'ojt');
   }catch(e){alert('تعذر: '+(e.code||e.message));}
 }
