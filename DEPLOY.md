@@ -4,11 +4,11 @@
 
 | الجزء | الملف | أين يُنشر |
 |---|---|---|
-| الموقع | `index.html` | Netlify |
+| الموقع | `index.html` | Cloudflare Pages — يُنشر تلقائيًا عند الدمج في `main` |
 | قواعد الأمان | `firestore.rules` | Firebase |
 | تصحيح الاختبارات | `functions/` | Firebase Cloud Functions (يتطلب خطة Blaze) |
 
-## نشر القواعد والدوال (من المتصفح عبر Google Cloud Shell)
+## نشر القواعد والدوال (قبل دمج أي تعديل يغيّرها) (من المتصفح عبر Google Cloud Shell)
 
 1. افتح: https://console.cloud.google.com/?cloudshell=true&project=hatem-ops-training
 2. انسخ الأوامر التالية في النافذة السوداء أسفل الصفحة:
@@ -22,6 +22,6 @@ npx -y firebase-tools@latest deploy --only functions,firestore:rules --project h
 
 ## بعد النشر
 
-- ارفع `index.html` إلى Netlify.
+- ادمج التعديلات في `main` — Cloudflare Pages ينشر الموقع تلقائيًا.
 - من لوحة المدرب ← «مفاتيح إجابات الاختبارات» ← استورد ملف `quiz_keys.json`.
   الملف **لا يُحفظ في المستودع** — احتفظ به عندك. عند تعديل أسئلة أي وحدة عدّل مفتاحها في الملف وأعد استيراده.
