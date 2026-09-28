@@ -19,12 +19,19 @@ service cloud.firestore {
       allow create: if isAdmin()
         || (isOwner(uid)
             && request.resource.data.status == 'pending'
-            && (!('scores' in request.resource.data) || request.resource.data.scores.size() == 0));
-      allow update: if isAdmin() || (isOwner(uid) && changedOnly(['scores', 'phone', 'jobTitle', 'employer', 'branch', 'city', 'updatedAt']));
+            && (!('scores' in request.resource.data) || request.resource.data.scores.size() == 0)
+            && !('quizAttempts' in request.resource.data));
+      // الدرجات (scores) ومحاولات الاختبار (quizAttempts) يكتبها الخادم وحده عبر gradeQuiz
+      allow update: if isAdmin() || (isOwner(uid) && changedOnly(['phone', 'jobTitle', 'employer', 'branch', 'city', 'updatedAt']));
       allow delete: if isAdmin();
     }
     // بيانات خاصة بالمتدرب يطّلع عليها المدرب فقط
     match /trainee_private/{uid} {
+      allow read, write: if isAdmin();
+    }
+
+    // مفاتيح إجابات اختبارات الوحدات — لا يراها المتدرب إطلاقًا
+    match /quiz_keys/{mid} {
       allow read, write: if isAdmin();
     }
 
