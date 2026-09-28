@@ -1,0 +1,230 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===================== دوال مساعدة =====================
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() { return isSignedIn() && request.auth.token.email in ['hatemattia1982@gmail.com']; }
+    function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
+    function hasTraineeDoc() { return isSignedIn() && exists(/databases/$(database)/documents/trainees/$(request.auth.uid)); }
+    function traineeData() { return get(/databases/$(database)/documents/trainees/$(request.auth.uid)).data; }
+    function isActiveTrainee() { return hasTraineeDoc() && (!('status' in traineeData()) || traineeData().status == 'active'); }
+    function changedOnly(keys) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys); }
+
+    // ===================== المتدربون =====================
+    match /trainees/{uid} {
+      allow get: if isOwner(uid) || isAdmin();
+      allow list: if isAdmin();
+      // طلب الانضمام: بحالة pending وبدون أي درجات مسبقة
+      allow create: if isAdmin()
+        || (isOwner(uid)
+            && request.resource.data.status == 'pending'
+            && (!('scores' in request.resource.data) || request.resource.data.scores.size() == 0));
+      allow update: if isAdmin() || (isOwner(uid) && changedOnly(['scores', 'phone', 'jobTitle', 'employer', 'branch', 'city', 'updatedAt']));
+      allow delete: if isAdmin();
+    }
+    // بيانات خاصة بالمتدرب يطّلع عليها المدرب فقط
+    match /trainee_private/{uid} {
+      allow read, write: if isAdmin();
+    }
+
+    match /codes/{code} {
+      allow read, write: if isAdmin();
+    }
+
+    // ===================== مكتبة الأصناف والوصفات =====================
+    match /items/{id} {
+      allow read: if isAdmin()
+        || (isActiveTrainee() && (resource.data.status == 'approved' || resource.data.createdBy.uid == request.auth.uid));
+      allow create: if isAdmin()
+        || (isActiveTrainee() && request.resource.data.status == 'draft' && request.resource.data.createdBy.uid == request.auth.uid);
+      allow update: if isAdmin()
+        || (isActiveTrainee()
+            && resource.data.createdBy.uid == request.auth.uid
+            && resource.data.status == 'draft'
+            && request.resource.data.status in ['draft', 'review']
+            && request.resource.data.createdBy.uid == resource.data.createdBy.uid);
+      allow delete: if isAdmin();
+    }
+    match /items_versions/{id} {
+      allow read, create: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    // ===================== مكتبة الإجراءات التشغيلية SOP =====================
+    match /sops/{id} {
+      allow read: if isAdmin()
+        || (isActiveTrainee() && (resource.data.status == 'approved' || resource.data.createdBy.uid == request.auth.uid));
+      allow create: if isAdmin()
+        || (isActiveTrainee() && request.resource.data.status == 'draft' && request.resource.data.createdBy.uid == request.auth.uid);
+      allow update: if isAdmin()
+        || (isActiveTrainee()
+            && resource.data.createdBy.uid == request.auth.uid
+            && resource.data.status == 'draft'
+            && request.resource.data.status in ['draft', 'review']
+            && request.resource.data.createdBy.uid == resource.data.createdBy.uid);
+      allow delete: if isAdmin();
+    }
+    match /sops_versions/{id} {
+      allow read, create: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    // ===================== التطبيق العملي: تمارين المتدرب — يراها صاحبها والمدرب =====================
+    match /checklists/{id} {
+      allow read: if isAdmin() || (isActiveTrainee() && resource.data.createdBy.uid == request.auth.uid);
+      allow create: if isAdmin()
+        || (isActiveTrainee() && request.resource.data.status == 'draft' && request.resource.data.createdBy.uid == request.auth.uid);
+      allow update: if isAdmin()
+        || (isActiveTrainee()
+            && resource.data.createdBy.uid == request.auth.uid
+            && resource.data.status == 'draft'
+            && request.resource.data.status in ['draft', 'review']
+            && request.resource.data.createdBy.uid == resource.data.createdBy.uid);
+      allow delete: if isAdmin()
+        || (isActiveTrainee() && resource.data.createdBy.uid == request.auth.uid && resource.data.status == 'draft');
+    }
+    match /deviations/{id} {
+      allow read: if isAdmin() || (isActiveTrainee() && resource.data.createdBy.uid == request.auth.uid);
+      allow create: if isAdmin()
+        || (isActiveTrainee() && request.resource.data.status == 'draft' && request.resource.data.createdBy.uid == request.auth.uid);
+      allow update: if isAdmin()
+        || (isActiveTrainee()
+            && resource.data.createdBy.uid == request.auth.uid
+            && resource.data.status == 'draft'
+            && request.resource.data.status in ['draft', 'review']
+            && request.resource.data.createdBy.uid == resource.data.createdBy.uid);
+      allow delete: if isAdmin()
+        || (isActiveTrainee() && resource.data.createdBy.uid == request.auth.uid && resource.data.status == 'draft');
+    }
+    match /kpis/{id} {
+      allow read: if isAdmin() || (isActiveTrainee() && resource.data.createdBy.uid == request.auth.uid);
+      allow create: if isAdmin()
+        || (isActiveTrainee() && request.resource.data.status == 'draft' && request.resource.data.createdBy.uid == request.auth.uid);
+      allow update: if isAdmin()
+        || (isActiveTrainee()
+            && resource.data.createdBy.uid == request.auth.uid
+            && resource.data.status == 'draft'
+            && request.resource.data.status in ['draft', 'review']
+            && request.resource.data.createdBy.uid == resource.data.createdBy.uid);
+      allow delete: if isAdmin()
+        || (isActiveTrainee() && resource.data.createdBy.uid == request.auth.uid && resource.data.status == 'draft');
+    }
+
+    // قوالب قوائم الفحص وتعريفات المؤشرات: المدرب يحررها والجميع يقرأها
+    match /checklists_tpl/{id} {
+      allow read: if isAdmin() || isActiveTrainee();
+      allow create, update, delete: if isAdmin();
+    }
+    match /kpi_defs/{id} {
+      allow read: if isAdmin() || isActiveTrainee();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ===================== الدعم والاستفسارات =====================
+    match /tickets/{id} {
+      allow read: if isAdmin() || (isActiveTrainee() && resource.data.createdBy.uid == request.auth.uid);
+      allow create: if isAdmin()
+        || (isActiveTrainee()
+            && request.resource.data.status == 'open'
+            && request.resource.data.createdBy.uid == request.auth.uid
+            && request.resource.data.messages.size() == 1);
+      allow update: if isAdmin()
+        || (isActiveTrainee()
+            && resource.data.createdBy.uid == request.auth.uid
+            && request.resource.data.createdBy.uid == resource.data.createdBy.uid
+            && (request.resource.data.status == resource.data.status || request.resource.data.status in ['open', 'closed'])
+            && changedOnly(['messages', 'status', 'updatedAt', 'lastMsgAt', 'lastMsgBy', 'msgCount', 'unreadAdmin', 'unreadTrainee', 'closedAt', 'closedBy', 'rating', 'ratingAt']));
+      allow delete: if isAdmin();
+    }
+    match /faqs/{id} {
+      allow read: if isAdmin() || isActiveTrainee();
+      allow create, update, delete: if isAdmin();
+    }
+    match /ticket_canned/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // ===================== ملف المتدرب: الجلسات والحضور · التكليفات والتسليمات · التقييم العملي · التطبيق الميداني · الشهادات =====================
+    match /sessions/{id} {
+      allow read: if isAdmin() || isActiveTrainee();
+      allow create, update, delete: if isAdmin();
+    }
+    match /attendance/{id} {
+      allow read: if isAdmin() || (isActiveTrainee() && resource.data.uid == request.auth.uid);
+      allow write: if isAdmin();
+    }
+    match /assignments/{id} {
+      allow read: if isAdmin() || isActiveTrainee();
+      allow create, update, delete: if isAdmin();
+    }
+    match /submissions/{id} {
+      allow read: if isAdmin() || (isActiveTrainee() && resource.data.uid == request.auth.uid);
+      // التسليم الجديد لا يحمل أي تقييم — التقييم يكتبه المدرب فقط
+      allow create: if isAdmin()
+        || (isActiveTrainee()
+            && request.resource.data.uid == request.auth.uid
+            && request.resource.data.status == 'submitted'
+            && !('review' in request.resource.data)
+            && !('gradedAt' in request.resource.data));
+      allow update: if isAdmin()
+        || (isActiveTrainee()
+            && resource.data.uid == request.auth.uid
+            && resource.data.status in ['todo', 'returned']
+            && request.resource.data.uid == resource.data.uid
+            && request.resource.data.status == 'submitted'
+            && changedOnly(['text', 'link', 'image', 'status', 'submittedAt', 'updatedAt', 'attempts']));
+      allow delete: if isAdmin();
+    }
+    match /assessments/{id} {
+      allow read: if isAdmin() || (isActiveTrainee() && resource.data.uid == request.auth.uid && resource.data.status == 'final');
+      allow create, update, delete: if isAdmin();
+    }
+    // سجل الـ30 يومًا: المتدرب يسجّل يومياته فقط (days) — الاعتماد في ojt_signs
+    match /ojt/{uid} {
+      allow read: if isAdmin() || isOwner(uid);
+      allow create: if isAdmin()
+        || (isOwner(uid) && isActiveTrainee() && request.resource.data.keys().hasOnly(['days', 'updatedAt']));
+      allow update: if isAdmin()
+        || (isOwner(uid) && isActiveTrainee() && changedOnly(['days', 'updatedAt']));
+      allow delete: if isAdmin();
+    }
+    // اعتماد المشرف لأيام التطبيق الميداني — يكتبه المدرب وحده ويقرؤه صاحبه
+    match /ojt_signs/{uid} {
+      allow read: if isAdmin() || isOwner(uid);
+      allow write: if isAdmin();
+    }
+    match /certificates/{id} {
+      allow read: if isAdmin() || (isActiveTrainee() && resource.data.uid == request.auth.uid);
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ===================== إعدادات المنصة (قفل الدليل التدريبي) =====================
+    match /platform/{id} {
+      allow read: if isAdmin() || isActiveTrainee();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ===================== الإعلانات وإصدارات المنصة =====================
+    match /announcements/{id} {
+      allow read: if isAdmin() || isActiveTrainee();
+      allow create, update, delete: if isAdmin();
+    }
+    match /versions/{id} {
+      allow read: if isAdmin() || isActiveTrainee();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ===================== الإشعارات =====================
+    match /notifications/{id} {
+      function isRecipient() {
+        return resource.data.toUid == request.auth.uid || (resource.data.toUid == 'admin' && isAdmin());
+      }
+      allow read: if isSignedIn() && isRecipient();
+      allow create: if isAdmin()
+        || (hasTraineeDoc() && request.resource.data.toUid == 'admin' && request.resource.data.from.uid == request.auth.uid);
+      allow update: if isSignedIn() && isRecipient() && changedOnly(['read', 'readAt']);
+      allow delete: if isAdmin() || (isSignedIn() && isRecipient());
+    }
+  }
+}
