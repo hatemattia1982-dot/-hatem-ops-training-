@@ -20,7 +20,9 @@ const D = {
   islam: typeof ARKAN_ISLAM !== "undefined" ? ARKAN_ISLAM : {items:[]},
   iman: typeof ARKAN_IMAN !== "undefined" ? ARKAN_IMAN : {items:[]},
   wudu: typeof WUDU !== "undefined" ? WUDU : null,
-  salah: typeof SALAH !== "undefined" ? SALAH : null
+  salah: typeof SALAH !== "undefined" ? SALAH : null,
+  mujizat: typeof MUJIZAT !== "undefined" ? MUJIZAT : {categories:[]},
+  karamatIntro: typeof KARAMAT_INTRO !== "undefined" ? KARAMAT_INTRO : ""
 };
 
 const SECTIONS = [
@@ -31,12 +33,15 @@ const SECTIONS = [
   {id:"wudu", name:"الوضوء", icon:"wudu", desc:"صفة الوضوء خطوة بخطوة بالرسوم، ونواقضه، والتيمم والغسل"},
   {id:"salah", name:"الصلاة", icon:"salah", desc:"صفة الصلاة بالرسوم، الأوقات، الأركان والواجبات والسنن"},
   {id:"prophets", name:"قصص الأنبياء", icon:"prophets", desc:"الأنبياء الخمسة والعشرون مرتبين زمنياً"},
+  {id:"mujizat", name:"معجزات النبي ﷺ", icon:"sawm", desc:"دلائل النبوة: انشقاق القمر، نبع الماء، حنين الجذع، الإخبار بالغيب…"},
   {id:"sahaba", name:"الصحابة", icon:"sahaba", desc:"سير أعلام الصحابة رضي الله عنهم"},
   {id:"sahabiyat", name:"الصحابيات", icon:"sahabiyat", desc:"أمهات المؤمنين وبنات النبي ﷺ وأعلام الصحابيات"},
   {id:"ghazawat", name:"الغزوات", icon:"ghazawat", desc:"غزوات النبي ﷺ وسراياه مع خريطة المواقع"}
 ];
+// الأقسام التي لم يصل محتواها بعد لا تظهر
+for (let i = SECTIONS.length - 1; i >= 0; i--) if (SECTIONS[i].id === "mujizat" && !D.mujizat.categories.length) SECTIONS.splice(i, 1);
 const count = id => ({quran:114, islam:D.islam.items.length, iman:D.iman.items.length, prophets:D.prophets.length,
-  sahaba:D.sahaba.length, sahabiyat:D.sahabiyat.length, ghazawat:D.ghazawat.length}[id]);
+  sahaba:D.sahaba.length, mujizat:D.mujizat.categories.reduce((a,c) => a + c.items.length, 0), sahabiyat:D.sahabiyat.length, ghazawat:D.ghazawat.length}[id]);
 
 /* ===== الثيم ===== */
 (function(){
@@ -58,9 +63,9 @@ function sectionsHTML(sections){
     ${(s.p || []).map(p => `<p>${esc(p)}</p>`).join("")}
     ${s.list ? `<ul class="lst">${s.list.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}`).join("");
 }
-function tocHTML(sections){
-  if (!sections || sections.length < 3) return "";
-  return `<div class="toc">${sections.map((s,i) => `<a class="chip" href="javascript:void(0)" data-jump="sec-${i}">${esc(s.h)}</a>`).join("")}</div>`;
+function tocHTML(sections, extra = []){
+  if (!sections || sections.length + extra.length < 3) return "";
+  return `<div class="toc">${sections.map((s,i) => `<a class="chip" href="javascript:void(0)" data-jump="sec-${i}">${esc(s.h)}</a>`).join("")}${extra.map(([id,t]) => `<a class="chip on" href="javascript:void(0)" data-jump="${id}">${t}</a>`).join("")}</div>`;
 }
 function listBox(title, arr){
   if (!arr || !arr.length) return "";
@@ -84,6 +89,19 @@ function prevNext(list, i, base, label){
     ${p ? `<a href="#${base}/${i-1}">${esc(label(p))} →</a>` : "<span></span>"}</div>`;
 }
 
+function miraclesHTML(list, title, id){
+  if (!list) return "";
+  return `<h3 class="sec" id="${id}">${title}</h3>` + (list.length ? `<div class="mir">${list.map((m,i) => `<div class="mir-item">
+    <h4><span class="mir-n">${toAr(i+1)}</span>${esc(m.title)}${m.grade ? ` <span class="tag${/صحيح|حسن/.test(m.grade) ? " gold" : ""}">${esc(m.grade)}</span>` : ""}</h4>
+    <p>${esc(m.text)}</p>${m.verses && m.verses.length ? `<div class="verses" data-refs='${JSON.stringify(m.verses)}'><div class="meta">جارٍ تحميل الآيات…</div></div>` : ""}
+    ${(m.hadith || []).map(h => `<div class="hadith">«${esc(h.text).replace(/^«|»$/g,"")}»<small>${esc(h.source || "")}</small></div>`).join("")}
+    ${m.source ? `<div class="meta">المصدر: ${esc(m.source)}</div>` : ""}</div>`).join("")}</div>`
+    : `<p class="meta">لم نقف على كرامات خاصة مروية عنه بأسانيد معتبرة، وفضائله الثابتة مذكورة أعلاه.</p>`);
+}
+function sourcesHTML(list){
+  return list && list.length ? `<div class="box src"><h4>المصادر والمراجع</h4><ul class="lst">${list.map(x => `<li>${/^https?:/.test(x) ? `<a href="${esc(x)}" target="_blank" rel="noopener">${esc(x)}</a>` : esc(x)}</li>`).join("")}</ul></div>` : "";
+}
+
 /* جلب نص الآيات من المصدر بدقة المصحف */
 const verseCache = new Map();
 const BASMALA_WORDS = 4;
@@ -101,6 +119,9 @@ async function fetchAyah(s, a){
 }
 function hydrateVerses(root){
   root.querySelectorAll(".verses[data-refs]").forEach(async el => {
+    const closed = el.closest("details:not([open])");
+    if (closed && closed !== root) return;
+    if (el.dataset.done) return; el.dataset.done = 1;
     const refs = JSON.parse(el.dataset.refs).filter(r => r && SURAHS[r[0]-1] && r[1] >= 1 && r[1] <= SURAHS[r[0]-1][1]);
     // تجميع الآيات المتتالية من السورة نفسها في مقطع واحد
     const groups = [];
@@ -128,6 +149,7 @@ function allIndex(){
   D.sahaba.forEach((p,i) => out.push({t:p.name, sub:"الصحابة", h:`sahaba/${i}`, x:p.summary}));
   D.sahabiyat.forEach((p,i) => out.push({t:p.name, sub:"الصحابيات", h:`sahabiyat/${i}`, x:p.summary}));
   D.ghazawat.forEach((g,i) => out.push({t:g.name, sub:"الغزوات", h:`ghazawat/${i}`, x:g.summary}));
+  D.mujizat.categories.forEach(c => c.items.forEach(m => out.push({t:m.title, sub:"معجزات النبي ﷺ", h:"mujizat", x:m.text})));
   D.islam.items.forEach(it => out.push({t:it.name, sub:"أركان الإسلام", h:`islam/${it.key}`, x:it.short}));
   D.iman.items.forEach(it => out.push({t:it.name, sub:"أركان الإيمان", h:`iman/${it.key}`, x:it.short}));
   SURAHS.forEach((s,i) => out.push({t:"سورة " + s[0], sub:"القرآن الكريم", h:`quran/${i+1}`, x:`${s[2]} · ${s[1]} آية`}));
@@ -163,6 +185,7 @@ function viewList(id, data, opts){
   let filter = "all";
   const tags = opts.tags ? [...new Set(data.flatMap(opts.tags))] : [];
   $("#view").innerHTML = `<h2 class="pg">${sec.name}</h2><p class="intro">${opts.intro}</p>${opts.note || ""}
+    ${opts.karamat && D.karamatIntro ? `<details class="acc"><summary>✨ ما هي الكرامة؟ معتقد أهل السنة في كرامات الأولياء</summary><div><p>${esc(D.karamatIntro)}</p></div></details>` : ""}
     <div class="bar"><input class="search" id="ls" placeholder="ابحث…"></div>
     ${tags.length ? `<div class="bar" id="lt"><button class="chip on" data-t="all">الكل (${toAr(data.length)})</button>${tags.map(t => `<button class="chip" data-t="${esc(t)}">${esc(t)}</button>`).join("")}</div>` : ""}
     <div class="${opts.timeline ? "timeline" : "grid"}" id="ll"></div>`;
@@ -198,8 +221,9 @@ function viewProphet(i){
   $("#view").innerHTML = `<a class="back" href="#prophets">→ قصص الأنبياء</a><article class="art">
     <div class="art-head">${ILL.icons.prophets}<div><h2 class="pg">${esc(p.name)} ${p.name.includes("ﷺ") ? "" : "عليه السلام"}</h2><div class="meta">${esc(p.title)}</div></div></div>
     ${factsHTML([["الترتيب الزمني", toAr(i+1) + " من ٢٥"],["القوم", p.people],["المكان", p.place],["مرات ذكر اسمه في القرآن", toAr(p.mentions)],["أبرز السور", p.surahs],["من أولي العزم", p.ulul ? "نعم" : ""]])}
-    <div class="lead">${esc(p.summary)}</div>${tocHTML(p.sections)}
-    ${sectionsHTML(p.sections)}${versesBox(p.verses)}${hadithBox(p.hadith)}${listBox("دروس وعبر", p.lessons)}
+    <div class="lead">${esc(p.summary)}</div>${tocHTML(p.sections, p.miracles ? [["sec-mir","✨ المعجزات والآيات"]] : [])}
+    ${sectionsHTML(p.sections)}${miraclesHTML(p.miracles, "✨ المعجزات والآيات التي أيّده الله بها", "sec-mir")}
+    ${versesBox(p.verses)}${hadithBox(p.hadith)}${listBox("دروس وعبر", p.lessons)}${sourcesHTML(p.sources)}
     ${prevNext(D.prophets, i, "prophets", x => x.name)}</article>`;
 }
 
@@ -208,13 +232,31 @@ function personView(base, data, i, honor, backName){
   $("#view").innerHTML = `<a class="back" href="#${base}">→ ${backName}</a><article class="art">
     <div class="art-head">${ILL.icons[base]}<div><h2 class="pg">${esc(p.name)} <small style="font-size:18px">${honor}</small></h2><div class="meta">${esc(p.kunya || "")}</div></div></div>
     ${factsHTML([["الاسم والنسب", p.full],["الوفاة", p.died],["التصنيف", (p.tags || [p.group]).join("، ")]])}
-    <div class="lead">${esc(p.summary)}</div>${tocHTML(p.sections)}
-    ${sectionsHTML(p.sections)}${listBox("من فضائله" + (base === "sahabiyat" ? "ا" : ""), p.virtues)}${hadithBox(p.hadith)}${versesBox(p.verses, "آيات ذات صلة")}
+    <div class="lead">${esc(p.summary)}</div>${tocHTML(p.sections, p.karamat ? [["sec-kar","✨ الكرامات"]] : [])}
+    ${sectionsHTML(p.sections)}${listBox("من فضائله" + (base === "sahabiyat" ? "ا" : ""), p.virtues)}
+    ${miraclesHTML(p.karamat, "✨ الكرامات والبشارات", "sec-kar")}
+    ${hadithBox(p.hadith)}${versesBox(p.verses, "آيات ذات صلة")}${sourcesHTML(p.sources)}
     ${prevNext(data, i, base, x => x.name)}</article>`;
 }
 const personCard = (base, honor) => (p,i) => `<a class="card" href="#${base}/${i}"><h3>${esc(p.name)} <small class="meta">${honor}</small></h3>
   <div class="meta">${esc(p.kunya || p.full || "")}</div><p style="margin-top:4px;font-size:15px">${esc(p.summary)}</p>
   <div>${(p.tags || [p.group]).map(t => `<span class="tag">${esc(t)}</span>`).join("")}<span class="tag">الوفاة: ${esc(p.died)}</span></div></a>`;
+
+/* ===== معجزات النبي ﷺ ===== */
+function viewMujizat(){
+  const M = D.mujizat;
+  if (!M.categories.length) { $("#view").innerHTML = `<div class="empty">المحتوى غير متوفر</div>`; return; }
+  $("#view").innerHTML = `<article class="art"><div class="art-head">${ILL.icons.sawm}<h2 class="pg">معجزات النبي ﷺ ودلائل نبوته</h2></div>
+    <div class="lead">${esc(M.intro)}</div>
+    <div class="toc">${M.categories.map(c => `<a class="chip" href="javascript:void(0)" data-jump="cat-${c.key}">${esc(c.name)} (${toAr(c.items.length)})</a>`).join("")}</div>
+    ${M.categories.map(c => `<h3 class="sec" id="cat-${c.key}">${esc(c.name)}</h3>
+      ${c.items.map(m => `<details class="acc"><summary>${esc(m.title)}${m.grade ? ` <span class="tag${/صحيح|حسن/.test(m.grade) ? " gold" : ""}">${esc(m.grade)}</span>` : ""}</summary><div>
+        <p>${esc(m.text)}</p>${m.verses && m.verses.length ? versesBox(m.verses, "") : ""}
+        ${(m.hadith || []).map(h => `<div class="hadith">«${esc(h.text).replace(/^«|»$/g,"")}»<small>${esc(h.source || "")}</small></div>`).join("")}</div></details>`).join("")}`).join("")}
+    ${sourcesHTML(M.sources)}</article>`;
+  // الآيات داخل البنود المطوية تُحمَّل عند فتحها
+  document.querySelectorAll("details.acc").forEach(d => d.addEventListener("toggle", () => d.open && hydrateVerses(d), {once:true}));
+}
 
 /* ===== الغزوات ===== */
 function viewGhazawat(){
@@ -372,7 +414,24 @@ async function searchAyat(){
   }catch(e){ box.innerHTML = `<div class="status err">تعذّر الاتصال بخدمة البحث. تحقق من اتصال الإنترنت.</div>`; }
 }
 
+/* القرّاء: من واجهة alquran.cloud، والمصحف المعلّم للحصري من everyayah.com (الآية بصوت الشيخ ثم فراغ لترديدها) */
+const pad3 = n => String(n).padStart(3, "0");
+const RECITERS = [
+  {id:"ar.husary", name:"محمود خليل الحصري — مرتّل"},
+  {id:"husary_muallim", name:"الحصري — المصحف المعلّم (للتحفيظ)", url:(s,a) => `https://everyayah.com/data/Husary_Muallim_128kbps/${pad3(s)}${pad3(a)}.mp3`},
+  {id:"ar.husarymujawwad", name:"الحصري — مجوّد"},
+  {id:"ar.minshawi", name:"محمد صديق المنشاوي — مرتّل"},
+  {id:"ar.minshawimujawwad", name:"المنشاوي — مجوّد"},
+  {id:"ar.abdulbasitmurattal", name:"عبد الباسط عبد الصمد — مرتّل"},
+  {id:"ar.alafasy", name:"مشاري راشد العفاسي"},
+  {id:"ar.mahermuaiqly", name:"ماهر المعيقلي"},
+  {id:"ar.abdurrahmaansudais", name:"عبد الرحمن السديس"},
+  {id:"ar.saoodshuraym", name:"سعود الشريم"}
+];
+const reciter = () => RECITERS.find(r => r.id === store.get("reciter", "ar.husary")) || RECITERS[0];
+
 let current = 0, audioList = [], playIdx = -1, continuous = false, fontSize = store.get("qsize", 26);
+let memo = null; // خطة التحفيظ الجارية
 const audio = new Audio();
 document.documentElement.style.setProperty("--qsize", fontSize + "px");
 
@@ -382,33 +441,63 @@ async function viewSurah(n, focusAyah){
   store.set("last", {n, a: focusAyah || 1});
   const [name, cnt, type] = SURAHS[n-1];
   const tafsir = store.get("tafsir", "ar.muyassar");
+  const rec = reciter(), M = store.get("memo", {rep:3, range:1, gap:2, speed:1});
+  const opt = (vals, cur, fmt = v => toAr(v)) => vals.map(v => `<option value="${v}"${v == cur ? " selected" : ""}>${fmt(v)}</option>`).join("");
   $("#view").innerHTML = `<div class="rtop"><a href="#quran">→ الفهرس</a>
       <select id="tafsirSel" title="التفسير">${TAFSIRS.map(([id,nm]) => `<option value="${id}"${id===tafsir?" selected":""}>${nm}</option>`).join("")}</select>
+      <select id="recSel" title="القارئ">${RECITERS.map(r => `<option value="${r.id}"${r.id===rec.id?" selected":""}>🎙 ${r.name}</option>`).join("")}</select>
       <button id="toggleTafsir">إخفاء التفسير</button><button id="fontDown" title="تصغير الخط">أ−</button><button id="fontUp" title="تكبير الخط">أ+</button>
-      <button id="playAll">▶ تلاوة السورة (العفاسي)</button></div>
+      <button id="playAll">▶ تلاوة السورة</button></div>
+    <details class="acc memo-box" id="memoBox"><summary>📖 وضع التحفيظ: تكرار الآيات والمقاطع</summary><div>
+      <div class="memo-grid">
+        <label>من الآية <input type="number" id="mFrom" min="1" max="${cnt}" value="${focusAyah || 1}"></label>
+        <label>إلى الآية <input type="number" id="mTo" min="1" max="${cnt}" value="${Math.min(cnt, (focusAyah || 1) + 4)}"></label>
+        <label>تكرار كل آية <select id="mRep">${opt([1,2,3,5,7,10,20], M.rep, v => toAr(v) + " مرات")}</select></label>
+        <label>تكرار المقطع كاملاً <select id="mRange">${opt([1,2,3,5,10,0], M.range, v => v ? toAr(v) + " مرات" : "بلا توقف")}</select></label>
+        <label>مهلة للترديد بعد كل آية <select id="mGap">${opt([0,1,2,3,5,8,12], M.gap, v => toAr(v) + " ث")}</select></label>
+        <label>سرعة التلاوة <select id="mSpeed">${opt([0.75,1,1.25], M.speed, v => ({0.75:"أبطأ",1:"عادية",1.25:"أسرع"})[v])}</select></label>
+      </div>
+      <label class="memo-hide"><input type="checkbox" id="mHide"> إخفاء نص الآيات لاختبار الحفظ (اضغط على الآية لإظهارها)</label>
+      <div class="bar" style="margin:10px 0 0"><button class="chip on" id="mStart">▶ ابدأ التحفيظ</button><span class="meta" id="mStatus"></span></div>
+      <p class="meta" style="margin-top:6px">نصيحة: اختر «الحصري — المصحف المعلّم» ليقرأ الشيخ الآية ثم يترك لك وقتاً لترديدها.</p>
+    </div></details>
+    <div id="audioErr" class="note err" hidden></div>
     <div id="readerBody"><div class="stitle">سورة ${name}</div><p class="meta" style="text-align:center">${type} · ${toAr(cnt)} آية</p><div class="status">جارٍ تحميل السورة والتفسير…</div></div>`;
   $("#tafsirSel").onchange = e => { store.set("tafsir", e.target.value); viewSurah(n); };
+  $("#recSel").onchange = e => { store.set("reciter", e.target.value); viewSurah(n, playIdx >= 0 ? playIdx + 1 : focusAyah); };
   $("#toggleTafsir").onclick = () => { const h = $("#readerBody").classList.toggle("hide-tafsir"); $("#toggleTafsir").textContent = h ? "إظهار التفسير" : "إخفاء التفسير"; };
   $("#fontUp").onclick = () => setFont(2); $("#fontDown").onclick = () => setFont(-2);
   $("#playAll").onclick = () => playIdx >= 0 ? stopAudio() : playFrom(0, true);
+  $("#mHide").onchange = e => $("#readerBody").classList.toggle("memo-hidden", e.target.checked);
+  $("#mStart").onclick = () => memo ? stopAudio() : startMemo(cnt);
+  if (store.get("memoOpen", false)) $("#memoBox").open = true;
+  $("#memoBox").ontoggle = e => store.set("memoOpen", e.target.open);
   try{
-    const j = await (await fetch(`${API}/surah/${n}/editions/quran-uthmani,${tafsir},ar.alafasy`)).json();
+    const eds = `quran-uthmani,${tafsir}` + (rec.url ? "" : `,${rec.id}`);
+    const j = await (await fetch(`${API}/surah/${n}/editions/${eds}`)).json();
     if (j.code !== 200) throw new Error("API");
     if (current !== n || !$("#readerBody")) return;
     const [qur, taf, aud] = j.data;
-    audioList = aud.ayahs.map(a => a.audio);
+    audioList = rec.url ? qur.ayahs.map(a => rec.url(n, a.numberInSurah)) : aud.ayahs.map(a => a.audio);
     const body = $("#readerBody");
-    body.innerHTML = `<div class="stitle">سورة ${name}</div><p class="meta" style="text-align:center">${type} · ${toAr(cnt)} آية · ${esc(taf.name)}</p>
+    body.innerHTML = `<div class="stitle">سورة ${name}</div><p class="meta" style="text-align:center">${type} · ${toAr(cnt)} آية · ${esc(taf.name)} · ${rec.name}</p>
       ${n !== 1 && n !== 9 ? `<div class="basmala">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>` : ""}
       ${qur.ayahs.map((a,i) => `<div class="ayah" id="ayah-${a.numberInSurah}">
-        <div class="atext">${esc(stripBasmala(a.text, n, a.numberInSurah))}<span class="amark">${toAr(a.numberInSurah)}</span></div>
-        <div class="atools"><button data-play="${i}">▶ استماع</button><button data-copy="${i}">نسخ</button></div>
+        <div class="atext" data-reveal="1">${esc(stripBasmala(a.text, n, a.numberInSurah))}<span class="amark">${toAr(a.numberInSurah)}</span></div>
+        <div class="atools"><button data-play="${i}">▶ استماع</button><button data-memo="${i}">🔁 حفظ هذه الآية</button><button data-copy="${i}">نسخ</button></div>
         <div class="tafsir">${esc(taf.ayahs[i].text)}</div></div>`).join("")}
       <div class="pn">${n < 114 ? `<a href="#quran/${n+1}">← السورة التالية: ${sname(n+1)}</a>` : "<span></span>"}
         ${n > 1 ? `<a href="#quran/${n-1}">السورة السابقة: ${sname(n-1)} →</a>` : "<span></span>"}</div>`;
+    if ($("#mHide").checked) body.classList.add("memo-hidden");
     body.onclick = e => {
       const t = e.target;
+      const at = t.closest(".atext");
+      if (at && body.classList.contains("memo-hidden")) { at.closest(".ayah").classList.toggle("reveal"); return; }
       if (t.dataset.play !== undefined) playFrom(+t.dataset.play, false);
+      else if (t.dataset.memo !== undefined) {
+        $("#mFrom").value = $("#mTo").value = +t.dataset.memo + 1;
+        $("#memoBox").open = true; startMemo(cnt);
+      }
       else if (t.dataset.copy !== undefined) {
         const a = qur.ayahs[+t.dataset.copy];
         const txt = `${stripBasmala(a.text, n, a.numberInSurah)} [${name}: ${a.numberInSurah}]`;
@@ -427,23 +516,69 @@ async function viewSurah(n, focusAyah){
   }
 }
 function setFont(d){ fontSize = Math.min(44, Math.max(18, fontSize + d)); document.documentElement.style.setProperty("--qsize", fontSize + "px"); store.set("qsize", fontSize); }
-function playFrom(i, cont){
-  continuous = cont;
+
+function highlight(i, scroll){
   document.querySelectorAll(".ayah.playing").forEach(x => x.classList.remove("playing"));
-  if (i >= audioList.length) { stopAudio(); return; }
-  playIdx = i;
   const el = document.getElementById("ayah-" + (i+1));
-  if (el) { el.classList.add("playing"); if (cont) el.scrollIntoView({block:"center", behavior:"smooth"}); }
+  if (el) { el.classList.add("playing"); if (scroll) el.scrollIntoView({block:"center", behavior:"smooth"}); }
+}
+function playAyah(i){
+  playIdx = i;
   store.set("last", {n: current, a: i+1});
-  audio.src = audioList[i]; audio.play().catch(() => {});
+  if ($("#audioErr")) $("#audioErr").hidden = true;
+  audio.src = audioList[i];
+  audio.playbackRate = memo ? memo.speed : 1;
+  audio.play().catch(() => {});
+}
+function playFrom(i, cont){
+  memo = null; clearTimeout(memoTimer); continuous = cont;
+  if (i >= audioList.length) { stopAudio(); return; }
+  highlight(i, cont); playAyah(i);
   if ($("#playAll")) $("#playAll").textContent = "■ إيقاف التلاوة";
+  if ($("#mStart")) $("#mStart").textContent = "▶ ابدأ التحفيظ";
 }
 function stopAudio(){
-  audio.pause(); playIdx = -1; continuous = false;
+  audio.pause(); playIdx = -1; continuous = false; memo = null; clearTimeout(memoTimer);
   document.querySelectorAll(".ayah.playing").forEach(x => x.classList.remove("playing"));
-  if ($("#playAll")) $("#playAll").textContent = "▶ تلاوة السورة (العفاسي)";
+  if ($("#playAll")) $("#playAll").textContent = "▶ تلاوة السورة";
+  if ($("#mStart")) $("#mStart").textContent = "▶ ابدأ التحفيظ";
+  if ($("#mStatus")) $("#mStatus").textContent = "";
 }
-audio.onended = () => continuous ? playFrom(playIdx + 1, true) : stopAudio();
+
+/* وضع التحفيظ: كل آية تُكرر rep مرات مع مهلة للترديد، ثم المقطع كله يُكرر range مرات (0 = بلا توقف) */
+let memoTimer = null;
+function startMemo(cnt){
+  const from = Math.max(1, Math.min(cnt, +$("#mFrom").value || 1));
+  const to = Math.max(from, Math.min(cnt, +$("#mTo").value || from));
+  const cfg = {rep:+$("#mRep").value, range:+$("#mRange").value, gap:+$("#mGap").value, speed:+$("#mSpeed").value};
+  store.set("memo", cfg);
+  if (!audioList.length) return;
+  audio.pause(); clearTimeout(memoTimer); continuous = false;
+  memo = {...cfg, from: from-1, to: to-1, i: from-1, r: 1, round: 1};
+  $("#mStart").textContent = "■ إيقاف التحفيظ";
+  if ($("#playAll")) $("#playAll").textContent = "▶ تلاوة السورة";
+  memoPlay();
+}
+function memoPlay(){
+  if (!memo) return;
+  highlight(memo.i, true);
+  $("#mStatus").textContent = `الآية ${toAr(memo.i+1)} · التكرار ${toAr(memo.r)}/${toAr(memo.rep)} · الجولة ${toAr(memo.round)}${memo.range ? "/" + toAr(memo.range) : ""}`;
+  playAyah(memo.i);
+}
+function memoNext(){
+  if (!memo) return;
+  if (memo.r < memo.rep) memo.r++;
+  else if (memo.i < memo.to) { memo.i++; memo.r = 1; }
+  else if (!memo.range || memo.round < memo.range) { memo.round++; memo.i = memo.from; memo.r = 1; }
+  else { stopAudio(); if ($("#mStatus")) $("#mStatus").textContent = "✓ انتهى التحفيظ، بارك الله فيك"; return; }
+  memoTimer = setTimeout(memoPlay, memo.gap * 1000);
+}
+audio.onended = () => memo ? memoNext() : continuous ? playFrom(playIdx + 1, true) : stopAudio();
+audio.onerror = () => {
+  if (playIdx < 0 || !$("#audioErr")) return;
+  $("#audioErr").hidden = false;
+  $("#audioErr").textContent = "تعذّر تشغيل التلاوة بهذا الصوت. تأكد من الاتصال بالإنترنت أو اختر قارئاً آخر.";
+};
 
 /* ===== التوجيه ===== */
 function go(h){ location.hash = h; }
@@ -461,9 +596,10 @@ function route(){
     case "salah": viewSalah(); break;
     case "prophets": n !== null ? viewProphet(n) : viewProphets(); break;
     case "sahaba": n !== null ? personView("sahaba", D.sahaba, n, "رضي الله عنه", "الصحابة")
-      : viewList("sahaba", D.sahaba, {intro:"سِيَر أعلام الصحابة رضي الله عنهم. اضغط على أي صحابي لقراءة سيرته كاملة.", tags:p => p.tags || [], card:personCard("sahaba","رضي الله عنه")}); break;
+      : viewList("sahaba", D.sahaba, {intro:"سِيَر أعلام الصحابة رضي الله عنهم. اضغط على أي صحابي لقراءة سيرته كاملة.", tags:p => p.tags || [], karamat:true, card:personCard("sahaba","رضي الله عنه")}); break;
     case "sahabiyat": n !== null ? personView("sahabiyat", D.sahabiyat, n, "رضي الله عنها", "الصحابيات")
-      : viewList("sahabiyat", D.sahabiyat, {intro:"سِيَر أمهات المؤمنين وبنات النبي ﷺ وأعلام الصحابيات رضي الله عنهن.", tags:p => [p.group], card:personCard("sahabiyat","رضي الله عنها")}); break;
+      : viewList("sahabiyat", D.sahabiyat, {intro:"سِيَر أمهات المؤمنين وبنات النبي ﷺ وأعلام الصحابيات رضي الله عنهن.", tags:p => [p.group], karamat:true, card:personCard("sahabiyat","رضي الله عنها")}); break;
+    case "mujizat": viewMujizat(); break;
     case "ghazawat": n !== null ? viewGhazwa(n) : viewGhazawat(); break;
     default: viewHome();
   }

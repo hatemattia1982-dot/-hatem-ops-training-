@@ -93,6 +93,12 @@ a.card.tile{display:flex;gap:12px;align-items:center}
 .verse .ref a{text-decoration:none}
 .hadith{border-right:3px solid var(--gold);padding:4px 12px;margin:8px 0;background:var(--chip);border-radius:8px}
 .hadith small{display:block;color:var(--soft)}
+.mir{display:grid;gap:10px}
+.mir-item{background:var(--card);border:1px solid var(--line);border-right:4px solid var(--gold);border-radius:14px;padding:12px 16px}
+.mir-item h4{color:var(--pri);font-size:17px;margin-bottom:4px}
+.mir-n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--gold);color:#fff;font-size:12px;margin-left:6px}
+.mir-item .verse{font-size:21px}
+.src li{word-break:break-word;font-size:14px}
 .pn{display:flex;justify-content:space-between;gap:8px;margin-top:22px}
 .pn a{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 14px;text-decoration:none}
 
@@ -127,6 +133,14 @@ details.acc > div{padding:0 16px 12px}
 .atools button{border:1px solid var(--line);background:none;border-radius:8px;padding:2px 10px;cursor:pointer;font-size:13px;color:var(--soft)}
 .tafsir{margin-top:8px;padding:10px 12px;border-right:3px solid var(--gold);background:var(--chip);border-radius:8px;font-size:15px}
 .hide-tafsir .tafsir{display:none}
+.memo-box{margin-bottom:12px}
+.memo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.memo-grid label{font-size:13.5px;color:var(--soft);display:flex;flex-direction:column;gap:2px}
+.memo-grid input,.memo-grid select{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:5px 8px;color:var(--ink)}
+.memo-hide{display:block;margin-top:10px;font-size:14px}
+.memo-hidden .atext{filter:blur(7px);cursor:pointer;user-select:none}
+.memo-hidden .ayah.reveal .atext{filter:none}
+.rtop select{max-width:100%}
 .status{text-align:center;color:var(--soft);padding:30px}
 .err{color:#b3261e}
 
@@ -179,6 +193,7 @@ footer{text-align:center;color:var(--soft);font-size:13px;padding:20px 16px}
 <script src="data/sahaba.js"></script>
 <script src="data/sahabiyat.js"></script>
 <script src="data/ghazawat.js"></script>
+<script src="data/mujizat.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
