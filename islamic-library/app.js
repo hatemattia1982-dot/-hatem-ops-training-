@@ -136,12 +136,16 @@ function hydrateVerses(root){
       const g = groups[groups.length-1];
       if (g && g.s === s && a === g.to + 1) g.to = a; else groups.push({s, from:a, to:a});
     });
+    // المقاطع الطويلة (كسورة كاملة) تُعرض رابطاً إلى القارئ بدل جلب عشرات الآيات
+    const LONG = 12, long = groups.filter(g => g.to - g.from + 1 > LONG), short = groups.filter(g => g.to - g.from + 1 <= LONG);
+    const longHTML = long.map(g => `<div class="verse" style="font-family:Tajawal;font-size:16px"><a class="chip on" href="#quran/${g.s}/${g.from}">📖 اقرأ ${g.from === 1 && g.to === SURAHS[g.s-1][1] ? "سورة " + sname(g.s) + " كاملة" : `سورة ${sname(g.s)}: ${toAr(g.from)}–${toAr(g.to)}`} ←</a></div>`).join("");
+    groups.length = 0; groups.push(...short);
     try{
       const texts = await Promise.all(groups.map(g => Promise.all(
         Array.from({length: g.to - g.from + 1}, (_, i) => fetchAyah(g.s, g.from + i)))));
       el.innerHTML = groups.map((g, gi) => `<div class="verse">﴿${texts[gi].map((t, i) =>
         `${esc(t)} <span class="amark" style="width:28px;height:28px;min-width:28px;font-size:12px">${toAr(g.from+i)}</span>`).join(" ")}﴾
-        <span class="ref"><a href="#quran/${g.s}/${g.from}">[${sname(g.s)}: ${toAr(g.from)}${g.to > g.from ? "–" + toAr(g.to) : ""}]</a></span></div>`).join("");
+        <span class="ref"><a href="#quran/${g.s}/${g.from}">[${sname(g.s)}: ${toAr(g.from)}${g.to > g.from ? "–" + toAr(g.to) : ""}]</a></span></div>`).join("") + longHTML;
     }catch(e){
       el.innerHTML = `<div class="meta">تعذّر تحميل نص الآيات (يحتاج اتصالاً بالإنترنت). المراجع: ` +
         groups.map(g => `<a href="#quran/${g.s}/${g.from}">${sname(g.s)}: ${toAr(g.from)}${g.to > g.from ? "–" + toAr(g.to) : ""}</a>`).join("، ") + `</div>`;
