@@ -89,14 +89,14 @@ function prevNext(list, i, base, label){
     ${p ? `<a href="#${base}/${i-1}">${esc(label(p))} →</a>` : "<span></span>"}</div>`;
 }
 
-function miraclesHTML(list, title, id){
+function miraclesHTML(list, title, id, fem){
   if (!list) return "";
   return `<h3 class="sec" id="${id}">${title}</h3>` + (list.length ? `<div class="mir">${list.map((m,i) => `<div class="mir-item">
     <h4><span class="mir-n">${toAr(i+1)}</span>${esc(m.title)}${m.grade ? ` <span class="tag${/صحيح|حسن/.test(m.grade) ? " gold" : ""}">${esc(m.grade)}</span>` : ""}</h4>
     <p>${esc(m.text)}</p>${m.verses && m.verses.length ? `<div class="verses" data-refs='${JSON.stringify(m.verses)}'><div class="meta">جارٍ تحميل الآيات…</div></div>` : ""}
     ${(m.hadith || []).map(h => `<div class="hadith">«${esc(h.text).replace(/^«|»$/g,"")}»<small>${esc(h.source || "")}</small></div>`).join("")}
     ${m.source ? `<div class="meta">المصدر: ${esc(m.source)}</div>` : ""}</div>`).join("")}</div>`
-    : `<p class="meta">لم نقف على كرامات خاصة مروية عنه بأسانيد معتبرة، وفضائله الثابتة مذكورة أعلاه.</p>`);
+    : `<p class="meta">لم نقف على كرامات خاصة مروية ${fem ? "عنها" : "عنه"} بأسانيد معتبرة، و${fem ? "فضائلها" : "فضائله"} الثابتة مذكورة أعلاه.</p>`);
 }
 function sourcesHTML(list){
   return list && list.length ? `<div class="box src"><h4>المصادر والمراجع</h4><ul class="lst">${list.map(x => `<li>${/^https?:/.test(x) ? `<a href="${esc(x)}" target="_blank" rel="noopener">${esc(x)}</a>` : esc(x)}</li>`).join("")}</ul></div>` : "";
@@ -234,7 +234,7 @@ function personView(base, data, i, honor, backName){
     ${factsHTML([["الاسم والنسب", p.full],["الوفاة", p.died],["التصنيف", (p.tags || [p.group]).join("، ")]])}
     <div class="lead">${esc(p.summary)}</div>${tocHTML(p.sections, p.karamat ? [["sec-kar","✨ الكرامات"]] : [])}
     ${sectionsHTML(p.sections)}${listBox("من فضائله" + (base === "sahabiyat" ? "ا" : ""), p.virtues)}
-    ${miraclesHTML(p.karamat, "✨ الكرامات والبشارات", "sec-kar")}
+    ${miraclesHTML(p.karamat, "✨ الكرامات والبشارات", "sec-kar", base === "sahabiyat")}
     ${hadithBox(p.hadith)}${versesBox(p.verses, "آيات ذات صلة")}${sourcesHTML(p.sources)}
     ${prevNext(data, i, base, x => x.name)}</article>`;
 }
