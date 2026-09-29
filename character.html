@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شخصية كيوت</title>
+<style>
+:root{--bg:#fdf3f8;--ink:#2b2320}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#241b24;--ink:#f5e9f0}}
+:root[data-theme="dark"]{--bg:#241b24;--ink:#f5e9f0}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);color:var(--ink);font-family:system-ui,sans-serif;padding:16px;box-sizing:border-box}
+svg{width:min(420px,100%);height:auto}
+#char{animation:bob 2.4s ease-in-out infinite;transform-origin:200px 560px}
+@keyframes bob{50%{transform:translateY(-8px)}}
+.lid{transform:scaleY(0);animation:blink 4s infinite;transform-origin:center;transform-box:fill-box}
+@keyframes blink{0%,94%,100%{transform:scaleY(0)}97%{transform:scaleY(1)}}
+.armR{animation:wave 1.6s ease-in-out infinite;transform-origin:290px 330px}
+@keyframes wave{50%{transform:rotate(-14deg)}}
+p{margin:8px 0 0;font-size:14px;opacity:.7}
+</style>
+</head>
+<body>
+<svg viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe0c4"/><stop offset="1" stop-color="#f7c9a6"/></linearGradient>
+  <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9fd0"/><stop offset="1" stop-color="#e8479c"/></linearGradient>
+  <pattern id="check" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="#fff"/><rect width="10" height="10" fill="#222"/><rect x="10" y="10" width="10" height="10" fill="#222"/></pattern>
+  <linearGradient id="rain" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ff5a5a"/><stop offset=".2" stop-color="#ff5a5a"/>
+    <stop offset=".2" stop-color="#ffa53a"/><stop offset=".4" stop-color="#ffa53a"/>
+    <stop offset=".4" stop-color="#ffe14d"/><stop offset=".6" stop-color="#ffe14d"/>
+    <stop offset=".6" stop-color="#5fd38a"/><stop offset=".8" stop-color="#5fd38a"/>
+    <stop offset=".8" stop-color="#5aa9ff"/><stop offset="1" stop-color="#5aa9ff"/>
+  </linearGradient>
+</defs>
+<ellipse cx="200" cy="572" rx="95" ry="12" fill="#000" opacity=".12"/>
+<g id="char" stroke="#2b2320" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+
+  <!-- ضفائر خلفية -->
+  <g fill="url(#hair)">
+    <circle cx="92" cy="200" r="22"/><circle cx="86" cy="238" r="20"/><circle cx="84" cy="273" r="17"/>
+    <circle cx="308" cy="200" r="22"/><circle cx="314" cy="238" r="20"/><circle cx="316" cy="273" r="17"/>
+  </g>
+  <circle cx="84" cy="296" r="8" fill="#ffe14d"/><circle cx="316" cy="296" r="8" fill="#5aa9ff"/>
+
+  <!-- الساقين والجوارب -->
+  <rect x="165" y="455" width="26" height="70" rx="10" fill="url(#skin)"/>
+  <rect x="209" y="455" width="26" height="70" rx="10" fill="url(#skin)"/>
+  <rect x="162" y="495" width="32" height="34" rx="6" fill="#fff"/>
+  <rect x="206" y="495" width="32" height="34" rx="6" fill="#fff"/>
+
+  <!-- أحذية الدب -->
+  <g fill="#9b6cff"><circle cx="160" cy="532" r="8"/><circle cx="186" cy="532" r="8"/>
+  <path d="M143 565 q0 -38 32 -38 q30 0 32 38 z"/></g>
+  <g fill="#ff6fb5"><circle cx="214" cy="532" r="8"/><circle cx="240" cy="532" r="8"/>
+  <path d="M195 565 q2 -38 32 -38 q32 0 32 38 z"/></g>
+  <g stroke="none" fill="#2b2320"><circle cx="168" cy="546" r="3"/><circle cx="182" cy="546" r="3"/><circle cx="220" cy="546" r="3"/><circle cx="234" cy="546" r="3"/></g>
+  <ellipse cx="175" cy="555" rx="6" ry="4" fill="#fff" stroke-width="2"/><ellipse cx="227" cy="555" rx="6" ry="4" fill="#fff" stroke-width="2"/>
+
+  <!-- التنورة -->
+  <path d="M148 405 L252 405 L272 470 Q200 488 128 470 Z" fill="#ff6fb5"/>
+  <path d="M140 445 Q200 460 260 445" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="6 6"/>
+
+  <!-- القميص المربعات -->
+  <rect x="152" y="300" width="96" height="112" rx="14" fill="url(#check)"/>
+
+  <!-- الجاكيت قوس قزح -->
+  <path d="M150 300 Q128 305 128 330 L136 412 L172 412 L172 300 Z" fill="url(#rain)"/>
+  <path d="M250 300 Q272 305 272 330 L264 412 L228 412 L228 300 Z" fill="url(#rain)"/>
+
+  <!-- دبدوب صغير على القميص -->
+  <g transform="translate(200 372)" stroke-width="2.5">
+    <circle cx="-9" cy="-12" r="6" fill="#ffc23a"/><circle cx="9" cy="-12" r="6" fill="#ffc23a"/>
+    <circle r="13" fill="#ffc23a"/><ellipse cy="4" rx="6" ry="4" fill="#fff3c9"/>
+    <circle cx="-4" cy="-2" r="1.6" fill="#2b2320" stroke="none"/><circle cx="4" cy="-2" r="1.6" fill="#2b2320" stroke="none"/>
+  </g>
+
+  <!-- الذراع اليسرى -->
+  <path d="M132 318 Q106 360 116 402" fill="none" stroke="#2b2320" stroke-width="30"/>
+  <path d="M132 318 Q106 360 116 402" fill="none" stroke="url(#rain)" stroke-width="23"/>
+  <circle cx="117" cy="412" r="13" fill="url(#skin)"/>
+
+  <!-- الذراع اليمنى تلوّح -->
+  <g class="armR">
+    <path d="M268 318 Q300 300 312 262" fill="none" stroke="#2b2320" stroke-width="30"/>
+    <path d="M268 318 Q300 300 312 262" fill="none" stroke="url(#rain)" stroke-width="23"/>
+    <circle cx="314" cy="250" r="13" fill="url(#skin)"/>
+  </g>
+
+  <!-- الرأس -->
+  <path d="M110 190 Q110 90 200 88 Q290 90 290 190 Q292 300 200 302 Q108 300 110 190 Z" fill="url(#skin)"/>
+
+  <!-- الشعر -->
+  <path d="M104 200 Q92 70 200 64 Q308 70 296 200 Q290 150 262 128 Q236 160 200 142 Q176 170 132 150 Q112 170 104 200 Z" fill="url(#hair)"/>
+  <path d="M150 90 Q170 80 190 86" fill="none" stroke="#fff" stroke-width="5" opacity=".7"/>
+
+  <!-- سماعات بأذن دب -->
+  <path d="M104 170 Q100 40 200 38 Q300 40 296 170" fill="none" stroke="#2b2320" stroke-width="16"/>
+  <path d="M104 170 Q100 40 200 38 Q300 40 296 170" fill="none" stroke="#ffd23f" stroke-width="10"/>
+  <circle cx="128" cy="62" r="24" fill="#ffd23f"/><circle cx="128" cy="62" r="12" fill="#ff9fd0" stroke-width="3"/>
+  <circle cx="272" cy="62" r="24" fill="#ffd23f"/><circle cx="272" cy="62" r="12" fill="#ff9fd0" stroke-width="3"/>
+  <rect x="90" y="160" width="30" height="52" rx="14" fill="#ffd23f"/>
+  <rect x="280" y="160" width="30" height="52" rx="14" fill="#ffd23f"/>
+
+  <!-- العيون -->
+  <g stroke="none">
+    <ellipse cx="160" cy="210" rx="17" ry="20" fill="#1a1414"/>
+    <ellipse cx="240" cy="210" rx="17" ry="20" fill="#1a1414"/>
+    <circle cx="154" cy="202" r="6" fill="#fff"/><circle cx="234" cy="202" r="6" fill="#fff"/>
+    <circle cx="166" cy="218" r="3" fill="#fff"/><circle cx="246" cy="218" r="3" fill="#fff"/>
+  </g>
+  <ellipse class="lid" cx="160" cy="210" rx="19" ry="22" fill="url(#skin)" stroke="none"/>
+  <ellipse class="lid" cx="240" cy="210" rx="19" ry="22" fill="url(#skin)" stroke="none"/>
+  <path d="M140 184 Q160 170 178 182" fill="none" stroke-width="5"/>
+  <path d="M222 182 Q240 170 260 184" fill="none" stroke-width="5"/>
+  <path d="M141 190 l-8 -6 M259 190 l8 -6" stroke-width="4"/>
+
+  <!-- النمش والأنف -->
+  <g fill="#c776d6" stroke="none">
+    <circle cx="130" cy="240" r="4"/><circle cx="142" cy="248" r="4"/><circle cx="128" cy="254" r="3.5"/>
+    <circle cx="270" cy="240" r="4"/><circle cx="258" cy="248" r="4"/><circle cx="272" cy="254" r="3.5"/>
+  </g>
+  <ellipse cx="136" cy="246" rx="16" ry="9" fill="#ff8fb0" opacity=".35" stroke="none"/>
+  <ellipse cx="264" cy="246" rx="16" ry="9" fill="#ff8fb0" opacity=".35" stroke="none"/>
+  <circle cx="200" cy="234" r="6" fill="#ff5a6a" stroke="none"/>
+
+  <!-- الفم -->
+  <path d="M174 252 Q200 250 226 252 Q224 290 200 290 Q176 290 174 252 Z" fill="#3a0d0d"/>
+  <path d="M180 256 Q200 260 220 256 L218 264 Q200 268 182 264 Z" fill="#fff" stroke="none"/>
+  <ellipse cx="202" cy="280" rx="10" ry="6" fill="#ff5a5a" stroke="none"/>
+</g>
+</svg>
+<p>شخصية مستوحاة من الفيديو ✨</p>
+</body>
+</html>
