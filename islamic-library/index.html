@@ -99,6 +99,18 @@ a.card.tile{display:flex;gap:12px;align-items:center}
 .mir-n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--gold);color:#fff;font-size:12px;margin-left:6px}
 .mir-item .verse{font-size:21px}
 .src li{word-break:break-word;font-size:14px}
+.asma-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px;align-items:start;margin-bottom:14px}
+.asma summary{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.asma-n{width:28px;height:28px;border-radius:50%;background:var(--chip);display:grid;place-items:center;font-size:12px;flex:none}
+.asma-name{font-family:'Amiri',serif;font-size:26px;color:var(--pri)}
+.asma-m{font-weight:500;flex-basis:100%;margin-top:-4px}
+.ev summary{font-size:16px}
+.dhikr{margin-bottom:10px;transition:opacity .2s}
+.dhikr.done{opacity:.55}
+.dh-text{font-family:'Amiri',serif;font-size:21px;line-height:2}
+.dh-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}
+.dh-count{flex:none;min-width:64px;height:64px;border-radius:50%;border:3px solid var(--gold);background:var(--hl);font-size:22px;font-weight:800;color:var(--pri);cursor:pointer}
+.dhikr.done .dh-count{background:var(--pri);color:#fff;border-color:var(--pri)}
 .pn{display:flex;justify-content:space-between;gap:8px;margin-top:22px}
 .pn a{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 14px;text-decoration:none}
 
@@ -194,6 +206,9 @@ footer{text-align:center;color:var(--soft);font-size:13px;padding:20px 16px}
 <script src="data/sahabiyat.js"></script>
 <script src="data/ghazawat.js"></script>
 <script src="data/mujizat.js"></script>
+<script src="data/seerah.js"></script>
+<script src="data/asma.js"></script>
+<script src="data/adhkar.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

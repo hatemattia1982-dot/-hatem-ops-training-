@@ -22,12 +22,18 @@ const D = {
   wudu: typeof WUDU !== "undefined" ? WUDU : null,
   salah: typeof SALAH !== "undefined" ? SALAH : null,
   mujizat: typeof MUJIZAT !== "undefined" ? MUJIZAT : {categories:[]},
+  asma: typeof ASMA !== "undefined" ? ASMA : {names:[]},
+  adhkar: typeof ADHKAR !== "undefined" ? ADHKAR : {categories:[]},
+  seerah: typeof SEERAH !== "undefined" ? SEERAH : {periods:[]},
   karamatIntro: typeof KARAMAT_INTRO !== "undefined" ? KARAMAT_INTRO : ""
 };
 
 const SECTIONS = [
   {id:"home", name:"الرئيسية", icon:"home"},
   {id:"quran", name:"القرآن الكريم", icon:"quran", desc:"١١٤ سورة بالرسم العثماني مع ستة تفاسير والتلاوة"},
+  {id:"seerah", name:"السيرة النبوية", icon:"seerah", desc:"حياة النبي ﷺ من المولد إلى الوفاة على خط زمني، والشمائل المحمدية"},
+  {id:"asma", name:"أسماء الله الحسنى", icon:"allah", desc:"الأسماء الحسنى بمعانيها وشرحها وأثرها في القلب"},
+  {id:"adhkar", name:"الأذكار", icon:"beads", desc:"أذكار الصباح والمساء والنوم واليوم والليلة مع عدّاد"},
   {id:"islam", name:"أركان الإسلام", icon:"salah", desc:"الشهادتان، الصلاة، الزكاة، الصوم، الحج"},
   {id:"iman", name:"أركان الإيمان", icon:"allah", desc:"الإيمان بالله وملائكته وكتبه ورسله واليوم الآخر والقدر"},
   {id:"wudu", name:"الوضوء", icon:"wudu", desc:"صفة الوضوء خطوة بخطوة بالرسوم، ونواقضه، والتيمم والغسل"},
@@ -39,9 +45,10 @@ const SECTIONS = [
   {id:"ghazawat", name:"الغزوات", icon:"ghazawat", desc:"غزوات النبي ﷺ وسراياه مع خريطة المواقع"}
 ];
 // الأقسام التي لم يصل محتواها بعد لا تظهر
-for (let i = SECTIONS.length - 1; i >= 0; i--) if (SECTIONS[i].id === "mujizat" && !D.mujizat.categories.length) SECTIONS.splice(i, 1);
+const EMPTY = {mujizat: !D.mujizat.categories.length, asma: !D.asma.names.length, adhkar: !D.adhkar.categories.length, seerah: !D.seerah.periods.length};
+for (let i = SECTIONS.length - 1; i >= 0; i--) if (EMPTY[SECTIONS[i].id]) SECTIONS.splice(i, 1);
 const count = id => ({quran:114, islam:D.islam.items.length, iman:D.iman.items.length, prophets:D.prophets.length,
-  sahaba:D.sahaba.length, mujizat:D.mujizat.categories.reduce((a,c) => a + c.items.length, 0), sahabiyat:D.sahabiyat.length, ghazawat:D.ghazawat.length}[id]);
+  sahaba:D.sahaba.length, asma:D.asma.names.length, adhkar:D.adhkar.categories.reduce((a,c) => a + c.items.length, 0), seerah:D.seerah.periods.reduce((a,p) => a + p.events.length, 0), mujizat:D.mujizat.categories.reduce((a,c) => a + c.items.length, 0), sahabiyat:D.sahabiyat.length, ghazawat:D.ghazawat.length}[id]);
 
 /* ===== الثيم ===== */
 (function(){
@@ -150,6 +157,9 @@ function allIndex(){
   D.sahabiyat.forEach((p,i) => out.push({t:p.name, sub:"الصحابيات", h:`sahabiyat/${i}`, x:p.summary}));
   D.ghazawat.forEach((g,i) => out.push({t:g.name, sub:"الغزوات", h:`ghazawat/${i}`, x:g.summary}));
   D.mujizat.categories.forEach(c => c.items.forEach(m => out.push({t:m.title, sub:"معجزات النبي ﷺ", h:"mujizat", x:m.text})));
+  D.asma.names.forEach((n,i) => out.push({t:n.name, sub:"أسماء الله الحسنى", h:`asma/${i}`, x:n.meaning}));
+  D.seerah.periods.forEach(p => p.events.forEach(e => out.push({t:e.title, sub:"السيرة النبوية", h:`seerah/${p.key}`, x:(e.text||[]).join(" ")})));
+  D.adhkar.categories.forEach(c => out.push({t:c.name, sub:"الأذكار", h:`adhkar/${c.key}`, x:c.time || ""}));
   D.islam.items.forEach(it => out.push({t:it.name, sub:"أركان الإسلام", h:`islam/${it.key}`, x:it.short}));
   D.iman.items.forEach(it => out.push({t:it.name, sub:"أركان الإيمان", h:`iman/${it.key}`, x:it.short}));
   SURAHS.forEach((s,i) => out.push({t:"سورة " + s[0], sub:"القرآن الكريم", h:`quran/${i+1}`, x:`${s[2]} · ${s[1]} آية`}));
@@ -241,6 +251,75 @@ function personView(base, data, i, honor, backName){
 const personCard = (base, honor) => (p,i) => `<a class="card" href="#${base}/${i}"><h3>${esc(p.name)} <small class="meta">${honor}</small></h3>
   <div class="meta">${esc(p.kunya || p.full || "")}</div><p style="margin-top:4px;font-size:15px">${esc(p.summary)}</p>
   <div>${(p.tags || [p.group]).map(t => `<span class="tag">${esc(t)}</span>`).join("")}<span class="tag">الوفاة: ${esc(p.died)}</span></div></a>`;
+
+/* ===== السيرة النبوية ===== */
+function viewSeerah(key){
+  const S = D.seerah;
+  const gIndex = name => D.ghazawat.findIndex(g => g.name === name);
+  $("#view").innerHTML = `<article class="art"><div class="art-head">${ILL.icons.seerah}<h2 class="pg">السيرة النبوية</h2></div>
+    <div class="lead">${esc(S.intro)}</div>
+    <div class="toc">${S.periods.map(p => `<a class="chip" href="javascript:void(0)" data-jump="per-${p.key}">${esc(p.name)}</a>`).join("")}${S.shamail ? `<a class="chip on" href="javascript:void(0)" data-jump="per-shamail">${esc(S.shamail.name)}</a>` : ""}</div>
+    ${S.periods.map(p => `<h3 class="sec" id="per-${p.key}">${esc(p.name)}${p.range ? ` <small class="meta">(${esc(p.range)})</small>` : ""}</h3>
+      <div class="timeline">${p.events.map((e,i) => { const gi = e.ghazwa ? gIndex(e.ghazwa) : -1; return `<div class="tl${gi >= 0 ? " gold" : ""}" data-n="${toAr(i+1)}"><details class="acc ev"><summary><span class="meta" style="display:block;font-weight:500">${esc(e.date)}</span>${esc(e.title)}</summary><div>
+        ${(Array.isArray(e.text) ? e.text : [e.text]).map(t => `<p>${esc(t)}</p>`).join("")}
+        ${e.verses && e.verses.length ? versesBox(e.verses, "") : ""}
+        ${(e.hadith || []).map(h => `<div class="hadith">«${esc(h.text).replace(/^«|»$/g,"")}»<small>${esc(h.source || "")}</small></div>`).join("")}
+        ${gi >= 0 ? `<p><a class="chip on" href="#ghazawat/${gi}">اقرأ تفاصيل ${esc(e.ghazwa)} ←</a></p>` : ""}</div></details></div>`; }).join("")}</div>`).join("")}
+    ${S.shamail ? `<h3 class="sec" id="per-shamail">${esc(S.shamail.name)}</h3>${sectionsHTML(S.shamail.sections)}` : ""}
+    ${sourcesHTML(S.sources)}</article>`;
+  document.querySelectorAll("details.acc").forEach(d => d.addEventListener("toggle", () => d.open && hydrateVerses(d), {once:true}));
+  if (key) setTimeout(() => { const t = document.getElementById("per-" + key); if (t) t.scrollIntoView({block:"start"}); }, 0);
+}
+
+/* ===== أسماء الله الحسنى ===== */
+function viewAsma(idx){
+  const A = D.asma;
+  $("#view").innerHTML = `<h2 class="pg">أسماء الله الحسنى</h2><div class="lead">${esc(A.intro)}</div>
+    ${hadithBox(A.hadith, "الدليل")}${A.note ? `<div class="note">${esc(A.note)}</div>` : ""}
+    <div class="bar"><input class="search" id="asmaS" placeholder="ابحث عن اسم أو معنى…"></div>
+    <div class="asma-grid" id="asmaL"></div>${sourcesHTML(A.sources)}`;
+  const render = () => {
+    const q = norm($("#asmaS").value.trim());
+    $("#asmaL").innerHTML = A.names.map((n,i) => ({n,i})).filter(({n}) => !q || norm(n.name + n.meaning + n.explanation).includes(q))
+      .map(({n,i}) => `<details class="acc asma" id="asma-${i}"><summary><span class="asma-n">${toAr(i+1)}</span><span class="asma-name">${esc(n.name)}</span><span class="meta asma-m">${esc(n.meaning)}</span></summary><div>
+        <p>${esc(n.explanation)}</p>${n.verses && n.verses.length ? versesBox(n.verses, "من القرآن الكريم") : ""}
+        ${n.effect ? `<div class="note"><b>أثره في القلب والسلوك:</b> ${esc(n.effect)}</div>` : ""}</div></details>`).join("") || `<div class="empty">لا توجد نتائج</div>`;
+    document.querySelectorAll("details.asma").forEach(d => d.addEventListener("toggle", () => d.open && hydrateVerses(d), {once:true}));
+  };
+  $("#asmaS").oninput = render; render();
+  if (idx !== undefined && A.names[idx]) { const d = document.getElementById("asma-" + idx); d.open = true; setTimeout(() => d.scrollIntoView({block:"center"}), 0); }
+}
+
+/* ===== الأذكار ===== */
+const todayKey = () => "adhkar-" + new Date().toISOString().slice(0,10);
+function viewAdhkar(key){
+  const A = D.adhkar;
+  const cat = A.categories.find(c => c.key === key) || A.categories[0];
+  const prog = store.get(todayKey(), {});
+  $("#view").innerHTML = `<h2 class="pg">الأذكار</h2><p class="intro">${esc(A.intro)}</p>
+    <div class="bar">${A.categories.map(c => `<a class="chip${c === cat ? " on" : ""}" href="#adhkar/${c.key}">${esc(c.name)}</a>`).join("")}</div>
+    <h3 class="sec" style="font-size:22px;color:var(--pri);border-right:4px solid var(--gold);padding-right:12px">${esc(cat.name)}</h3>
+    ${cat.time ? `<p class="meta" style="margin-bottom:10px">${esc(cat.time)}</p>` : ""}
+    <div class="bar"><span class="meta" id="dhDone"></span><button class="chip" id="dhReset">↺ إعادة العدّ</button></div>
+    <div id="dhL">${cat.items.map((d,i) => { const k = cat.key + i, left = prog[k] ?? d.count ?? 1; return `<div class="card dhikr${left <= 0 ? " done" : ""}" data-k="${k}" data-c="${d.count || 1}">
+      ${d.quran ? `<div class="say" style="background:none;padding:0">${esc(d.text)}</div>${versesBox(d.verses, "")}` : `<div class="dh-text">${esc(d.text)}</div>`}
+      ${d.virtue ? `<p class="meta" style="margin-top:6px">✨ ${esc(d.virtue)}</p>` : ""}
+      <div class="dh-foot"><small class="meta">${esc(d.source || "")}${d.grade ? " · " + esc(d.grade) : ""}</small>
+        <button class="dh-count" data-k="${k}">${left <= 0 ? "✓" : toAr(left)}</button></div></div>`; }).join("")}</div>
+    ${sourcesHTML(A.sources)}`;
+  const upd = () => { const all = document.querySelectorAll(".dhikr").length, done = document.querySelectorAll(".dhikr.done").length; $("#dhDone").textContent = `أنجزت ${toAr(done)} من ${toAr(all)}`; };
+  $("#dhL").onclick = e => {
+    const b = e.target.closest(".dh-count"); if (!b) return;
+    const card = b.closest(".dhikr"), k = b.dataset.k, p = store.get(todayKey(), {});
+    const left = Math.max(0, (p[k] ?? +card.dataset.c) - 1); p[k] = left; store.set(todayKey(), p);
+    b.textContent = left <= 0 ? "✓" : toAr(left); card.classList.toggle("done", left <= 0);
+    if (navigator.vibrate) navigator.vibrate(15);
+    if (left <= 0) { const nx = card.nextElementSibling; if (nx) nx.scrollIntoView({behavior:"smooth", block:"center"}); }
+    upd();
+  };
+  $("#dhReset").onclick = () => { const p = store.get(todayKey(), {}); Object.keys(p).filter(k => k.startsWith(cat.key)).forEach(k => delete p[k]); store.set(todayKey(), p); viewAdhkar(cat.key); hydrateVerses($("#view")); };
+  upd();
+}
 
 /* ===== معجزات النبي ﷺ ===== */
 function viewMujizat(){
@@ -600,6 +679,9 @@ function route(){
     case "sahabiyat": n !== null ? personView("sahabiyat", D.sahabiyat, n, "رضي الله عنها", "الصحابيات")
       : viewList("sahabiyat", D.sahabiyat, {intro:"سِيَر أمهات المؤمنين وبنات النبي ﷺ وأعلام الصحابيات رضي الله عنهن.", tags:p => [p.group], karamat:true, card:personCard("sahabiyat","رضي الله عنها")}); break;
     case "mujizat": viewMujizat(); break;
+    case "seerah": viewSeerah(a); break;
+    case "asma": viewAsma(n !== null && !isNaN(n) ? n : undefined); break;
+    case "adhkar": viewAdhkar(a); break;
     case "ghazawat": n !== null ? viewGhazwa(n) : viewGhazawat(); break;
     default: viewHome();
   }

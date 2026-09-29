@@ -94,6 +94,8 @@ const ILL = (() => {
     sahaba: I(`<circle cx="22" cy="22" r="7" ${st}/><circle cx="42" cy="22" r="7" ${st}/><path d="M8 52 q2-16 14-16 q12 0 14 16 M28 52 q2-16 14-16 q12 0 14 16" ${st}/>`),
     sahabiyat: I(`<path d="M32 10 q12 0 12 14 q0 10-12 12 q-12-2-12-12 q0-14 12-14z" ${st}/><path d="M14 56 q2-18 18-18 q16 0 18 18" ${st}/>`),
     ghazawat: I(`<path d="M14 50 L46 14 M40 14 h6 v6 M20 40 l4 4 M50 50 L18 14 M18 14 h6 M18 14 v6 M44 40 l-4 4" ${st}/>`),
+    beads: I(`<circle cx="32" cy="10" r="4" ${st}/><circle cx="20" cy="16" r="4" ${st}/><circle cx="44" cy="16" r="4" ${st}/><circle cx="14" cy="28" r="4" ${st}/><circle cx="50" cy="28" r="4" ${st}/><circle cx="20" cy="40" r="4" ${st}/><circle cx="44" cy="40" r="4" ${st}/><path d="M32 44 v8 M28 56 h8 l-4 4z" ${st}/>`),
+    seerah: I(`<path d="M10 54 q10-20 22-20 q12 0 22-20" ${st} stroke-dasharray="4 5"/><circle cx="10" cy="54" r="4" fill="currentColor"/><path d="M50 8 l4 10 -8 0z" fill="currentColor"/><path d="M50 18 v8" ${st}/>`),
     home: I(`<path d="M10 30 L32 12 L54 30 M16 26 V54 h32 V26" ${st}/><path d="M28 54 V40 h8 v14" ${st}/>`)
   };
 
