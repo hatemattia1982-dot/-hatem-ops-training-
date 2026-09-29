@@ -25,6 +25,9 @@ const D = {
   asma: typeof ASMA !== "undefined" ? ASMA : {names:[]},
   adhkar: typeof ADHKAR !== "undefined" ? ADHKAR : {categories:[]},
   seerah: typeof SEERAH !== "undefined" ? SEERAH : {periods:[]},
+  khutab: typeof KHUTAB_DATA !== "undefined" ? KHUTAB_DATA : [],
+  duas: typeof DUAS !== "undefined" ? DUAS : {quran:[], sunnah:[]},
+  hajj: typeof HAJJ !== "undefined" ? HAJJ : null,
   karamatIntro: typeof KARAMAT_INTRO !== "undefined" ? KARAMAT_INTRO : ""
 };
 
@@ -34,6 +37,9 @@ const SECTIONS = [
   {id:"seerah", name:"السيرة النبوية", icon:"seerah", desc:"حياة النبي ﷺ من المولد إلى الوفاة على خط زمني، والشمائل المحمدية"},
   {id:"asma", name:"أسماء الله الحسنى", icon:"allah", desc:"الأسماء الحسنى بمعانيها وشرحها وأثرها في القلب"},
   {id:"adhkar", name:"الأذكار", icon:"beads", desc:"أذكار الصباح والمساء والنوم واليوم والليلة مع عدّاد"},
+  {id:"duas", name:"الأدعية", icon:"dua", desc:"أدعية القرآن الكريم والأدعية النبوية الصحيحة مصنفة، وآداب الدعاء"},
+  {id:"khutab", name:"خطب الجمعة", icon:"minbar", desc:"خطب جاهزة للإلقاء بالأدلة، مع وضع الخطيب والطباعة"},
+  {id:"hajj", name:"الحج والعمرة", icon:"tawaf", desc:"صفة العمرة والحج خطوة بخطوة ويوماً بيوم، والمواقيت والمحظورات"},
   {id:"islam", name:"أركان الإسلام", icon:"salah", desc:"الشهادتان، الصلاة، الزكاة، الصوم، الحج"},
   {id:"iman", name:"أركان الإيمان", icon:"allah", desc:"الإيمان بالله وملائكته وكتبه ورسله واليوم الآخر والقدر"},
   {id:"wudu", name:"الوضوء", icon:"wudu", desc:"صفة الوضوء خطوة بخطوة بالرسوم، ونواقضه، والتيمم والغسل"},
@@ -45,10 +51,10 @@ const SECTIONS = [
   {id:"ghazawat", name:"الغزوات", icon:"ghazawat", desc:"غزوات النبي ﷺ وسراياه مع خريطة المواقع"}
 ];
 // الأقسام التي لم يصل محتواها بعد لا تظهر
-const EMPTY = {mujizat: !D.mujizat.categories.length, asma: !D.asma.names.length, adhkar: !D.adhkar.categories.length, seerah: !D.seerah.periods.length};
+const EMPTY = {mujizat: !D.mujizat.categories.length, asma: !D.asma.names.length, adhkar: !D.adhkar.categories.length, seerah: !D.seerah.periods.length, khutab: !D.khutab.length, duas: !D.duas.quran.length && !D.duas.sunnah.length, hajj: !D.hajj};
 for (let i = SECTIONS.length - 1; i >= 0; i--) if (EMPTY[SECTIONS[i].id]) SECTIONS.splice(i, 1);
 const count = id => ({quran:114, islam:D.islam.items.length, iman:D.iman.items.length, prophets:D.prophets.length,
-  sahaba:D.sahaba.length, asma:D.asma.names.length, adhkar:D.adhkar.categories.reduce((a,c) => a + c.items.length, 0), seerah:D.seerah.periods.reduce((a,p) => a + p.events.length, 0), mujizat:D.mujizat.categories.reduce((a,c) => a + c.items.length, 0), sahabiyat:D.sahabiyat.length, ghazawat:D.ghazawat.length}[id]);
+  sahaba:D.sahaba.length, khutab:D.khutab.length, duas:D.duas.quran.length + D.duas.sunnah.reduce((a,c) => a + c.items.length, 0), asma:D.asma.names.length, adhkar:D.adhkar.categories.reduce((a,c) => a + c.items.length, 0), seerah:D.seerah.periods.reduce((a,p) => a + p.events.length, 0), mujizat:D.mujizat.categories.reduce((a,c) => a + c.items.length, 0), sahabiyat:D.sahabiyat.length, ghazawat:D.ghazawat.length}[id]);
 
 /* ===== الثيم ===== */
 (function(){
@@ -124,10 +130,18 @@ async function fetchAyah(s, a){
     .catch(e => { verseCache.delete(k); throw e; }));
   return verseCache.get(k);
 }
+const verseObserver = "IntersectionObserver" in window ? new IntersectionObserver(entries => entries.forEach(e => {
+  if (e.isIntersecting) { verseObserver.unobserve(e.target); loadVerses(e.target); }
+}), {rootMargin: "400px"}) : null;
 function hydrateVerses(root){
-  root.querySelectorAll(".verses[data-refs]").forEach(async el => {
+  root.querySelectorAll(".verses[data-refs]").forEach(el => {
     const closed = el.closest("details:not([open])");
     if (closed && closed !== root) return;
+    if (verseObserver) verseObserver.observe(el); else loadVerses(el);
+  });
+}
+async function loadVerses(el){
+  {
     if (el.dataset.done) return; el.dataset.done = 1;
     const refs = JSON.parse(el.dataset.refs).filter(r => r && SURAHS[r[0]-1] && r[1] >= 1 && r[1] <= SURAHS[r[0]-1][1]);
     // تجميع الآيات المتتالية من السورة نفسها في مقطع واحد
@@ -150,7 +164,7 @@ function hydrateVerses(root){
       el.innerHTML = `<div class="meta">تعذّر تحميل نص الآيات (يحتاج اتصالاً بالإنترنت). المراجع: ` +
         groups.map(g => `<a href="#quran/${g.s}/${g.from}">${sname(g.s)}: ${toAr(g.from)}${g.to > g.from ? "–" + toAr(g.to) : ""}</a>`).join("، ") + `</div>`;
     }
-  });
+  }
 }
 
 /* ===== الرئيسية ===== */
@@ -164,6 +178,7 @@ function allIndex(){
   D.asma.names.forEach((n,i) => out.push({t:n.name, sub:"أسماء الله الحسنى", h:`asma/${i}`, x:n.meaning}));
   D.seerah.periods.forEach(p => p.events.forEach(e => out.push({t:e.title, sub:"السيرة النبوية", h:`seerah/${p.key}`, x:(e.text||[]).join(" ")})));
   D.adhkar.categories.forEach(c => out.push({t:c.name, sub:"الأذكار", h:`adhkar/${c.key}`, x:c.time || ""}));
+  D.khutab.forEach((k,i) => out.push({t:k.title, sub:"خطب الجمعة", h:`khutab/${i}`, x:k.summary}));
   D.islam.items.forEach(it => out.push({t:it.name, sub:"أركان الإسلام", h:`islam/${it.key}`, x:it.short}));
   D.iman.items.forEach(it => out.push({t:it.name, sub:"أركان الإيمان", h:`iman/${it.key}`, x:it.short}));
   SURAHS.forEach((s,i) => out.push({t:"سورة " + s[0], sub:"القرآن الكريم", h:`quran/${i+1}`, x:`${s[2]} · ${s[1]} آية`}));
@@ -255,6 +270,124 @@ function personView(base, data, i, honor, backName){
 const personCard = (base, honor) => (p,i) => `<a class="card" href="#${base}/${i}"><h3>${esc(p.name)} <small class="meta">${honor}</small></h3>
   <div class="meta">${esc(p.kunya || p.full || "")}</div><p style="margin-top:4px;font-size:15px">${esc(p.summary)}</p>
   <div>${(p.tags || [p.group]).map(t => `<span class="tag">${esc(t)}</span>`).join("")}<span class="tag">الوفاة: ${esc(p.died)}</span></div></a>`;
+
+/* ===== خطب الجمعة ===== */
+const KH_OPEN = "إِنَّ الْحَمْدَ لِلَّهِ، نَحْمَدُهُ وَنَسْتَعِينُهُ وَنَسْتَغْفِرُهُ، وَنَعُوذُ بِاللَّهِ مِنْ شُرُورِ أَنْفُسِنَا وَمِنْ سَيِّئَاتِ أَعْمَالِنَا، مَنْ يَهْدِهِ اللَّهُ فَلَا مُضِلَّ لَهُ، وَمَنْ يُضْلِلْ فَلَا هَادِيَ لَهُ، وَأَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ.";
+const KH_AMMA = "أَمَّا بَعْدُ: فَإِنَّ خَيْرَ الْحَدِيثِ كِتَابُ اللَّهِ، وَخَيْرَ الْهَدْيِ هَدْيُ مُحَمَّدٍ ﷺ، وَشَرَّ الْأُمُورِ مُحْدَثَاتُهَا، وَكُلَّ بِدْعَةٍ ضَلَالَةٌ.";
+const khBlocks = blocks => (blocks || []).map(b => {
+  if (b.t === "h") return `<h4 class="kh-h">${esc(b.v)}</h4>`;
+  if (b.t === "ayah") return `<div class="kh-ayah">${b.intro ? `<div class="meta">${esc(b.intro)}</div>` : ""}<div class="verses" data-refs='${JSON.stringify(b.refs)}'><div class="meta">جارٍ تحميل الآيات…</div></div></div>`;
+  if (b.t === "hadith") return `<div class="hadith">«${esc(b.v).replace(/^«|»$/g,"")}»<small>${esc(b.source || "")}</small></div>`;
+  return `<p>${esc(b.v)}</p>`;
+}).join("");
+function viewKhutab(i){
+  const K = D.khutab;
+  if (i !== undefined && K[i]){
+    const k = K[i];
+    $("#view").innerHTML = `<div class="no-print"><a class="back" href="#khutab">→ خطب الجمعة</a>
+      <div class="bar"><button class="chip on" id="presBtn">🎤 وضع الخطيب</button><button class="chip" id="khDown">أ−</button><button class="chip" id="khUp">أ+</button><button class="chip" id="khPrint">🖨 طباعة</button></div></div>
+      <article class="art khutba" id="khutba">
+      <div class="meta">${esc(k.category)} · ${esc(k.duration || "")}</div><h2 class="pg">${esc(k.title)}</h2>
+      <h3 class="sec">الخطبة الأولى</h3>
+      <p class="kh-fixed">${KH_OPEN}</p>
+      <div class="kh-ayah"><div class="verses" data-refs='[[3,102],[4,1],[33,70],[33,71]]'><div class="meta">جارٍ تحميل الآيات…</div></div></div>
+      <p class="kh-fixed">${KH_AMMA}</p>
+      ${khBlocks(k.first)}
+      <p class="kh-fixed">أَقُولُ قَوْلِي هَذَا، وَأَسْتَغْفِرُ اللَّهَ لِي وَلَكُمْ، فَاسْتَغْفِرُوهُ إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ.</p>
+      <div class="kh-sit no-print">— يجلس الخطيب جلسة خفيفة —</div>
+      <h3 class="sec">الخطبة الثانية</h3>
+      <p class="kh-fixed">الْحَمْدُ لِلَّهِ وَكَفَى، وَالصَّلَاةُ وَالسَّلَامُ عَلَى عَبْدِهِ الَّذِي اصْطَفَى، وَأَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ. أَمَّا بَعْدُ:</p>
+      ${khBlocks(k.second)}
+      <p class="kh-fixed">ثُمَّ صَلُّوا وَسَلِّمُوا عَلَى مَنْ أَمَرَكُمُ اللَّهُ بِالصَّلَاةِ وَالسَّلَامِ عَلَيْهِ، فَقَالَ جَلَّ مِنْ قَائِلٍ:</p>
+      <div class="kh-ayah"><div class="verses" data-refs='[[33,56]]'><div class="meta">جارٍ تحميل الآيات…</div></div></div>
+      <p class="kh-fixed">اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ، وَبَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ.</p>
+      ${(k.dua || []).length ? `<div class="kh-dua">${k.dua.map(d => `<p>${esc(d)}</p>`).join("")}</div>` : ""}
+      <p class="kh-fixed">عِبَادَ اللَّهِ:</p>
+      <div class="kh-ayah"><div class="verses" data-refs='[[16,90]]'><div class="meta">جارٍ تحميل الآيات…</div></div></div>
+      <p class="kh-fixed">فَاذْكُرُوا اللَّهَ الْعَظِيمَ يَذْكُرْكُمْ، وَاشْكُرُوهُ عَلَى نِعَمِهِ يَزِدْكُمْ، وَأَقِمِ الصَّلَاةَ.</p>
+      <p class="meta no-print" style="margin-top:14px">خطبة الحاجة رواها أبو داود والترمذي والنسائي وابن ماجه من حديث ابن مسعود، و«أما بعد…» من حديث جابر في صحيح مسلم (867).</p>
+      ${prevNext(K, i, "khutab", x => x.title)}</article>`;
+    let fs = store.get("khsize", 20);
+    const setFs = d => { fs = Math.min(40, Math.max(15, fs + d)); $("#khutba").style.setProperty("--khfs", fs + "px"); store.set("khsize", fs); };
+    setFs(0);
+    $("#khUp").onclick = () => setFs(2); $("#khDown").onclick = () => setFs(-2);
+    $("#khPrint").onclick = () => { document.querySelectorAll("#khutba .verses").forEach(loadVerses); setTimeout(() => print(), 1200); };
+    $("#presBtn").onclick = () => {
+      const on = document.body.classList.toggle("presenter");
+      $("#presBtn").textContent = on ? "✕ الخروج من وضع الخطيب" : "🎤 وضع الخطيب";
+      if (on) { setFs(Math.max(0, 26 - fs)); if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {}); }
+      else if (document.fullscreenElement) document.exitFullscreen();
+    };
+    return;
+  }
+  let cat = "all";
+  const cats = [...new Set(K.map(k => k.category))];
+  $("#view").innerHTML = `<h2 class="pg">خطب الجمعة</h2>
+    <p class="intro">خطب كاملة جاهزة للإلقاء، تبدأ بخطبة الحاجة وتنتهي بالدعاء، والآيات تُعرض بنص المصحف. في صفحة الخطبة: «وضع الخطيب» لتكبير الخط وملء الشاشة، وزر الطباعة.</p>
+    <div class="bar"><input class="search" id="khS" placeholder="ابحث عن موضوع خطبة…"></div>
+    <div class="bar" id="khC"><button class="chip on" data-c="all">الكل (${toAr(K.length)})</button>${cats.map(c => `<button class="chip" data-c="${esc(c)}">${esc(c)}</button>`).join("")}</div>
+    <div class="grid" id="khL"></div>`;
+  const render = () => {
+    const q = norm($("#khS").value.trim());
+    $("#khL").innerHTML = K.map((k,i) => ({k,i})).filter(({k}) => (cat === "all" || k.category === cat) && (!q || norm(k.title + k.summary).includes(q)))
+      .map(({k,i}) => `<a class="card" href="#khutab/${i}"><div class="meta">${esc(k.category)}</div><h3>${esc(k.title)}</h3><p style="font-size:15px;margin-top:4px">${esc(k.summary)}</p></a>`).join("") || `<div class="empty">لا توجد نتائج</div>`;
+  };
+  $("#khS").oninput = render;
+  $("#khC").onclick = e => { if (!e.target.dataset.c) return; cat = e.target.dataset.c; $("#khC").querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c === e.target)); render(); };
+  render();
+}
+
+/* ===== الأدعية ===== */
+function viewDuas(tab){
+  const A = D.duas; tab = tab || "quran";
+  const copyBtn = t => `<button class="chip dua-copy" data-t="${esc(t)}">نسخ</button>`;
+  let body = "";
+  if (tab === "quran") body = `<p class="meta" style="margin-bottom:10px">أدعية وردت في القرآن الكريم على ألسنة الأنبياء والصالحين، والنص يُعرض من المصحف.</p>` +
+    A.quran.map(d => `<div class="card dua"><h3>${esc(d.title)}</h3>${d.context ? `<div class="meta">${esc(d.context)}</div>` : ""}
+      <div class="verses" data-refs='${JSON.stringify(d.refs)}'><div class="meta">جارٍ تحميل الآيات…</div></div></div>`).join("");
+  else if (tab === "adab") body = acc("آداب الدعاء", A.adab, true) + acc("أوقات وأحوال يُرجى فيها الإجابة", A.times, true);
+  else {
+    const c = A.sunnah.find(x => x.cat === tab) || A.sunnah[0];
+    body = `<h3 class="sec" style="margin-top:0">${esc(c.cat)}</h3>` + c.items.map(d => `<div class="card dua"><div class="dh-text">${esc(d.text)}</div>
+      ${d.note ? `<p class="meta">${esc(d.note)}</p>` : ""}<div class="dh-foot"><small class="meta">${esc(d.source || "")}${d.grade ? " · " + esc(d.grade) : ""}</small>${copyBtn(d.text)}</div></div>`).join("");
+  }
+  $("#view").innerHTML = `<h2 class="pg">الأدعية من القرآن والسنة</h2><div class="lead">${esc(A.intro)}</div>
+    <div class="bar"><a class="chip${tab==="quran"?" on":""}" href="#duas/quran">📖 من القرآن (${toAr(A.quran.length)})</a>
+      ${A.sunnah.map(c => `<a class="chip${tab===c.cat?" on":""}" href="#duas/${encodeURIComponent(c.cat)}">${esc(c.cat)}</a>`).join("")}
+      <a class="chip${tab==="adab"?" on":""}" href="#duas/adab">آداب الدعاء وأوقات الإجابة</a></div>
+    <div id="duaL">${body}</div>${sourcesHTML(A.sources)}`;
+  $("#duaL").onclick = e => { const b = e.target.closest(".dua-copy"); if (b && navigator.clipboard) navigator.clipboard.writeText(b.dataset.t).then(() => { b.textContent = "تم ✓"; setTimeout(() => b.textContent = "نسخ", 1500); }); };
+}
+
+/* ===== الحج والعمرة ===== */
+function viewHajj(){
+  const H = D.hajj;
+  const stepCard = (s, i) => `<div class="card step"><span class="n">${toAr(i+1)}</span><div style="color:var(--pri)">${ILL.icons[s.icon] || ILL.icons.tawaf}</div>
+    <h4>${esc(s.title)}</h4><p>${esc(s.text)}</p>${s.say ? `<div class="say">${esc(s.say)}</div>` : ""}${s.verses && s.verses.length ? versesBox(s.verses, "") : ""}</div>`;
+  const table2 = (title, obj) => obj ? `<h3 class="sec">${title}</h3><div class="hj2"><div class="box"><h4>في الحج</h4><ul class="lst">${(obj.hajj||[]).map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+    <div class="box"><h4>في العمرة</h4><ul class="lst">${(obj.umrah||[]).map(x => `<li>${esc(x)}</li>`).join("")}</ul></div></div>` : "";
+  $("#view").innerHTML = `<article class="art"><div class="art-head">${ILL.icons.tawaf}<h2 class="pg">صفة الحج والعمرة</h2></div>
+    <div class="lead">${esc(H.intro)}</div>${versesBox(H.verses)}${hadithBox(H.hadith)}
+    <div class="toc">${[["hj-types","أنواع النسك"],["hj-miqat","المواقيت"],["hj-ihram","الإحرام"],["hj-umrah","صفة العمرة"],["hj-days","صفة الحج يوماً بيوم"],["hj-arkan","الأركان والواجبات"],["hj-mistakes","أخطاء شائعة"]].map(([id,t]) => `<a class="chip" href="javascript:void(0)" data-jump="${id}">${t}</a>`).join("")}</div>
+    <h3 class="sec" id="hj-types">أنواع النسك</h3>
+    <div class="grid">${(H.types||[]).map(t => `<div class="card"><h3>${esc(t.name)}</h3><p style="font-size:15px">${esc(t.text)}</p>${t.hady ? `<span class="tag gold">الهدي: ${esc(t.hady)}</span>` : ""}</div>`).join("")}</div>
+    <h3 class="sec" id="hj-miqat">المواقيت المكانية</h3>
+    <div style="overflow-x:auto"><table class="tb"><tr><th>الميقات</th><th>لمن</th><th>المسافة</th></tr>${(H.mawaqit||[]).map(m => `<tr><td><b>${esc(m.name)}</b></td><td>${esc(m.for)}</td><td>${esc(m.distance || "")}</td></tr>`).join("")}</table></div>
+    <h3 class="sec" id="hj-ihram">الإحرام</h3>${H.ihram ? `<p>${esc(H.ihram.text)}</p><ul class="lst">${(H.ihram.steps||[]).map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+      <div class="box"><h4>التلبية</h4><div class="say">${esc(H.ihram.talbiyah)}</div><small class="meta">${esc(H.ihram.talbiyahSource || "")}</small></div>` : ""}
+    ${acc("محظورات الإحرام", H.mahzurat, false)}
+    <h3 class="sec" id="hj-umrah">صفة العمرة خطوة بخطوة</h3><div class="steps">${(H.umrah||[]).map(stepCard).join("")}</div>
+    <h3 class="sec" id="hj-days">صفة الحج يوماً بيوم</h3>
+    <div class="timeline">${(H.hajj||[]).map((d,i) => `<div class="tl gold" data-n="${toAr(i+1)}"><div class="card"><div class="art-head" style="margin:0"><span style="color:var(--pri)">${ILL.icons[d.icon] || ""}</span><div><div class="meta">${esc(d.day)}</div><h3>${esc(d.name)}</h3></div></div>
+      <p style="margin-top:6px">${esc(d.text || "")}</p>${d.steps && d.steps.length ? `<ul class="lst">${d.steps.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+      ${(d.hadith||[]).map(h => `<div class="hadith">«${esc(h.text).replace(/^«|»$/g,"")}»<small>${esc(h.source || "")}</small></div>`).join("")}
+      ${d.verses && d.verses.length ? versesBox(d.verses, "") : ""}</div></div>`).join("")}</div>
+    <div id="hj-arkan">${table2("أركان النسك", H.arkan)}${table2("واجبات النسك", H.wajibat)}</div>
+    ${acc("سنن الحج والعمرة", H.sunan)}${acc("أحكام خاصة بالمرأة", H.women)}
+    <h3 class="sec" id="hj-mistakes">أخطاء شائعة ينبغي تجنبها</h3><ul class="lst">${(H.mistakes||[]).map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+    ${H.madinah ? acc("زيارة المسجد النبوي", H.madinah.steps, false, H.madinah.text) : ""}
+    ${sourcesHTML(H.sources)}</article>`;
+}
 
 /* ===== السيرة النبوية ===== */
 function viewSeerah(key){
@@ -669,6 +802,7 @@ function route(){
   const [sec = "home", a, b] = location.hash.replace(/^#/, "").split("/").map(decodeURIComponent);
   const id = SECTIONS.some(s => s.id === sec) ? sec : "home";
   if (id !== "quran") stopAudio();
+  document.body.classList.remove("presenter");
   document.querySelectorAll("#nav a").forEach(x => x.classList.toggle("on", x.dataset.s === id));
   const active = $(`#nav a[data-s="${id}"]`); if (active) active.scrollIntoView({inline:"center", block:"nearest"});
   const n = a !== undefined ? +a : null;
@@ -684,6 +818,9 @@ function route(){
       : viewList("sahabiyat", D.sahabiyat, {intro:"سِيَر أمهات المؤمنين وبنات النبي ﷺ وأعلام الصحابيات رضي الله عنهن.", tags:p => [p.group], karamat:true, card:personCard("sahabiyat","رضي الله عنها")}); break;
     case "mujizat": viewMujizat(); break;
     case "seerah": viewSeerah(a); break;
+    case "khutab": viewKhutab(n !== null && !isNaN(n) ? n : undefined); break;
+    case "duas": viewDuas(a); break;
+    case "hajj": viewHajj(); break;
     case "asma": viewAsma(n !== null && !isNaN(n) ? n : undefined); break;
     case "adhkar": viewAdhkar(a); break;
     case "ghazawat": n !== null ? viewGhazwa(n) : viewGhazawat(); break;

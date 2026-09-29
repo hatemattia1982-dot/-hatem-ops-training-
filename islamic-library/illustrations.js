@@ -96,6 +96,18 @@ const ILL = (() => {
     ghazawat: I(`<path d="M14 50 L46 14 M40 14 h6 v6 M20 40 l4 4 M50 50 L18 14 M18 14 h6 M18 14 v6 M44 40 l-4 4" ${st}/>`),
     beads: I(`<circle cx="32" cy="10" r="4" ${st}/><circle cx="20" cy="16" r="4" ${st}/><circle cx="44" cy="16" r="4" ${st}/><circle cx="14" cy="28" r="4" ${st}/><circle cx="50" cy="28" r="4" ${st}/><circle cx="20" cy="40" r="4" ${st}/><circle cx="44" cy="40" r="4" ${st}/><path d="M32 44 v8 M28 56 h8 l-4 4z" ${st}/>`),
     seerah: I(`<path d="M10 54 q10-20 22-20 q12 0 22-20" ${st} stroke-dasharray="4 5"/><circle cx="10" cy="54" r="4" fill="currentColor"/><path d="M50 8 l4 10 -8 0z" fill="currentColor"/><path d="M50 18 v8" ${st}/>`),
+    ihram: I(`<path d="M14 12 h16 v40 h-16z M34 12 h16 l-4 24 h-12z" ${st}/><path d="M34 36 v16 h12 v-16" ${st}/>`),
+    tawaf: I(`<rect x="22" y="22" width="20" height="20" rx="2" fill="currentColor"/><rect x="22" y="27" width="20" height="3" fill="var(--gold)"/><path d="M54 32 a22 22 0 1 1 -8 -17" ${st}/><path d="M46 8 l1 8 -8 1" ${st}/>`),
+    maqam: I(`<path d="M18 56 V28 q14-16 28 0 V56z" ${st}/><rect x="26" y="40" width="12" height="10" rx="2" ${st}/>`),
+    zamzam: I(`<path d="M20 14 h24 l-4 40 h-16z" ${st}/><path d="M22 26 h20" ${st}/><path d="M32 34 q-5 7 0 11 q5-4 0-11z" fill="currentColor"/>`),
+    sai: I(`<path d="M4 50 q8-16 16 0 M44 50 q8-16 16 0" ${st}/><path d="M22 40 h20 M36 35 l6 5 -6 5 M28 45 l-6 -5" ${st}/>`),
+    halq: I(`<circle cx="18" cy="46" r="7" ${st}/><circle cx="46" cy="46" r="7" ${st}/><path d="M23 41 L44 10 M41 41 L20 10" ${st}/>`),
+    mina: I(`<path d="M6 50 L18 26 L30 50z M26 50 L38 22 L50 50z M42 50 L52 32 L60 50z" ${st}/><path d="M4 50 h58" ${st}/>`),
+    arafah: I(`<path d="M6 54 L26 20 L36 34 L44 26 L60 54z" ${st}/><path d="M26 20 v-8 M22 14 h8" ${st}/>`),
+    muzdalifah: I(`<path d="M40 8 a14 14 0 1 0 12 20 a11 11 0 1 1 -12 -20z" ${st}/><circle cx="16" cy="50" r="3" fill="currentColor"/><circle cx="26" cy="54" r="3" fill="currentColor"/><circle cx="36" cy="50" r="3" fill="currentColor"/>`),
+    jamarat: I(`<path d="M26 56 V14 h12 V56" ${st}/><path d="M18 56 h28" ${st}/><circle cx="12" cy="24" r="2.5" fill="currentColor"/><circle cx="16" cy="32" r="2.5" fill="currentColor"/><circle cx="50" cy="28" r="2.5" fill="currentColor"/>`),
+    minbar: I(`<path d="M14 56 V36 h10 V26 h10 V16 h10 V56" ${st}/><path d="M44 16 l8 -6 v46" ${st}/>`),
+    dua: I(`<path d="M20 54 q-8-10-6-24 l4-10 q2-4 5 0 l3 14 M44 54 q8-10 6-24 l-4-10 q-2-4-5 0 l-3 14" ${st}/><path d="M26 34 v20 M38 34 v20" ${st}/>`),
     home: I(`<path d="M10 30 L32 12 L54 30 M16 26 V54 h32 V26" ${st}/><path d="M28 54 V40 h8 v14" ${st}/>`)
   };
 

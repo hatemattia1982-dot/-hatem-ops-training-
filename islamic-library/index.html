@@ -111,6 +111,25 @@ a.card.tile{display:flex;gap:12px;align-items:center}
 .dh-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}
 .dh-count{flex:none;min-width:64px;height:64px;border-radius:50%;border:3px solid var(--gold);background:var(--hl);font-size:22px;font-weight:800;color:var(--pri);cursor:pointer}
 .dhikr.done .dh-count{background:var(--pri);color:#fff;border-color:var(--pri)}
+.khutba{--khfs:20px}
+.khutba p,.khutba .hadith{font-size:var(--khfs);line-height:2.1}
+.khutba .verse{font-size:calc(var(--khfs) + 6px)}
+.kh-fixed{font-family:'Amiri',serif;color:var(--pri)}
+.kh-h{color:var(--gold);font-size:calc(var(--khfs) + 1px);margin:14px 0 4px}
+.kh-ayah{margin:8px 0;padding:6px 14px;border-right:3px solid var(--pri);background:var(--card);border-radius:10px}
+.kh-dua{background:var(--hl);border-radius:12px;padding:10px 16px;margin:10px 0}
+.kh-dua p{margin:0}
+.kh-sit{text-align:center;color:var(--soft);margin:18px 0}
+body.presenter header,body.presenter footer{display:none}
+body.presenter main{max-width:900px}
+.dua h3{font-size:17px}
+.hj2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+@media print{
+  header,footer,.no-print,.pn,.toc{display:none!important}
+  body{background:#fff;color:#000}
+  main{max-width:none;padding:0}
+  .kh-ayah,.hadith,.kh-dua{background:none;border-color:#999}
+}
 .pn{display:flex;justify-content:space-between;gap:8px;margin-top:22px}
 .pn a{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 14px;text-decoration:none}
 
@@ -209,6 +228,11 @@ footer{text-align:center;color:var(--soft);font-size:13px;padding:20px 16px}
 <script src="data/seerah.js"></script>
 <script src="data/asma.js"></script>
 <script src="data/adhkar.js"></script>
+<script>var KHUTAB_DATA = [];</script>
+<script src="data/khutab-1.js"></script>
+<script src="data/khutab-2.js"></script>
+<script src="data/duas.js"></script>
+<script src="data/hajj.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
