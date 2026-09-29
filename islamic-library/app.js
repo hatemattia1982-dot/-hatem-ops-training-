@@ -277,14 +277,23 @@ function viewArkan(id, key){
       <div><span class="meta">${toAr(i+1)}</span><b>${esc(it.name)}</b><span class="meta">${esc(it.short)}</span></div></a>`).join("")}</div>`;
 }
 
+/* صور خطوات الوضوء والصلاة (img/)، ويُستخدم الرسم المتجهي بديلاً لأي خطوة بلا صورة */
+const WUDU_IMG = {niyyah:1, hands:2, mouth:3, nose:3, face:4, arms:4, head:5, ears:5, feet:6, dua:1};
+const POSE_IMG = {takbir:1, takbeer:1, qiyam:2, ruku:3, itidal:4, sujud:5, julus:6, tashahhud:8, taslim:8};
+const stepImg = (src, alt) => `<img class="stepimg" src="${src}" alt="${esc(alt)}" loading="lazy">`;
+const wuduPic = s => WUDU_IMG[s.key] ? stepImg(`img/wudu-${WUDU_IMG[s.key]}.jpg`, s.title) : ILL.wudu(s.key);
+const posePic = s => POSE_IMG[s.pose] ? stepImg(`img/salah-${POSE_IMG[s.pose]}.jpg`, s.title) : ILL.pose(s.pose);
+
 /* ===== الوضوء ===== */
 function viewWudu(){
   const W = D.wudu; if (!W) { $("#view").innerHTML = `<div class="empty">المحتوى غير متوفر</div>`; return; }
   $("#view").innerHTML = `<article class="art"><div class="art-head">${ILL.icons.wudu}<h2 class="pg">الوضوء</h2></div>
     <div class="lead">${esc(W.intro)}</div>${versesBox(W.verses, "آية الوضوء")}${hadithBox(W.virtues, "فضل الوضوء")}
     <h3 class="sec">صفة الوضوء خطوة بخطوة</h3>
-    <p class="meta">العضو المظلّل باللون الأزرق هو موضع الغسل أو المسح في كل خطوة. الشارة الذهبية تعني أن الخطوة من فروض الوضوء.</p>
-    <div class="steps">${W.steps.map((s,i) => `<div class="card step"><span class="n">${toAr(i+1)}</span>${ILL.wudu(s.key)}
+    <figure class="card" style="margin-bottom:14px"><img src="img/wudu-steps.jpg" alt="خطوات الوضوء" style="width:100%;border-radius:12px;display:block" loading="lazy">
+      <figcaption class="meta" style="text-align:center;margin-top:6px">ملخّص خطوات الوضوء</figcaption></figure>
+    <p class="meta">الشارة الذهبية تعني أن الخطوة من فروض الوضوء، والبقية من سننه.</p>
+    <div class="steps">${W.steps.map((s,i) => `<div class="card step"><span class="n">${toAr(i+1)}</span>${wuduPic(s)}
       <h4>${esc(s.title)}</h4><div>${s.fard ? '<span class="tag gold">فرض</span>' : '<span class="tag">سنة</span>'}${s.count && s.count !== "—" ? `<span class="tag">${esc(s.count)}</span>` : ""}</div>
       <p>${esc(s.text)}</p></div>`).join("")}</div>
     <div style="margin-top:18px">
@@ -307,8 +316,8 @@ function viewSalah(){
     <div style="overflow-x:auto"><table class="tb"><tr><th>الصلاة</th><th>الفرض</th><th>السنن الرواتب</th><th>الوقت</th></tr>
     ${(S.times || []).map(t => `<tr><td><b>${esc(t.name)}</b></td><td>${toAr(t.fard)} ركعات</td><td>${esc(t.sunnah)}</td><td>${esc(t.time)}</td></tr>`).join("")}</table></div>
     <h3 class="sec">صفة الصلاة خطوة بخطوة</h3>
-    <p class="meta">الرسوم توضيحية لهيئة المصلي، والمكعب في الزاوية يشير إلى اتجاه القبلة.</p>
-    <div class="steps">${S.steps.map((s,i) => `<div class="card step"><span class="n">${toAr(i+1)}</span>${ILL.pose(s.pose)}
+    <p class="meta">الصور توضيحية لهيئة المصلي في كل خطوة.</p>
+    <div class="steps">${S.steps.map((s,i) => `<div class="card step"><span class="n">${toAr(i+1)}</span>${posePic(s)}
       <h4>${esc(s.title)}</h4><p>${esc(s.text)}</p>${s.say ? `<div class="say">${esc(s.say)}</div>` : ""}
       ${s.verses ? versesBox(s.verses, "") : ""}</div>`).join("")}</div>
     <div style="margin-top:18px">
