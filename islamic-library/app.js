@@ -142,8 +142,9 @@ function viewHome(){
       ${last && SURAHS[last.n-1] ? `<p style="margin-top:10px"><a class="chip" href="#quran/${last.n}/${last.a}">متابعة القراءة: سورة ${sname(last.n)} — الآية ${toAr(last.a)}</a></p>` : ""}
     </div>
     <div class="waqf"><b>🤲 وقفٌ لله تعالى</b>
-      هذا العمل صدقةٌ جارية لوجه الله تعالى، يُتاح مجاناً للجميع بلا مقابل، فلا يُباع ولا يُتكسَّب به.
-      نرجو منكم الدعاء لصاحب العمل ولوالديه وأهله وللمسلمين بظهر الغيب، بالمغفرة والرحمة وأن يجعله في ميزان حسناتهم.</div>
+      هذا العمل صدقةٌ جارية لوجه الله تعالى، يُتاح مجاناً للجميع بلا مقابل، <b style="display:inline;font-size:inherit">ولا أُبيح لأحدٍ بيعه</b> ولا التكسّب به.
+      نرجو منكم الدعاء لصاحب العمل ولوالديه وأهله وللمسلمين بظهر الغيب، بالمغفرة والرحمة وأن يجعله في ميزان حسناتهم.
+      <br><small class="meta">مرخّص بموجب <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.ar" target="_blank" rel="noopener">المشاع الإبداعي: نسب المصنف – غير تجاري (CC BY-NC 4.0)</a></small></div>
     <div id="gres"></div>
     <div class="tiles">${SECTIONS.slice(1).map(s => `<a class="card tile" href="#${s.id}">${ILL.icons[s.icon]}
       <div><b>${s.name}</b><span class="meta">${s.desc}</span>${count(s.id) && s.id !== "quran" ? `<br><span class="tag">${toAr(count(s.id))} موضوعاً</span>` : ""}</div></a>`).join("")}</div>`;
