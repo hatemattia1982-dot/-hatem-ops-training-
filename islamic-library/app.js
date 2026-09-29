@@ -141,6 +141,9 @@ function viewHome(){
       <input class="search" id="gsearch" placeholder="ابحث في المكتبة كلها: نبي، صحابي، غزوة، سورة…" style="width:100%">
       ${last && SURAHS[last.n-1] ? `<p style="margin-top:10px"><a class="chip" href="#quran/${last.n}/${last.a}">متابعة القراءة: سورة ${sname(last.n)} — الآية ${toAr(last.a)}</a></p>` : ""}
     </div>
+    <div class="waqf"><b>🤲 وقفٌ لله تعالى</b>
+      هذا العمل صدقةٌ جارية لوجه الله تعالى، يُتاح مجاناً للجميع بلا مقابل، فلا يُباع ولا يُتكسَّب به.
+      نرجو منكم الدعاء لصاحب العمل ولوالديه وأهله وللمسلمين بظهر الغيب، بالمغفرة والرحمة وأن يجعله في ميزان حسناتهم.</div>
     <div id="gres"></div>
     <div class="tiles">${SECTIONS.slice(1).map(s => `<a class="card tile" href="#${s.id}">${ILL.icons[s.icon]}
       <div><b>${s.name}</b><span class="meta">${s.desc}</span>${count(s.id) && s.id !== "quran" ? `<br><span class="tag">${toAr(count(s.id))} موضوعاً</span>` : ""}</div></a>`).join("")}</div>`;
