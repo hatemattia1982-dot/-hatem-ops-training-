@@ -4,64 +4,118 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>المكتبة الإسلامية</title>
+<meta name="description" content="مكتبة إسلامية شاملة: القرآن الكريم وتفسيره، أركان الإسلام والإيمان، الوضوء والصلاة، قصص الأنبياء، الصحابة والصحابيات، والغزوات.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#f6f1e7; --card:#fffdf8; --ink:#2a2620; --soft:#6b6257; --line:#e4dac8;
   --pri:#1d5c4a; --pri-2:#2f7d66; --gold:#b08a3c; --chip:#efe7d6; --hl:#fff3cf;
+  --fig:#1d5c4a; --water:#4aa3d8; --water-2:#2b7fb3; --skin:#f1dcc4; --cloth:#e6efe9;
+  --land:#efe4cc; --sea:#bcdcea;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#14181a; --card:#1c2226; --ink:#ece6da; --soft:#a79f92; --line:#2e373c;
+    --bg:#14181a; --card:#1c2226; --ink:#ece6da; --soft:#a79f92; --line:#33403f;
     --pri:#58b494; --pri-2:#7fcfb2; --gold:#d6b56a; --chip:#263036; --hl:#3a3420;
+    --fig:#7fcfb2; --water:#5ab4e8; --water-2:#8ccdf2; --skin:#5a4a3c; --cloth:#2b3a36;
+    --land:#26302c; --sea:#1d3a4a;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#14181a; --card:#1c2226; --ink:#ece6da; --soft:#a79f92; --line:#2e373c;
+  --bg:#14181a; --card:#1c2226; --ink:#ece6da; --soft:#a79f92; --line:#33403f;
   --pri:#58b494; --pri-2:#7fcfb2; --gold:#d6b56a; --chip:#263036; --hl:#3a3420;
+  --fig:#7fcfb2; --water:#5ab4e8; --water-2:#8ccdf2; --skin:#5a4a3c; --cloth:#2b3a36;
+  --land:#26302c; --sea:#1d3a4a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--ink);line-height:1.9;font-size:16px}
+html{scroll-behavior:smooth}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--ink);line-height:1.95;font-size:16.5px}
 button,input,select{font-family:inherit;font-size:inherit;color:inherit}
-header{background:linear-gradient(135deg,#123d31,#1d5c4a 60%,#2f7d66);color:#fff;padding:22px 16px 0}
+a{color:var(--pri-2)}
+header{background:linear-gradient(135deg,#123d31,#1d5c4a 60%,#2f7d66);color:#fff;padding:18px 16px 0;position:sticky;top:-78px;z-index:10}
 .hwrap{max-width:1100px;margin:auto}
-.brand{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand h1{font-family:'Amiri',serif;font-size:30px;font-weight:700}
-.brand p{opacity:.85;font-size:14px}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px}
+.brand a{color:#fff;text-decoration:none}
+.brand h1{font-family:'Amiri',serif;font-size:30px;font-weight:700;line-height:1.3}
+.brand p{opacity:.85;font-size:13.5px}
 .theme-btn{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:10px;padding:6px 12px;cursor:pointer}
-nav{display:flex;gap:4px;overflow-x:auto;margin-top:18px;scrollbar-width:none}
+nav{display:flex;gap:2px;overflow-x:auto;margin-top:12px;scrollbar-width:none}
 nav::-webkit-scrollbar{display:none}
-nav button{background:none;border:0;color:#fff;opacity:.75;padding:10px 14px;border-radius:12px 12px 0 0;cursor:pointer;white-space:nowrap;font-weight:500}
-nav button.on{background:var(--bg);color:var(--pri);opacity:1;font-weight:800}
-main{max-width:1100px;margin:auto;padding:20px 16px 60px}
-section{display:none}
-section.on{display:block}
-.intro{color:var(--soft);margin-bottom:14px}
+nav a{color:#fff;opacity:.8;padding:9px 13px;border-radius:12px 12px 0 0;white-space:nowrap;font-weight:500;text-decoration:none;font-size:15px}
+nav a.on{background:var(--bg);color:var(--pri);opacity:1;font-weight:800}
+main{max-width:1100px;margin:auto;padding:22px 16px 60px;min-height:70vh}
+h2.pg{font-family:'Amiri',serif;font-size:30px;color:var(--pri);line-height:1.4}
+.intro{color:var(--soft);margin:4px 0 16px}
 .bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center}
 .search{flex:1;min-width:200px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
-.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 14px;cursor:pointer;font-size:14px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 14px;cursor:pointer;font-size:14px;text-decoration:none;color:var(--ink)}
 .chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
-.card h3{font-size:18px;color:var(--pri)}
-.meta{color:var(--soft);font-size:13px}
-.tag{display:inline-block;background:var(--chip);border-radius:6px;padding:0 8px;font-size:12px;margin:2px 0 2px 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+a.card{display:block;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
+a.card:hover{border-color:var(--pri-2);transform:translateY(-2px)}
+.card h3{font-size:18.5px;color:var(--pri);line-height:1.5}
+.meta{color:var(--soft);font-size:13.5px}
+.tag{display:inline-block;background:var(--chip);border-radius:6px;padding:0 8px;font-size:12.5px;margin:2px 0 2px 4px}
 .tag.gold{background:var(--gold);color:#fff}
-.more{margin-top:8px}
-.more summary{cursor:pointer;color:var(--pri-2);font-weight:700;font-size:14px}
-.more p{margin-top:6px}
 .empty{color:var(--soft);text-align:center;padding:30px}
+.note{background:var(--chip);border-radius:12px;padding:10px 14px;font-size:14.5px;margin-bottom:14px}
+.icon{width:44px;height:44px;color:var(--pri);flex:none}
+.ill{width:100%;max-width:170px;height:auto;display:block;margin:auto}
+
+/* الرئيسية */
+.hero{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;margin-bottom:18px;text-align:center}
+.hero .bism{font-family:'Amiri Quran','Amiri',serif;font-size:28px;color:var(--pri)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+a.card.tile{display:flex;gap:12px;align-items:center}
+.tile .icon{width:50px;height:50px;background:var(--chip);border-radius:14px;padding:6px}
+.tile b{display:block;font-size:17px;color:var(--pri)}
+
+/* المقال */
+.back{display:inline-block;margin-bottom:12px;text-decoration:none;font-weight:700}
+.art-head{display:flex;gap:16px;align-items:center;margin-bottom:10px}
+.facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;margin:14px 0}
+.fact{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.fact span{display:block;color:var(--soft);font-size:12.5px}
+.lead{font-size:18px;background:var(--hl);border-radius:12px;padding:12px 16px;margin:10px 0 18px}
+.art h3.sec{scroll-margin-top:80px;font-size:21px;color:var(--pri);margin:22px 0 6px;padding-right:12px;border-right:4px solid var(--gold);line-height:1.5}
+.art p{margin-bottom:10px;text-align:justify}
+.art ul.lst{padding-right:22px;margin-bottom:10px}
+.art ul.lst li{margin-bottom:4px}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.toc a{font-size:13.5px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:16px 0}
+.box h4{color:var(--pri);font-size:17px;margin-bottom:6px}
+.verse{font-family:'Amiri Quran','Amiri',serif;font-size:24px;line-height:2.2;padding:6px 0;border-bottom:1px dashed var(--line)}
+.verse:last-child{border-bottom:0}
+.verse .ref{font-family:'Tajawal';font-size:13px;color:var(--soft);white-space:nowrap}
+.verse .ref a{text-decoration:none}
+.hadith{border-right:3px solid var(--gold);padding:4px 12px;margin:8px 0;background:var(--chip);border-radius:8px}
+.hadith small{display:block;color:var(--soft)}
+.pn{display:flex;justify-content:space-between;gap:8px;margin-top:22px}
+.pn a{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 14px;text-decoration:none}
+
+/* الوضوء والصلاة */
+.steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.step{position:relative;text-align:center}
+.step .n{position:absolute;top:10px;right:12px;width:28px;height:28px;border-radius:50%;background:var(--pri);color:#fff;font-weight:800;display:grid;place-items:center;font-size:14px}
+.step h4{color:var(--pri);font-size:17px;margin-top:6px}
+.step p{font-size:14.5px;text-align:right;margin-top:6px}
+.say{font-family:'Amiri',serif;font-size:19px;background:var(--hl);border-radius:10px;padding:6px 10px;margin-top:8px;line-height:1.9}
+table.tb{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;font-size:15px}
+.tb th,.tb td{border:1px solid var(--line);padding:8px;text-align:right;vertical-align:top}
+.tb th{background:var(--pri);color:#fff}
+details.acc{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:10px}
+details.acc summary{cursor:pointer;padding:12px 16px;font-weight:800;color:var(--pri);font-size:17px}
+details.acc > div{padding:0 16px 12px}
 
 /* القرآن */
-.surah{display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .15s}
-.surah:hover{border-color:var(--pri-2)}
+.surah{display:flex;align-items:center;gap:12px;cursor:pointer}
 .num{flex:none;width:40px;height:40px;border-radius:10px;background:var(--chip);display:grid;place-items:center;font-weight:800;color:var(--pri)}
 .surah .nm{font-family:'Amiri',serif;font-size:20px;font-weight:700}
-#reader{display:none}
-#reader.on{display:block}
 .rtop{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
-.rtop select,.rtop button{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:6px 10px;cursor:pointer}
+.rtop select,.rtop button,.rtop a{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:6px 10px;cursor:pointer;text-decoration:none;color:var(--ink)}
 .stitle{text-align:center;margin:10px 0 4px;font-family:'Amiri',serif;font-size:32px;color:var(--pri)}
 .basmala{text-align:center;font-family:'Amiri Quran','Amiri',serif;font-size:26px;margin:6px 0 18px}
 .ayah{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px}
@@ -74,360 +128,53 @@ section.on{display:block}
 .hide-tafsir .tafsir{display:none}
 .status{text-align:center;color:var(--soft);padding:30px}
 .err{color:#b3261e}
-.snav{display:flex;justify-content:space-between;margin-top:14px}
-.snav button{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 14px;cursor:pointer}
 
 /* الخط الزمني */
-.timeline{position:relative;padding-right:28px}
-.timeline:before{content:"";position:absolute;right:11px;top:0;bottom:0;width:2px;background:var(--line)}
+.timeline{position:relative;padding-right:30px}
+.timeline:before{content:"";position:absolute;right:12px;top:0;bottom:0;width:2px;background:var(--line)}
 .tl{position:relative;margin-bottom:12px}
-.tl:before{content:attr(data-n);position:absolute;right:-28px;top:14px;width:24px;height:24px;border-radius:50%;background:var(--pri);color:#fff;font-size:12px;display:grid;place-items:center;font-weight:700}
-.tl.ulul:before{background:var(--gold)}
-.note{background:var(--chip);border-radius:12px;padding:10px 14px;font-size:14px;margin-bottom:14px}
-footer{text-align:center;color:var(--soft);font-size:13px;padding:20px}
-@media (max-width:600px){.brand h1{font-size:24px}.atext{font-size:calc(var(--qsize,26px) - 3px)}}
+.tl:before{content:attr(data-n);position:absolute;right:-30px;top:16px;width:26px;height:26px;border-radius:50%;background:var(--pri);color:#fff;font-size:12px;display:grid;place-items:center;font-weight:700}
+.tl.gold:before{background:var(--gold)}
+
+/* الخريطة */
+.map{width:100%;max-width:420px;height:auto;display:block;margin:auto}
+.art .mapwrap .map{max-width:300px}
+.mapwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px;align-items:start;margin-bottom:18px}
+.mapdot circle{fill:var(--pri);stroke:var(--card);stroke-width:2;cursor:pointer}
+.mapdot.on circle{fill:#c0392b}
+.map text{direction:ltr}
+.mapdot text{font-size:13px;fill:var(--ink);font-family:'Tajawal';font-weight:700;paint-order:stroke;stroke:var(--land);stroke-width:3px}
+.sealabel{font-size:14px;fill:var(--water-2);font-family:'Tajawal';font-weight:700;opacity:.8}
+footer{text-align:center;color:var(--soft);font-size:13px;padding:20px 16px}
+@media (max-width:700px){
+  .brand h1{font-size:24px} .brand p{display:none} header{top:-60px}
+  .mapwrap{grid-template-columns:1fr}
+  .atext{font-size:calc(var(--qsize,26px) - 3px)} .verse{font-size:21px}
+  .art-head .ill{max-width:110px}
+}
 </style>
 </head>
 <body>
 <header>
   <div class="hwrap">
     <div class="brand">
-      <div><h1>المكتبة الإسلامية</h1><p>القرآن الكريم وتفسيره · قصص الأنبياء · الصحابة والصحابيات · الغزوات</p></div>
-      <button class="theme-btn" id="themeBtn" title="الوضع الليلي">◐</button>
+      <a href="#home"><h1>المكتبة الإسلامية</h1><p>القرآن وتفسيره · العقيدة والعبادات · الأنبياء · الصحابة · الغزوات</p></a>
+      <button class="theme-btn" id="themeBtn" title="الوضع الليلي" aria-label="تبديل الوضع الليلي">◐</button>
     </div>
-    <nav id="nav">
-      <button data-s="quran" class="on">القرآن الكريم</button>
-      <button data-s="prophets">قصص الأنبياء</button>
-      <button data-s="sahaba">الصحابة</button>
-      <button data-s="sahabiyat">الصحابيات</button>
-      <button data-s="ghazawat">الغزوات</button>
-    </nav>
+    <nav id="nav"></nav>
   </div>
 </header>
+<main id="view"></main>
+<footer>نص القرآن الكريم والتفاسير والتلاوة من api.alquran.cloud · المحتوى التعريفي ملخّص من كتب السيرة والتراجم والفقه المعتمدة، ويُرجع للتفصيل إلى أهل العلم والمصادر الأصلية.</footer>
 
-<main>
-  <!-- القرآن -->
-  <section id="quran" class="on">
-    <div id="index">
-      <p class="intro">اختر سورة لقراءتها مع التفسير والاستماع إلى التلاوة. النص القرآني يُجلب من مصدر موثّق بالرسم العثماني.</p>
-      <div class="bar">
-        <input class="search" id="qSearch" placeholder="ابحث باسم السورة أو رقمها…">
-        <button class="chip on" data-f="all">الكل</button>
-        <button class="chip" data-f="مكية">مكية</button>
-        <button class="chip" data-f="مدنية">مدنية</button>
-        <button class="chip" id="resume" hidden>متابعة القراءة</button>
-      </div>
-      <div class="bar">
-        <input class="search" id="ayahSearch" placeholder="ابحث عن كلمة في آيات القرآن (مثال: الصبر)…">
-        <button class="chip" id="ayahGo">بحث في الآيات</button>
-      </div>
-      <div id="ayahResults"></div>
-      <div class="grid" id="surahGrid"></div>
-    </div>
-    <div id="reader">
-      <div class="rtop">
-        <button id="back">→ الفهرس</button>
-        <select id="tafsirSel" title="التفسير"></select>
-        <button id="toggleTafsir">إخفاء التفسير</button>
-        <button id="fontDown" title="تصغير الخط">أ−</button>
-        <button id="fontUp" title="تكبير الخط">أ+</button>
-        <button id="playAll">▶ تلاوة السورة (العفاسي)</button>
-      </div>
-      <div id="readerBody"></div>
-    </div>
-  </section>
-
-  <!-- الأنبياء -->
-  <section id="prophets">
-    <p class="intro">الأنبياء والرسل الخمسة والعشرون المذكورون في القرآن الكريم، مرتّبين ترتيباً زمنياً.</p>
-    <div class="note">الدائرة الذهبية = من <b>أولي العزم من الرسل</b>: نوح، إبراهيم، موسى، عيسى، ومحمد ﷺ. وترتيب بعض الأنبياء كأيوب وشعيب وذي الكفل ويونس فيه اجتهاد بين المؤرخين.</div>
-    <div class="bar"><input class="search" id="pSearch" placeholder="ابحث عن نبي…"></div>
-    <div class="timeline" id="pList"></div>
-  </section>
-
-  <!-- الصحابة -->
-  <section id="sahaba">
-    <p class="intro">سِيَر مختصرة لأعلام الصحابة رضي الله عنهم.</p>
-    <div class="bar"><input class="search" id="sSearch" placeholder="ابحث عن صحابي…"></div>
-    <div class="bar" id="sTags"></div>
-    <div class="grid" id="sList"></div>
-  </section>
-
-  <!-- الصحابيات -->
-  <section id="sahabiyat">
-    <p class="intro">سِيَر مختصرة لأمهات المؤمنين وبنات النبي ﷺ وأعلام الصحابيات رضي الله عنهن.</p>
-    <div class="bar"><input class="search" id="wSearch" placeholder="ابحث عن صحابية…"></div>
-    <div class="bar" id="wTags"></div>
-    <div class="grid" id="wList"></div>
-  </section>
-
-  <!-- الغزوات -->
-  <section id="ghazawat">
-    <p class="intro">أبرز غزوات النبي ﷺ وسراياه مرتبة زمنياً.</p>
-    <div class="note">غزا النبي ﷺ بنفسه <b>27 غزوة</b> على المشهور، قاتل في تسع منها: بدر، وأحد، والخندق، وقريظة، والمصطلق، وخيبر، والفتح، وحنين، والطائف (وفي عدّ الفتح منها خلاف). و«السرية» ما أرسل فيه جيشاً ولم يخرج بنفسه.</div>
-    <div class="bar">
-      <input class="search" id="gSearch" placeholder="ابحث عن غزوة…">
-      <button class="chip on" data-g="all">الكل</button>
-      <button class="chip" data-g="fought">وقع فيها قتال</button>
-      <button class="chip" data-g="quran">ذُكرت في القرآن</button>
-    </div>
-    <div class="timeline" id="gList"></div>
-  </section>
-</main>
-<footer>مصدر نص القرآن والتفاسير والتلاوة: api.alquran.cloud · المحتوى التعريفي ملخّص من كتب السيرة والتراجم المشهورة، ويُرجع للتفصيل إلى المصادر الأصلية.</footer>
-
-<script src="data.js"></script>
-<script>
-const $ = s => document.querySelector(s);
-const API = "https://api.alquran.cloud/v1";
-const store = {
-  get(k, d){ try{ const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
-  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
-};
-const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-// توحيد الحروف العربية للبحث: إزالة التشكيل وتوحيد الألف والتاء المربوطة والياء
-const norm = s => String(s).replace(/[ؐ-ًؚ-ٰٟۖ-ۭـ]/g,"")
-  .replace(/[أإآٱ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").toLowerCase();
-const toAr = n => String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
-
-/* ===== الثيم ===== */
-(function(){
-  const t = store.get("theme", null);
-  if (t) document.documentElement.dataset.theme = t;
-  $("#themeBtn").onclick = () => {
-    const dark = document.documentElement.dataset.theme
-      ? document.documentElement.dataset.theme === "dark"
-      : matchMedia("(prefers-color-scheme: dark)").matches;
-    const next = dark ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    store.set("theme", next);
-  };
-})();
-
-/* ===== التبويب ===== */
-function showSection(id){
-  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.s === id));
-  document.querySelectorAll("main section").forEach(s => s.classList.toggle("on", s.id === id));
-  store.set("tab", id);
-}
-$("#nav").onclick = e => { if (e.target.dataset.s) showSection(e.target.dataset.s); };
-
-/* ===== القرآن: الفهرس ===== */
-let qFilter = "all";
-function renderIndex(){
-  const q = norm($("#qSearch").value.trim());
-  const html = SURAHS.map((s,i) => ({n:i+1, name:s[0], ayat:s[1], type:s[2]}))
-    .filter(s => (qFilter === "all" || s.type === qFilter) && (!q || norm(s.name).includes(q) || String(s.n) === q))
-    .map(s => `<div class="card surah" data-n="${s.n}"><div class="num">${toAr(s.n)}</div>
-      <div><div class="nm">سورة ${s.name}</div><div class="meta">${s.type} · ${toAr(s.ayat)} آية</div></div></div>`).join("");
-  $("#surahGrid").innerHTML = html || `<div class="empty">لا توجد نتائج</div>`;
-}
-$("#qSearch").oninput = renderIndex;
-document.querySelectorAll("[data-f]").forEach(b => b.onclick = () => {
-  qFilter = b.dataset.f;
-  document.querySelectorAll("[data-f]").forEach(x => x.classList.toggle("on", x === b));
-  renderIndex();
-});
-$("#surahGrid").onclick = e => { const c = e.target.closest(".surah"); if (c) openSurah(+c.dataset.n); };
-
-/* البحث في الآيات */
-async function searchAyat(){
-  const kw = $("#ayahSearch").value.trim();
-  const box = $("#ayahResults");
-  if (!kw) { box.innerHTML = ""; return; }
-  box.innerHTML = `<div class="status">جارٍ البحث…</div>`;
-  try{
-    const r = await fetch(`${API}/search/${encodeURIComponent(kw)}/all/quran-simple-clean`);
-    const j = await r.json();
-    const m = (j.data && j.data.matches) || [];
-    if (!m.length) { box.innerHTML = `<div class="empty">لم يُعثر على نتائج لـ «${esc(kw)}»</div>`; return; }
-    box.innerHTML = `<p class="meta" style="margin-bottom:8px">عدد النتائج: ${toAr(m.length)}${m.length>50?" (يُعرض أول ٥٠)":""}</p>` +
-      m.slice(0,50).map(a => `<div class="card" style="margin-bottom:8px;cursor:pointer" data-s="${a.surah.number}" data-a="${a.numberInSurah}">
-        <div class="atext" style="font-size:22px">${esc(a.text)}</div>
-        <div class="meta">سورة ${SURAHS[a.surah.number-1][0]} · الآية ${toAr(a.numberInSurah)}</div></div>`).join("") +
-      `<hr style="border:0;border-top:1px solid var(--line);margin:14px 0">`;
-  }catch(e){
-    box.innerHTML = `<div class="status err">تعذّر الاتصال بخدمة البحث. تحقق من اتصال الإنترنت.</div>`;
-  }
-}
-$("#ayahGo").onclick = searchAyat;
-$("#ayahSearch").onkeydown = e => { if (e.key === "Enter") searchAyat(); };
-$("#ayahResults").onclick = e => { const c = e.target.closest("[data-s]"); if (c) openSurah(+c.dataset.s, +c.dataset.a); };
-
-/* ===== القرآن: القارئ ===== */
-TAFSIRS.forEach(([id,name]) => $("#tafsirSel").insertAdjacentHTML("beforeend", `<option value="${id}">${name}</option>`));
-$("#tafsirSel").value = store.get("tafsir", "ar.muyassar");
-let fontSize = store.get("qsize", 26);
-document.documentElement.style.setProperty("--qsize", fontSize + "px");
-let current = 0, audioList = [], audio = new Audio(), playIdx = -1;
-
-const BASMALA_WORDS = 4;
-function stripBasmala(text, n){
-  if (n === 1 || n === 9) return text;
-  const w = text.split(" ");
-  return norm(w[0]) === "بسم" ? w.slice(BASMALA_WORDS).join(" ") : text;
-}
-
-async function openSurah(n, focusAyah){
-  stopAudio();
-  current = n;
-  store.set("last", {n, a: focusAyah || 1});
-  $("#index").style.display = "none";
-  $("#reader").classList.add("on");
-  scrollTo(0,0);
-  const [name, count, type] = SURAHS[n-1];
-  const body = $("#readerBody");
-  body.innerHTML = `<div class="stitle">سورة ${name}</div><p class="meta" style="text-align:center">${type} · ${toAr(count)} آية</p>
-    <div class="status">جارٍ تحميل السورة والتفسير…</div>`;
-  const tafsir = $("#tafsirSel").value;
-  try{
-    const r = await fetch(`${API}/surah/${n}/editions/quran-uthmani,${tafsir},ar.alafasy`);
-    const j = await r.json();
-    if (j.code !== 200) throw new Error(j.data || "API");
-    if (current !== n) return;
-    const [qur, taf, aud] = j.data;
-    audioList = aud.ayahs.map(a => a.audio);
-    let html = `<div class="stitle">سورة ${name}</div><p class="meta" style="text-align:center">${type} · ${toAr(count)} آية · ${esc(taf.name)}</p>`;
-    if (n !== 1 && n !== 9) html += `<div class="basmala">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ</div>`;
-    html += qur.ayahs.map((a,i) => `<div class="ayah" id="ayah-${a.numberInSurah}">
-      <div class="atext">${esc(i === 0 ? stripBasmala(a.text, n) : a.text)}<span class="amark">${toAr(a.numberInSurah)}</span></div>
-      <div class="atools"><button data-play="${i}">▶ استماع</button><button data-copy="${i}">نسخ</button></div>
-      <div class="tafsir">${esc(taf.ayahs[i].text)}</div></div>`).join("");
-    html += `<div class="snav">
-      ${n < 114 ? `<button data-go="${n+1}">← السورة التالية: ${SURAHS[n][0]}</button>` : "<span></span>"}
-      ${n > 1 ? `<button data-go="${n-1}">السورة السابقة: ${SURAHS[n-2][0]} →</button>` : "<span></span>"}</div>`;
-    body.innerHTML = html;
-    body._ayahs = qur.ayahs;
-    if (focusAyah) {
-      const el = document.getElementById("ayah-" + focusAyah);
-      if (el) { el.scrollIntoView({block:"center"}); el.classList.add("playing"); setTimeout(() => el.classList.remove("playing"), 2500); }
-    }
-  }catch(e){
-    body.innerHTML = `<div class="stitle">سورة ${name}</div><div class="status err">تعذّر تحميل السورة. تأكد من اتصالك بالإنترنت ثم حاول مجدداً.<br><button class="chip" style="margin-top:10px" onclick="openSurah(${n})">إعادة المحاولة</button></div>`;
-  }
-}
-
-$("#readerBody").onclick = e => {
-  const t = e.target;
-  if (t.dataset.go) openSurah(+t.dataset.go);
-  else if (t.dataset.play !== undefined) playFrom(+t.dataset.play, false);
-  else if (t.dataset.copy !== undefined) {
-    const a = $("#readerBody")._ayahs[+t.dataset.copy];
-    const txt = `${a.text} [${SURAHS[current-1][0]}: ${a.numberInSurah}]`;
-    navigator.clipboard && navigator.clipboard.writeText(txt).then(() => { t.textContent = "تم النسخ ✓"; setTimeout(() => t.textContent = "نسخ", 1500); });
-  }
-};
-
-/* التلاوة */
-let continuous = false;
-function playFrom(i, cont){
-  continuous = cont;
-  document.querySelectorAll(".ayah.playing").forEach(x => x.classList.remove("playing"));
-  if (i >= audioList.length) { stopAudio(); return; }
-  playIdx = i;
-  const el = document.getElementById("ayah-" + (i+1));
-  if (el) { el.classList.add("playing"); if (cont) el.scrollIntoView({block:"center", behavior:"smooth"}); }
-  store.set("last", {n: current, a: i+1});
-  audio.src = audioList[i];
-  audio.play().catch(() => {});
-  $("#playAll").textContent = "■ إيقاف التلاوة";
-}
-function stopAudio(){
-  audio.pause(); playIdx = -1; continuous = false;
-  document.querySelectorAll(".ayah.playing").forEach(x => x.classList.remove("playing"));
-  $("#playAll").textContent = "▶ تلاوة السورة (العفاسي)";
-}
-audio.onended = () => continuous ? playFrom(playIdx + 1, true) : stopAudio();
-$("#playAll").onclick = () => playIdx >= 0 ? stopAudio() : playFrom(0, true);
-
-$("#back").onclick = () => { stopAudio(); $("#reader").classList.remove("on"); $("#index").style.display = ""; updateResume(); };
-$("#tafsirSel").onchange = () => { store.set("tafsir", $("#tafsirSel").value); openSurah(current); };
-$("#toggleTafsir").onclick = () => {
-  const hidden = $("#readerBody").classList.toggle("hide-tafsir");
-  $("#toggleTafsir").textContent = hidden ? "إظهار التفسير" : "إخفاء التفسير";
-};
-function setFont(d){ fontSize = Math.min(44, Math.max(18, fontSize + d)); document.documentElement.style.setProperty("--qsize", fontSize + "px"); store.set("qsize", fontSize); }
-$("#fontUp").onclick = () => setFont(2);
-$("#fontDown").onclick = () => setFont(-2);
-
-function updateResume(){
-  const last = store.get("last", null);
-  const b = $("#resume");
-  if (last && SURAHS[last.n-1]) {
-    b.hidden = false;
-    b.textContent = `متابعة: ${SURAHS[last.n-1][0]} (${toAr(last.a)})`;
-    b.onclick = () => openSurah(last.n, last.a);
-  }
-}
-
-/* ===== الأنبياء ===== */
-function renderProphets(){
-  const q = norm($("#pSearch").value.trim());
-  const html = PROPHETS.map((p,i) => ({...p, i:i+1}))
-    .filter(p => !q || norm(p.name + p.title + p.story + p.people).includes(q))
-    .map(p => `<div class="tl ${p.ulul?"ulul":""}" data-n="${toAr(p.i)}"><div class="card">
-      <h3>${p.name} ${p.name.includes("ﷺ") ? "" : "عليه السلام"}</h3>
-      <div class="meta">${p.title}</div>
-      <div style="margin-top:4px">${p.ulul?'<span class="tag gold">أولو العزم</span>':""}<span class="tag">القوم: ${p.people}</span><span class="tag">ذُكر اسمه ${toAr(p.mentions)} مرة</span></div>
-      <details class="more"><summary>القصة</summary><p>${p.story}</p>
-        <p><b>أبرز السور:</b> ${p.surahs}</p><p><b>من العِبَر:</b> ${p.lessons}</p></details></div></div>`).join("");
-  $("#pList").innerHTML = html || `<div class="empty">لا توجد نتائج</div>`;
-}
-$("#pSearch").oninput = renderProphets;
-
-/* ===== الصحابة والصحابيات ===== */
-function peopleSection(data, listEl, searchEl, tagsEl, getTags, honor){
-  let tag = "all";
-  const all = [...new Set(data.flatMap(getTags))];
-  $(tagsEl).innerHTML = `<button class="chip on" data-t="all">الكل (${toAr(data.length)})</button>` +
-    all.map(t => `<button class="chip" data-t="${t}">${t}</button>`).join("");
-  const render = () => {
-    const q = norm($(searchEl).value.trim());
-    const html = data.filter(p => (tag === "all" || getTags(p).includes(tag)) && (!q || norm(p.name + (p.full||"") + p.bio).includes(q)))
-      .map(p => `<div class="card"><h3>${p.name} ${honor}</h3>
-        ${p.full ? `<div class="meta">${p.full}</div>` : ""}
-        <div>${getTags(p).map(t => `<span class="tag">${t}</span>`).join("")}<span class="tag">الوفاة: ${p.died}</span></div>
-        <details class="more"><summary>السيرة</summary><p>${p.bio}</p></details></div>`).join("");
-    $(listEl).innerHTML = html || `<div class="empty">لا توجد نتائج</div>`;
-  };
-  $(tagsEl).onclick = e => {
-    if (!e.target.dataset.t) return;
-    tag = e.target.dataset.t;
-    $(tagsEl).querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c === e.target));
-    render();
-  };
-  $(searchEl).oninput = render;
-  render();
-}
-
-/* ===== الغزوات ===== */
-let gFilter = "all";
-function renderGhazawat(){
-  const q = norm($("#gSearch").value.trim());
-  const html = GHAZAWAT.map((g,i) => ({...g, i:i+1}))
-    .filter(g => (gFilter === "all" || (gFilter === "fought" && g.fought) || (gFilter === "quran" && g.quran)) && (!q || norm(g.name + g.summary + g.date).includes(q)))
-    .map(g => `<div class="tl" data-n="${toAr(g.i)}"><div class="card">
-      <h3>${g.name}</h3><div class="meta">${g.date}</div>
-      <div style="margin-top:4px"><span class="tag ${g.type==="سرية"?"":"gold"}">${g.type}</span><span class="tag">${g.fought?"وقع قتال":"لم يقع قتال"}</span>${g.quran?`<span class="tag">في القرآن: ${g.quran}</span>`:""}</div>
-      <p style="margin-top:6px"><b>القوات:</b> ${g.forces}<br><b>النتيجة:</b> ${g.result}</p>
-      <details class="more"><summary>التفاصيل</summary><p>${g.summary}</p></details></div></div>`).join("");
-  $("#gList").innerHTML = html || `<div class="empty">لا توجد نتائج</div>`;
-}
-$("#gSearch").oninput = renderGhazawat;
-document.querySelectorAll("[data-g]").forEach(b => b.onclick = () => {
-  gFilter = b.dataset.g;
-  document.querySelectorAll("[data-g]").forEach(x => x.classList.toggle("on", x === b));
-  renderGhazawat();
-});
-
-/* ===== تشغيل ===== */
-renderIndex();
-updateResume();
-renderProphets();
-peopleSection(SAHABA, "#sList", "#sSearch", "#sTags", p => p.tags, "رضي الله عنه");
-peopleSection(SAHABIYAT, "#wList", "#wSearch", "#wTags", p => [p.group], "رضي الله عنها");
-renderGhazawat();
-showSection(store.get("tab", "quran"));
-</script>
+<script src="illustrations.js"></script>
+<script src="data/quran.js"></script>
+<script src="data/worship.js"></script>
+<script src="data/prophets-1.js"></script>
+<script src="data/prophets-2.js"></script>
+<script src="data/sahaba.js"></script>
+<script src="data/sahabiyat.js"></script>
+<script src="data/ghazawat.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
