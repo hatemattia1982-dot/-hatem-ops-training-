@@ -362,31 +362,35 @@ function viewDuas(tab){
 /* ===== الحج والعمرة ===== */
 function viewHajj(){
   const H = D.hajj;
+  // مراجع الآيات المكتوبة داخل النص مثل [2,201] تتحول إلى رابط «[البقرة: ٢٠١]»
+  const rt = t => esc(t).replace(/\[(\d{1,3}),\s*(\d{1,3})\]/g, (m, x, y) => SURAHS[x-1] ? `<a href="#quran/${x}/${y}">[${sname(+x)}: ${toAr(y)}]</a>` : m);
   const stepCard = (s, i) => `<div class="card step"><span class="n">${toAr(i+1)}</span><div style="color:var(--pri)">${ILL.icons[s.icon] || ILL.icons.tawaf}</div>
-    <h4>${esc(s.title)}</h4><p>${esc(s.text)}</p>${s.say ? `<div class="say">${esc(s.say)}</div>` : ""}${s.verses && s.verses.length ? versesBox(s.verses, "") : ""}</div>`;
+    <h4>${esc(s.title)}</h4><p>${rt(s.text)}</p>${s.say ? `<div class="say">${esc(s.say)}</div>` : ""}${s.verses && s.verses.length ? versesBox(s.verses, "") : ""}</div>`;
   const table2 = (title, obj) => obj ? `<h3 class="sec">${title}</h3><div class="hj2"><div class="box"><h4>في الحج</h4><ul class="lst">${(obj.hajj||[]).map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
     <div class="box"><h4>في العمرة</h4><ul class="lst">${(obj.umrah||[]).map(x => `<li>${esc(x)}</li>`).join("")}</ul></div></div>` : "";
-  $("#view").innerHTML = `<article class="art"><div class="art-head">${ILL.icons.tawaf}<h2 class="pg">صفة الحج والعمرة</h2></div>
+  const html = `<article class="art"><div class="art-head">${ILL.icons.tawaf}<h2 class="pg">صفة الحج والعمرة</h2></div>
     <div class="lead">${esc(H.intro)}</div>${versesBox(H.verses)}${hadithBox(H.hadith)}
     <div class="toc">${[["hj-types","أنواع النسك"],["hj-miqat","المواقيت"],["hj-ihram","الإحرام"],["hj-umrah","صفة العمرة"],["hj-days","صفة الحج يوماً بيوم"],["hj-arkan","الأركان والواجبات"],["hj-mistakes","أخطاء شائعة"]].map(([id,t]) => `<a class="chip" href="javascript:void(0)" data-jump="${id}">${t}</a>`).join("")}</div>
     <h3 class="sec" id="hj-types">أنواع النسك</h3>
     <div class="grid">${(H.types||[]).map(t => `<div class="card"><h3>${esc(t.name)}</h3><p style="font-size:15px">${esc(t.text)}</p>${t.hady ? `<span class="tag gold">الهدي: ${esc(t.hady)}</span>` : ""}</div>`).join("")}</div>
     <h3 class="sec" id="hj-miqat">المواقيت المكانية</h3>
-    <div style="overflow-x:auto"><table class="tb"><tr><th>الميقات</th><th>لمن</th><th>المسافة</th></tr>${(H.mawaqit||[]).map(m => `<tr><td><b>${esc(m.name)}</b></td><td>${esc(m.for)}</td><td>${esc(m.distance || "")}</td></tr>`).join("")}</table></div>
-    <h3 class="sec" id="hj-ihram">الإحرام</h3>${H.ihram ? `<p>${esc(H.ihram.text)}</p><ul class="lst">${(H.ihram.steps||[]).map(x => `<li>${esc(x)}</li>`).join("")}</ul>
-      <div class="box"><h4>التلبية</h4><div class="say">${esc(H.ihram.talbiyah)}</div><small class="meta">${esc(H.ihram.talbiyahSource || "")}</small></div>` : ""}
+    <div style="overflow-x:auto"><table class="tb"><tr><th>الميقات</th><th>لمن</th><th>المسافة</th></tr>${(H.mawaqit||[]).map(m => `<tr><td><b>${esc(m.name)}</b></td><td>${esc(m.for)}</td><td>${esc(m.distance || "")}</td></tr>`).join("")}</table></div>${H.mawaqitNote ? `<div class="note" style="margin-top:10px">${rt(H.mawaqitNote)}</div>` : ""}
+    <h3 class="sec" id="hj-ihram">الإحرام</h3>${H.ihram ? `<p>${rt(H.ihram.text)}</p><ul class="lst">${(H.ihram.steps||[]).map(x => `<li>${rt(x)}</li>`).join("")}</ul>
+      <div class="box"><h4>التلبية</h4><div class="say">${esc(H.ihram.talbiyah)}</div><small class="meta">${esc(H.ihram.talbiyahSource || "")}</small>${(Array.isArray(H.ihram.extraTalbiyah) ? H.ihram.extraTalbiyah : []).map(x => `<div class="hadith" style="margin-top:8px"><span class="say" style="display:block;background:none;padding:0;font-size:17px">${esc(x.text)}</span><small>${esc(x.source || "")}</small></div>`).join("")}</div>` : ""}
     ${acc("محظورات الإحرام", H.mahzurat, false)}
     <h3 class="sec" id="hj-umrah">صفة العمرة خطوة بخطوة</h3><div class="steps">${(H.umrah||[]).map(stepCard).join("")}</div>
     <h3 class="sec" id="hj-days">صفة الحج يوماً بيوم</h3>
     <div class="timeline">${(H.hajj||[]).map((d,i) => `<div class="tl gold" data-n="${toAr(i+1)}"><div class="card"><div class="art-head" style="margin:0"><span style="color:var(--pri)">${ILL.icons[d.icon] || ""}</span><div><div class="meta">${esc(d.day)}</div><h3>${esc(d.name)}</h3></div></div>
-      <p style="margin-top:6px">${esc(d.text || "")}</p>${d.steps && d.steps.length ? `<ul class="lst">${d.steps.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+      <p style="margin-top:6px">${rt(d.text || "")}</p>${d.steps && d.steps.length ? `<ul class="lst">${d.steps.map(x => `<li>${rt(x)}</li>`).join("")}</ul>` : ""}${d.say ? `<div class="say">${esc(d.say)}</div>` : ""}
       ${(d.hadith||[]).map(h => `<div class="hadith">«${esc(h.text).replace(/^«|»$/g,"")}»<small>${esc(h.source || "")}</small></div>`).join("")}
       ${d.verses && d.verses.length ? versesBox(d.verses, "") : ""}</div></div>`).join("")}</div>
     <div id="hj-arkan">${table2("أركان النسك", H.arkan)}${table2("واجبات النسك", H.wajibat)}</div>
     ${acc("سنن الحج والعمرة", H.sunan)}${acc("أحكام خاصة بالمرأة", H.women)}
-    <h3 class="sec" id="hj-mistakes">أخطاء شائعة ينبغي تجنبها</h3><ul class="lst">${(H.mistakes||[]).map(x => `<li>${esc(x)}</li>`).join("")}</ul>
-    ${H.madinah ? acc("زيارة المسجد النبوي", H.madinah.steps, false, H.madinah.text) : ""}
+    <h3 class="sec" id="hj-mistakes">أخطاء شائعة ينبغي تجنبها</h3><ul class="lst">${(H.mistakes||[]).map(x => `<li>${rt(x)}</li>`).join("")}</ul>
+    ${H.madinah ? acc("زيارة المسجد النبوي", H.madinah.steps, false, H.madinah.text) + hadithBox(H.madinah.hadith, "من أحاديث فضل المدينة والمسجد النبوي") : ""}
     ${sourcesHTML(H.sources)}</article>`;
+  // ما تبقّى من مراجع داخل القوائم (دون المساس بسمات data-refs)
+  $("#view").innerHTML = html.replace(/(?<![\[,\d])\[(\d{1,3}),\s*(\d{1,3})\](?!\])/g, (m, x, y) => SURAHS[x-1] ? `<a href="#quran/${x}/${y}">[${sname(+x)}: ${toAr(y)}]</a>` : m);
 }
 
 /* ===== السيرة النبوية ===== */
