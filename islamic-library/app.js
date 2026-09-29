@@ -28,12 +28,14 @@ const D = {
   khutab: typeof KHUTAB_DATA !== "undefined" ? KHUTAB_DATA : [],
   duas: typeof DUAS !== "undefined" ? DUAS : {quran:[], sunnah:[]},
   hajj: typeof HAJJ !== "undefined" ? HAJJ : null,
+  tajweed: typeof TAJWEED !== "undefined" ? TAJWEED : null,
   karamatIntro: typeof KARAMAT_INTRO !== "undefined" ? KARAMAT_INTRO : ""
 };
 
 const SECTIONS = [
   {id:"home", name:"الرئيسية", icon:"home"},
   {id:"quran", name:"القرآن الكريم", icon:"quran", desc:"١١٤ سورة بالرسم العثماني مع ستة تفاسير والتلاوة"},
+  {id:"tajweed", name:"التجويد", icon:"tajweed", desc:"مخارج الحروف بالرسوم، صفات الحروف، وأحكام التجويد بالأمثلة والاستماع"},
   {id:"seerah", name:"السيرة النبوية", icon:"seerah", desc:"حياة النبي ﷺ من المولد إلى الوفاة على خط زمني، والشمائل المحمدية"},
   {id:"asma", name:"أسماء الله الحسنى", icon:"allah", desc:"الأسماء الحسنى بمعانيها وشرحها وأثرها في القلب"},
   {id:"adhkar", name:"الأذكار", icon:"beads", desc:"أذكار الصباح والمساء والنوم واليوم والليلة مع عدّاد"},
@@ -51,7 +53,7 @@ const SECTIONS = [
   {id:"ghazawat", name:"الغزوات", icon:"ghazawat", desc:"غزوات النبي ﷺ وسراياه مع خريطة المواقع"}
 ];
 // الأقسام التي لم يصل محتواها بعد لا تظهر
-const EMPTY = {mujizat: !D.mujizat.categories.length, asma: !D.asma.names.length, adhkar: !D.adhkar.categories.length, seerah: !D.seerah.periods.length, khutab: !D.khutab.length, duas: !D.duas.quran.length && !D.duas.sunnah.length, hajj: !D.hajj};
+const EMPTY = {mujizat: !D.mujizat.categories.length, asma: !D.asma.names.length, adhkar: !D.adhkar.categories.length, seerah: !D.seerah.periods.length, khutab: !D.khutab.length, duas: !D.duas.quran.length && !D.duas.sunnah.length, hajj: !D.hajj, tajweed: !D.tajweed};
 for (let i = SECTIONS.length - 1; i >= 0; i--) if (EMPTY[SECTIONS[i].id]) SECTIONS.splice(i, 1);
 const count = id => ({quran:114, islam:D.islam.items.length, iman:D.iman.items.length, prophets:D.prophets.length,
   sahaba:D.sahaba.length, khutab:D.khutab.length, duas:D.duas.quran.length + D.duas.sunnah.reduce((a,c) => a + c.items.length, 0), asma:D.asma.names.length, adhkar:D.adhkar.categories.reduce((a,c) => a + c.items.length, 0), seerah:D.seerah.periods.reduce((a,p) => a + p.events.length, 0), mujizat:D.mujizat.categories.reduce((a,c) => a + c.items.length, 0), sahabiyat:D.sahabiyat.length, ghazawat:D.ghazawat.length}[id]);
@@ -270,6 +272,68 @@ function personView(base, data, i, honor, backName){
 const personCard = (base, honor) => (p,i) => `<a class="card" href="#${base}/${i}"><h3>${esc(p.name)} <small class="meta">${honor}</small></h3>
   <div class="meta">${esc(p.kunya || p.full || "")}</div><p style="margin-top:4px;font-size:15px">${esc(p.summary)}</p>
   <div>${(p.tags || [p.group]).map(t => `<span class="tag">${esc(t)}</span>`).join("")}<span class="tag">الوفاة: ${esc(p.died)}</span></div></a>`;
+
+/* ===== التجويد ===== */
+function viewTajweed(){
+  const T = D.tajweed, M = T.makharij;
+  const areaName = k => (M.areas.find(a => a.key === k) || {}).name || "";
+  const exHTML = ex => (ex || []).map(e => `<div class="tj-ex" data-s="${e.ref ? e.ref[0] : ""}" data-a="${e.ref ? e.ref[1] : ""}" data-w="${esc(e.word)}">
+    <span class="tj-word">${esc(e.word)}</span>${e.ref ? `<a class="chip" href="#quran/${e.ref[0]}/${e.ref[1]}">🔊 استمع [${sname(e.ref[0])}: ${toAr(e.ref[1])}]</a>` : ""}<div class="tj-ayah"></div></div>`).join("");
+  const itemHTML = it => `<div class="tj-item"><h4>${esc(it.name)}${it.letters ? ` <span class="tag gold">${esc(it.letters)}</span>` : ""}</h4>
+    ${it.verse ? `<div class="tj-bayt">${esc(it.verse)}</div>` : ""}<p>${esc(it.text)}</p>${exHTML(it.examples)}</div>`;
+  $("#view").innerHTML = `<article class="art"><div class="art-head">${ILL.icons.tajweed}<h2 class="pg">علم التجويد</h2></div>
+    <div class="lead">${esc(T.intro)}</div>
+    ${T.lahn ? `<div class="hj2"><div class="box"><h4>اللحن الجلي</h4><p>${esc(T.lahn.jali)}</p></div><div class="box"><h4>اللحن الخفي</h4><p>${esc(T.lahn.khafi)}</p></div></div>` : ""}
+    <div class="toc">${[["tj-mkh","مخارج الحروف"],["tj-teeth","الأسنان"],["tj-sifat","صفات الحروف"],...T.rules.map(r => ["tj-" + r.key, r.name])].map(([id,t]) => `<a class="chip" href="javascript:void(0)" data-jump="${id}">${esc(t)}</a>`).join("")}</div>
+
+    <h3 class="sec" id="tj-mkh">مخارج الحروف</h3><p>${esc(M.intro)}</p>
+    <div class="mkh-wrap"><div class="card mkh-fig">${ILL.makharij()}<p class="meta" style="text-align:center">اضغط على نقطة في الرسم أو على مخرج من القائمة</p>
+      <div class="mkh-legend">${M.areas.map(a => `<span><i style="background:${ILL.AREA_COLOR[a.key]}"></i>${esc(a.name)}</span>`).join("")}</div></div>
+      <div><div class="card mkh-detail" id="mkhD"><p class="meta">اختر مخرجاً لعرض حروفه وشرحه.</p></div>
+      <div class="mkh-list">${M.points.map((pt,i) => `<button class="mkh-btn" data-id="${pt.id}" style="--c:${ILL.AREA_COLOR[pt.area]}"><b>${toAr(i+1)}</b> ${esc(pt.letters)}</button>`).join("")}</div></div></div>
+    ${M.areas.map(a => `<details class="acc"><summary><span style="color:${ILL.AREA_COLOR[a.key]}">●</span> ${esc(a.name)}</summary><div><p>${esc(a.text)}</p></div></details>`).join("")}
+
+    <h3 class="sec" id="tj-teeth">أسماء الأسنان</h3>
+    <div class="mkh-wrap"><div class="card">${ILL.teeth()}</div><p>${esc(M.teeth || "")}</p></div>
+
+    <h3 class="sec" id="tj-sifat">صفات الحروف</h3><p>${esc(T.sifat.intro)}</p>
+    <h4 class="kh-h">الصفات التي لها ضد</h4>
+    <div style="overflow-x:auto"><table class="tb"><tr><th>الصفة</th><th>حروفها</th><th>ضدها</th><th>حروفه</th></tr>
+      ${T.sifat.pairs.map(p => `<tr><td><b>${esc(p.a.name)}</b><div class="meta">${esc(p.a.text)}</div></td><td class="tj-l">${esc(p.a.letters)}</td><td><b>${esc(p.b.name)}</b><div class="meta">${esc(p.b.text)}</div></td><td class="tj-l">${esc(p.b.letters)}</td></tr>`).join("")}</table></div>
+    <h4 class="kh-h">الصفات التي لا ضد لها</h4>
+    <div class="grid">${T.sifat.single.map(x => `<div class="card"><h3>${esc(x.name)}</h3><div class="tj-l">${esc(x.letters)}</div><p style="font-size:15px">${esc(x.text)}</p></div>`).join("")}</div>
+
+    ${T.rules.map(r => `<h3 class="sec" id="tj-${r.key}"${r.color ? ` style="border-color:${r.color}"` : ""}>${esc(r.name)}</h3>
+      ${r.intro ? `<p>${esc(r.intro)}</p>` : ""}
+      ${r.items.map(it => `<details class="acc tj-acc"><summary>${esc(it.name)}${it.letters ? ` <span class="tag">${esc(it.letters)}</span>` : ""}</summary><div>${itemHTML(it)}</div></details>`).join("")}`).join("")}
+    ${listBox("نصائح لتعلّم التجويد", T.tips)}${sourcesHTML(T.sources)}</article>`;
+
+  const showPoint = id => {
+    const i = M.points.findIndex(x => x.id === id), pt = M.points[i]; if (!pt) return;
+    document.querySelector(".mkh-fig").firstElementChild.outerHTML = ILL.makharij(id);
+    bindDots();
+    $("#mkhD").innerHTML = `<div class="meta"><span style="color:${ILL.AREA_COLOR[pt.area]}">●</span> ${esc(areaName(pt.area))} · المخرج ${toAr(i+1)} من ١٧</div>
+      <div class="tj-big">${esc(pt.letters)}</div><h4 style="color:var(--pri)">${esc(pt.name)}</h4><p>${esc(pt.text)}</p>`;
+    document.querySelectorAll(".mkh-btn").forEach(b => b.classList.toggle("on", b.dataset.id === id));
+  };
+  const bindDots = () => document.querySelectorAll(".mkh").forEach(g => g.onclick = () => showPoint(g.dataset.id));
+  bindDots();
+  document.querySelectorAll(".mkh-btn").forEach(b => b.onclick = () => { showPoint(b.dataset.id); if (innerWidth < 700) document.querySelector(".mkh-fig").scrollIntoView({behavior:"smooth"}); });
+
+  // أمثلة الأحكام: تُجلب الآية عند فتح الحكم، وتُظلَّل كلمة المثال
+  document.querySelectorAll("details.tj-acc").forEach(d => d.addEventListener("toggle", () => {
+    if (!d.open) return;
+    d.querySelectorAll(".tj-ex").forEach(async ex => {
+      if (ex.dataset.done || !ex.dataset.s) return; ex.dataset.done = 1;
+      const box = ex.querySelector(".tj-ayah");
+      try {
+        const text = await fetchAyah(+ex.dataset.s, +ex.dataset.a);
+        const keys = norm(ex.dataset.w).split(/\s+/).filter(k => k.length > 1);
+        box.innerHTML = "﴿" + text.split(" ").map(w => { const n = norm(w); return keys.some(k => n === k || (k.length > 2 && (n.includes(k) || k.includes(n) && n.length > 2))) ? `<mark>${esc(w)}</mark>` : esc(w); }).join(" ") + "﴾";
+      } catch(e) { box.innerHTML = `<span class="meta">تعذّر تحميل الآية (يحتاج اتصالاً بالإنترنت)</span>`; }
+    });
+  }));
+}
 
 /* ===== خطب الجمعة ===== */
 const KH_OPEN = "إِنَّ الْحَمْدَ لِلَّهِ، نَحْمَدُهُ وَنَسْتَعِينُهُ وَنَسْتَغْفِرُهُ، وَنَعُوذُ بِاللَّهِ مِنْ شُرُورِ أَنْفُسِنَا وَمِنْ سَيِّئَاتِ أَعْمَالِنَا، مَنْ يَهْدِهِ اللَّهُ فَلَا مُضِلَّ لَهُ، وَمَنْ يُضْلِلْ فَلَا هَادِيَ لَهُ، وَأَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ.";
@@ -836,6 +900,7 @@ function route(){
     case "khutab": viewKhutab(n !== null && !isNaN(n) ? n : undefined); break;
     case "duas": viewDuas(a); break;
     case "hajj": viewHajj(); break;
+    case "tajweed": viewTajweed(); break;
     case "asma": viewAsma(n !== null && !isNaN(n) ? n : undefined); break;
     case "adhkar": viewAdhkar(a); break;
     case "ghazawat": n !== null ? viewGhazwa(n) : viewGhazawat(); break;

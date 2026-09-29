@@ -108,6 +108,7 @@ const ILL = (() => {
     jamarat: I(`<path d="M26 56 V14 h12 V56" ${st}/><path d="M18 56 h28" ${st}/><circle cx="12" cy="24" r="2.5" fill="currentColor"/><circle cx="16" cy="32" r="2.5" fill="currentColor"/><circle cx="50" cy="28" r="2.5" fill="currentColor"/>`),
     minbar: I(`<path d="M14 56 V36 h10 V26 h10 V16 h10 V56" ${st}/><path d="M44 16 l8 -6 v46" ${st}/>`),
     dua: I(`<path d="M20 54 q-8-10-6-24 l4-10 q2-4 5 0 l3 14 M44 54 q8-10 6-24 l-4-10 q-2-4-5 0 l-3 14" ${st}/><path d="M26 34 v20 M38 34 v20" ${st}/>`),
+    tajweed: I(`<path d="M10 18 q12-4 22 4 q10-8 22-4 v32 q-12-4-22 4 q-10-8-22-4z" ${st}/><path d="M20 30 q4 -6 8 0 t8 0" ${st}/><circle cx="44" cy="26" r="3" fill="currentColor"/>`),
     home: I(`<path d="M10 30 L32 12 L54 30 M16 26 V54 h32 V26" ${st}/><path d="M28 54 V40 h8 v14" ${st}/>`)
   };
 
@@ -140,5 +141,70 @@ const ILL = (() => {
       ${dots}</svg>`;
   }
 
-  return { pose, wudu, icons, map, PLACES, place };
+
+  /* ===== مخارج الحروف: مقطع جانبي للفم والحلق (الوجه إلى اليسار) ===== */
+  const AREA_COLOR = {jawf:"#5b8def", halq:"#e67e22", lisan:"#c0392b", shafatan:"#8e44ad", khayshum:"#27ae60"};
+  // [x, y, area]
+  const MKH = {
+    jawf:[178,172,"jawf"], halq_adna:[247,178,"halq"], halq_wasat:[251,214,"halq"], halq_aqsa:[253,256,"halq"],
+    qaf:[226,150,"lisan"], kaf:[209,146,"lisan"], jeem_sheen_ya:[166,145,"lisan"], dad:[146,158,"lisan"],
+    lam:[132,150,"lisan"], noon:[122,148,"lisan"], ra:[126,157,"lisan"], ta_dal_ta:[110,150,"lisan"],
+    za_dhal_tha:[101,165,"lisan"], sad_zay_seen:[104,176,"lisan"], fa:[92,170,"shafatan"], ba_meem_waw:[82,170,"shafatan"],
+    khayshum:[112,120,"khayshum"]
+  };
+  function makharij(active){
+    const dots = Object.entries(MKH).map(([id,[x,y,a]]) => {
+      const on = id === active;
+      return `<g class="mkh${on ? " on" : ""}" data-id="${id}" style="cursor:pointer">
+        ${on ? `<circle cx="${x}" cy="${y}" r="13" fill="${AREA_COLOR[a]}" opacity=".25"><animate attributeName="r" values="9;15;9" dur="1.6s" repeatCount="indefinite"/></circle>` : ""}
+        <circle cx="${x}" cy="${y}" r="${on ? 6 : 4.2}" fill="${AREA_COLOR[a]}" stroke="#fff" stroke-width="1.5"/></g>`;
+    }).join("");
+    return `<svg viewBox="55 60 250 250" class="mkh-svg" role="img" aria-label="رسم توضيحي لمخارج الحروف">
+      <rect x="55" y="60" width="250" height="250" fill="var(--card)"/>
+      <!-- الرأس -->
+      <path d="M150 20 Q125 40 118 62 Q112 80 108 90 L74 120 Q72 126 80 128 L96 132 Q90 140 86 150 Q82 156 84 164 Q80 168 84 174 Q82 182 88 190 Q90 206 96 216 Q112 236 132 242 Q158 250 170 272 L176 380 L300 380 L300 250 Q340 236 360 200 L360 60 Z"
+        fill="var(--skin)" stroke="var(--line)" stroke-width="2"/>
+      <!-- التجويف الأنفي -->
+      <path d="M92 128 Q104 112 130 106 Q190 98 252 108 L256 132 Q200 126 150 128 Q118 130 100 132 Z" fill="#f6d6d0" stroke="#d9a79d" stroke-width="1.2"/>
+      <!-- البلعوم -->
+      <path d="M238 132 L264 132 L266 330 L246 330 L244 262 Q240 220 236 190 Z" fill="#f6d6d0" stroke="#d9a79d" stroke-width="1.2"/>
+      <!-- تجويف الفم -->
+      <path d="M104 150 Q140 136 190 134 Q222 136 236 150 L238 172 Q220 158 196 152 Q160 148 124 162 Q110 170 104 176 Z" fill="#f6d6d0"/>
+      <!-- الحنك الأعلى واللهاة -->
+      <path d="M103 149 Q140 135 190 133 Q222 135 234 146 Q240 156 237 168" fill="none" stroke="#b5655a" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="237" cy="169" r="3.5" fill="#b5655a"/>
+      <!-- اللسان -->
+      <path d="M103 178 Q108 166 124 160 Q160 146 200 150 Q228 158 236 182 Q242 214 244 250 Q222 236 200 222 Q160 208 128 204 Q110 198 103 188 Z" fill="#e8868c" stroke="#b8505a" stroke-width="1.5"/>
+      <!-- لسان المزمار والحنجرة -->
+      <path d="M244 250 Q250 240 256 246" fill="none" stroke="#b8505a" stroke-width="2.5"/>
+      <path d="M232 262 L232 330 M252 262 L252 330" stroke="#d9a79d" stroke-width="2"/>
+      <!-- الأسنان -->
+      <path d="M97 146 L106 146 L105 166 L99 167 Z" fill="#fff" stroke="#bbb"/>
+      <path d="M98 172 L106 172 L106 190 L99 190 Z" fill="#fff" stroke="#bbb"/>
+      <!-- الشفتان -->
+      <path d="M100 144 Q86 146 83 160 Q86 168 97 167 Z" fill="#d97b7b" stroke="#b8505a"/>
+      <path d="M99 173 Q84 172 82 180 Q86 194 101 192 Z" fill="#d97b7b" stroke="#b8505a"/>
+      ${dots}</svg>`;
+  }
+
+  /* ===== الأسنان: منظر علوي للفك الأعلى مع أسمائها ===== */
+  const TEETH = [["الثنايا","#c0392b",11],["الرباعيات","#e67e22",10],["الأنياب","#d4ac0d",10],["الضواحك","#27ae60",11],
+    ["الطواحن","#2e86c1",14],["الطواحن","#2e86c1",14],["الطواحن","#2e86c1",14],["النواجذ","#8e44ad",13]];
+  function teeth(){
+    const ang = [0.1,0.3,0.5,0.72,0.95,1.18,1.39,1.56];
+    let t = "";
+    [-1,1].forEach(side => TEETH.forEach(([n,c,r],i) => {
+      const a = Math.PI/2 + side*ang[i];
+      const x = 160 + 105*Math.cos(a), y = 30 + 150*Math.sin(a);
+      t += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${c}" opacity=".85" stroke="#fff" stroke-width="2"/>`;
+    }));
+    const legend = [...new Map(TEETH.map(([n,c]) => [n,c])).entries()]
+      .map(([n,c],i) => `<g transform="translate(${i%3*104+8},${210+Math.floor(i/3)*24})"><rect width="14" height="14" rx="3" fill="${c}"/><text x="20" y="12" font-size="13" fill="var(--ink)" style="direction:ltr" text-anchor="start">${n}</text></g>`).join("");
+    return `<svg viewBox="0 0 320 262" class="teeth-svg" role="img" aria-label="أسماء الأسنان">
+      <text x="160" y="96" text-anchor="middle" font-size="13" fill="var(--soft)" style="direction:ltr">الفك الأعلى</text>
+      <text x="160" y="196" text-anchor="middle" font-size="12" fill="var(--soft)" style="direction:ltr">↓ مقدمة الفم</text>
+      ${t}${legend}</svg>`;
+  }
+
+  return { pose, wudu, icons, map, PLACES, place, makharij, teeth, AREA_COLOR };
 })();
