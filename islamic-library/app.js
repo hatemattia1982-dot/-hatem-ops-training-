@@ -280,6 +280,17 @@ const khBlocks = blocks => (blocks || []).map(b => {
   if (b.t === "hadith") return `<div class="hadith">«${esc(b.v).replace(/^«|»$/g,"")}»<small>${esc(b.source || "")}</small></div>`;
   return `<p>${esc(b.v)}</p>`;
 }).join("");
+// الصفحة تضيف الأمر بالصلاة على النبي ﷺ وآيتها بعد الخطبة الثانية، فنحذف تكرارها إن وُجد في آخر النص
+function khSecond(blocks){
+  const b = (blocks || []).slice();
+  const last = b[b.length-1];
+  if (last && last.t === "ayah" && JSON.stringify(last.refs) === "[[33,56]]") {
+    b.pop();
+    const prev = b[b.length-1];
+    if (prev && prev.t === "p" && /صلّ?وا|صلوا/.test(prev.v) && prev.v.length < 200) b.pop();
+  }
+  return b;
+}
 function viewKhutab(i){
   const K = D.khutab;
   if (i !== undefined && K[i]){
@@ -297,7 +308,7 @@ function viewKhutab(i){
       <div class="kh-sit no-print">— يجلس الخطيب جلسة خفيفة —</div>
       <h3 class="sec">الخطبة الثانية</h3>
       <p class="kh-fixed">الْحَمْدُ لِلَّهِ وَكَفَى، وَالصَّلَاةُ وَالسَّلَامُ عَلَى عَبْدِهِ الَّذِي اصْطَفَى، وَأَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ. أَمَّا بَعْدُ:</p>
-      ${khBlocks(k.second)}
+      ${khBlocks(khSecond(k.second))}
       <p class="kh-fixed">ثُمَّ صَلُّوا وَسَلِّمُوا عَلَى مَنْ أَمَرَكُمُ اللَّهُ بِالصَّلَاةِ وَالسَّلَامِ عَلَيْهِ، فَقَالَ جَلَّ مِنْ قَائِلٍ:</p>
       <div class="kh-ayah"><div class="verses" data-refs='[[33,56]]'><div class="meta">جارٍ تحميل الآيات…</div></div></div>
       <p class="kh-fixed">اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ، وَبَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ.</p>
