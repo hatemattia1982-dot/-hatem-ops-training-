@@ -70,7 +70,6 @@ const count = id => ({quran:114, islam:D.islam.items.length, iman:D.iman.items.l
   };
 })();
 
-$("#nav").innerHTML = SECTIONS.map(s => `<a href="#${s.id}" data-s="${s.id}">${s.name}</a>`).join("");
 
 /* ===== أدوات عرض مشتركة ===== */
 function sectionsHTML(sections){
@@ -287,6 +286,8 @@ function viewTajweed(){
     <div class="toc">${[["tj-mkh","مخارج الحروف"],["tj-teeth","الأسنان"],["tj-sifat","صفات الحروف"],...T.rules.map(r => ["tj-" + r.key, r.name])].map(([id,t]) => `<a class="chip" href="javascript:void(0)" data-jump="${id}">${esc(t)}</a>`).join("")}</div>
 
     <h3 class="sec" id="tj-mkh">مخارج الحروف</h3><p>${esc(M.intro)}</p>
+    <figure class="card" style="margin-bottom:12px"><img class="mkh-img" src="img/makharij.jpg" alt="لوحة مخارج الحروف" loading="lazy">
+      <figcaption class="note" style="margin:8px 0 0">لوحة عامة للمخارج الخمسة. <b>تصحيح:</b> حروف طرف اللسان تشمل أيضاً <b>ص ز س</b> (حروف الصفير)، وتفصيل المخارج السبعة عشر في الرسم التفاعلي أدناه.</figcaption></figure>
     <div class="mkh-wrap"><div class="card mkh-fig">${ILL.makharij()}<p class="meta" style="text-align:center">اضغط على نقطة في الرسم أو على مخرج من القائمة</p>
       <div class="mkh-legend">${M.areas.map(a => `<span><i style="background:${ILL.AREA_COLOR[a.key]}"></i>${esc(a.name)}</span>`).join("")}</div></div>
       <div><div class="card mkh-detail" id="mkhD"><p class="meta">اختر مخرجاً لعرض حروفه وشرحه.</p></div>
@@ -875,6 +876,16 @@ audio.onerror = () => {
   $("#audioErr").textContent = "تعذّر تشغيل التلاوة بهذا الصوت. تأكد من الاتصال بالإنترنت أو اختر قارئاً آخر.";
 };
 
+/* ===== شريط الأقسام وقائمة «كل الأقسام» ===== */
+$("#nav").innerHTML = SECTIONS.map(s => `<a href="#${s.id}" data-s="${s.id}">${s.name}</a>`).join("");
+$("#menuBtn").textContent = `☰ كل الأقسام (${toAr(SECTIONS.length - 1)})`;
+$("#menuGrid").innerHTML = SECTIONS.map(s => `<a href="#${s.id}" data-s="${s.id}">${ILL.icons[s.icon] || ""}${s.name}</a>`).join("");
+const closeMenu = () => { $("#menu").hidden = true; document.body.style.overflow = ""; };
+$("#menuBtn").onclick = () => { $("#menu").hidden = false; document.body.style.overflow = "hidden"; };
+$("#menuX").onclick = closeMenu;
+$("#menu").onclick = e => { if (e.target.id === "menu" || e.target.closest(".menu-grid a")) closeMenu(); };
+addEventListener("keydown", e => { if (e.key === "Escape") closeMenu(); });
+
 /* ===== التوجيه ===== */
 function go(h){ location.hash = h; }
 function route(){
@@ -882,7 +893,7 @@ function route(){
   const id = SECTIONS.some(s => s.id === sec) ? sec : "home";
   if (id !== "quran") stopAudio();
   document.body.classList.remove("presenter");
-  document.querySelectorAll("#nav a").forEach(x => x.classList.toggle("on", x.dataset.s === id));
+  document.querySelectorAll("#nav a, #menuGrid a").forEach(x => x.classList.toggle("on", x.dataset.s === id));
   const active = $(`#nav a[data-s="${id}"]`); if (active) active.scrollIntoView({inline:"center", block:"nearest"});
   const n = a !== undefined ? +a : null;
   switch (id){
