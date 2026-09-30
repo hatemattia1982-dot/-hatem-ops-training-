@@ -278,7 +278,7 @@ function viewTajweed(){
   const areaName = k => (M.areas.find(a => a.key === k) || {}).name || "";
   const exHTML = ex => (ex || []).map(e => `<div class="tj-ex" data-s="${e.ref ? e.ref[0] : ""}" data-a="${e.ref ? e.ref[1] : ""}" data-w="${esc(e.word)}">
     <span class="tj-word">${esc(e.word)}</span>${e.ref ? `<a class="chip" href="#quran/${e.ref[0]}/${e.ref[1]}">🔊 استمع [${sname(e.ref[0])}: ${toAr(e.ref[1])}]</a>` : ""}<div class="tj-ayah"></div></div>`).join("");
-  const itemHTML = it => `<div class="tj-item"><h4>${esc(it.name)}${it.letters ? ` <span class="tag gold">${esc(it.letters)}</span>` : ""}</h4>
+  const itemHTML = it => `<div class="tj-item"><h4>${esc(it.name)}${it.letters ? ` <span class="tag gold">${esc(it.letters)}</span>` : ""}${it.duration ? ` <span class="tag">⏱ ${esc(it.duration)}</span>` : ""}</h4>
     ${it.verse ? `<div class="tj-bayt">${esc(it.verse)}</div>` : ""}<p>${esc(it.text)}</p>${exHTML(it.examples)}</div>`;
   $("#view").innerHTML = `<article class="art"><div class="art-head">${ILL.icons.tajweed}<h2 class="pg">علم التجويد</h2></div>
     <div class="lead">${esc(T.intro)}</div>
@@ -300,7 +300,7 @@ function viewTajweed(){
     <h3 class="sec" id="tj-sifat">صفات الحروف</h3><p>${esc(T.sifat.intro)}</p>
     <h4 class="kh-h">الصفات التي لها ضد</h4>
     <div style="overflow-x:auto"><table class="tb"><tr><th>الصفة</th><th>حروفها</th><th>ضدها</th><th>حروفه</th></tr>
-      ${T.sifat.pairs.map(p => `<tr><td><b>${esc(p.a.name)}</b><div class="meta">${esc(p.a.text)}</div></td><td class="tj-l">${esc(p.a.letters)}</td><td><b>${esc(p.b.name)}</b><div class="meta">${esc(p.b.text)}</div></td><td class="tj-l">${esc(p.b.letters)}</td></tr>`).join("")}</table></div>
+      ${T.sifat.pairs.map(p => `<tr><td><b>${esc(p.a.name)}</b><div class="meta">${esc(p.a.text)}</div></td><td class="tj-l">${esc(p.a.letters)}</td><td><b>${esc(p.b.name)}</b><div class="meta">${esc(p.b.text)}</div>${p.c ? `<hr style="border:0;border-top:1px dashed var(--line);margin:6px 0"><b>${esc(p.c.name)}</b><div class="meta">${esc(p.c.text)}</div>` : ""}</td><td class="tj-l">${esc(p.b.letters)}${p.c ? `<hr style="border:0;border-top:1px dashed var(--line);margin:6px 0">${esc(p.c.letters)}` : ""}</td></tr>`).join("")}</table></div>
     <h4 class="kh-h">الصفات التي لا ضد لها</h4>
     <div class="grid">${T.sifat.single.map(x => `<div class="card"><h3>${esc(x.name)}</h3><div class="tj-l">${esc(x.letters)}</div><p style="font-size:15px">${esc(x.text)}</p></div>`).join("")}</div>
 
@@ -329,8 +329,16 @@ function viewTajweed(){
       const box = ex.querySelector(".tj-ayah");
       try {
         const text = await fetchAyah(+ex.dataset.s, +ex.dataset.a);
-        const keys = norm(ex.dataset.w).split(/\s+/).filter(k => k.length > 1);
-        box.innerHTML = "﴿" + text.split(" ").map(w => { const n = norm(w); return keys.some(k => n === k || (k.length > 2 && (n.includes(k) || k.includes(n) && n.length > 2))) ? `<mark>${esc(w)}</mark>` : esc(w); }).join(" ") + "﴾";
+        // نبحث عن تسلسل كلمات المثال داخل الآية ونظلّل أول تطابق فقط
+        // الرسم العثماني يحذف بعض حروف المد (ٱلشَّيۡطَٰنِ، ٱلصَّلَوٰةَ) فنقارن الهيكل بعد إسقاطها
+        const skel = w => norm(w).replace(/[^\u0621-\u064A]/g, "").replace(/[اويءأإؤئ]/g, "");
+        const words = text.split(" "), wn = words.map(skel);
+        const keys = ex.dataset.w.split(/\s+/).map(skel).filter(Boolean);
+        const like = (a, b) => a === b || (a.length > 2 && b.length > 2 && (a.includes(b) || b.includes(a)));
+        let at = -1;
+        for (let i = 0; i + keys.length <= wn.length && at < 0; i++) if (keys.every((k, j) => like(wn[i+j], k))) at = i;
+        const hit = new Set(at >= 0 ? keys.map((_, j) => at + j) : []);
+        box.innerHTML = "﴿" + words.map((w, i) => hit.has(i) ? `<mark>${esc(w)}</mark>` : esc(w)).join(" ") + "﴾";
       } catch(e) { box.innerHTML = `<span class="meta">تعذّر تحميل الآية (يحتاج اتصالاً بالإنترنت)</span>`; }
     });
   }));
