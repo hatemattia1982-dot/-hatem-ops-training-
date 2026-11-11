@@ -687,6 +687,27 @@ body:not(.locked) #content{padding-top:64px}
 .tk-row:hover{box-shadow:0 10px 24px rgba(11,53,60,.14);transform:translateY(-1px)}
 .tk-row.p-1{border-inline-start-color:#9cb0b3}.tk-row.p-2{border-inline-start-color:#2b93a0}.tk-row.p-3{border-inline-start-color:#c98a0b}.tk-row.p-4{border-inline-start-color:#9c231b}
 .tk-row.unread{background:#f3f9fa}
+/* ===== تطوير الدعم والاستفسارات ===== */
+.tk-row{animation:pcIn .45s both cubic-bezier(.2,.7,.2,1);transition:transform .2s,box-shadow .2s,background .2s}
+.tk-row:hover{transform:translateX(-3px)}
+.tk-row.p-4:not(.unread) .tk-ic{background:#fdf0ef}
+.tk-row.p-4 .tk-ic{animation:tkPulse 2.2s ease-in-out infinite}
+@keyframes tkPulse{0%,100%{box-shadow:0 0 0 0 rgba(156,35,27,.3)}50%{box-shadow:0 0 0 7px rgba(156,35,27,0)}}
+.tk-msg{animation:pcIn .35s both}
+#tk-stats .ks b{font-size:24px}
+#tk-stats .ks:nth-child(4) b,#tk-stats .ks:nth-child(5) b{font-size:20px;line-height:1.7}
+.tk-steps{display:flex;gap:4px;flex-basis:100%;margin:2px 0}
+.tk-steps span{flex:1;text-align:center;font-size:11.5px;font-weight:700;padding:4px 6px;border-radius:8px;background:var(--beige-deep);color:#8a8079}
+.tk-steps span.done{background:#e8f3ec;color:#1d5a35}.tk-steps span.cur{background:var(--red);color:#fff}
+.tk-sg{margin-top:10px;background:linear-gradient(135deg,#fff8e6,#fff);border:1.5px solid #f0dbb0;border-radius:12px;padding:10px 14px;animation:pcIn .35s both}
+.tk-sg>b{display:block;color:#7a4f00;font-size:13px;margin-bottom:6px}
+.tk-sg details{background:#fff;border:1px solid var(--line);border-radius:9px;margin-top:6px}
+.tk-sg summary{cursor:pointer;padding:8px 12px;font-weight:700;font-size:13px}
+.tk-sg details div{padding:0 12px 10px;font-size:13px;line-height:1.8;white-space:pre-line;color:var(--ink-soft)}
+.faq{transition:box-shadow .2s,transform .2s}
+.faq:hover{box-shadow:0 6px 16px rgba(11,53,60,.1)}
+.faq[open]{border-color:var(--red)}
+
 .tk-row .tk-ic{font-size:24px;line-height:1;width:42px;height:42px;border-radius:12px;background:var(--beige);display:flex;align-items:center;justify-content:center}
 .tk-row .tk-main{min-width:0}
 .tk-row .tk-main b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -5340,6 +5361,87 @@ function tkPriBadge(p){const i=(TK_PRI.indexOf(p)+1)||2;return '<span class="bad
 function tkIsMine(t){return !!(t&&t.createdBy&&ME&&t.createdBy.uid===ME.uid);}
 function tkExcerpt(s,n){s=(s||'').replace(/\s+/g,' ').trim();n=n||80;return s.length>n?s.slice(0,n)+'…':s;}
 function tkStars(n){n=Number(n)||0;return '★'.repeat(n)+'☆'.repeat(Math.max(0,5-n));}
+/* ==== تطوير الدعم: مؤشرات · تصنيف سريع · اقتراح أسئلة شائعة · مراحل التذكرة ==== */
+function tkDur(ms){
+  if(!ms||ms<0) return '';
+  if(ms<60e3) return 'لحظات';
+  if(ms<3600e3) return arCount(Math.floor(ms/60e3),'دقيقة','دقيقتين','دقائق','دقيقة');
+  if(ms<86400e3) return arCount(Math.floor(ms/3600e3),'ساعة','ساعتين','ساعات','ساعة');
+  return arCount(Math.floor(ms/86400e3),'يوم','يومين','أيام','يومًا');
+}
+function tkAge(t){
+  if((t.status||'open')!=='open') return '';
+  const base=t.lastMsgAt||tsMs(t.createdAt); if(!base) return '';
+  const age=Date.now()-base;
+  const cls=age>172800e3?'pr-4':(age>86400e3?'pr-3':'tp');
+  return '<span class="badge '+cls+'" title="مدة الانتظار">⏳ '+tkDur(age)+'</span>';
+}
+function tkStepHTML(t){
+  const st=t.status||'open', order=['open','answered','closed'], cur=order.indexOf(st);
+  const lbl=isAdminUser()?TK_ST_ADMIN:TK_ST_TR;
+  return '<div class="tk-steps">'+order.map((k,i)=>'<span class="'+(i<cur?'done':(i===cur?'cur':''))+'">'+(i<cur?'✓ ':'')+lbl[k]+'</span>').join('')+'</div>';
+}
+function tkStats(){
+  const el=document.getElementById('tk-stats'); if(!el) return;
+  const admin=isAdminUser();
+  const list=TKS.filter(t=>!(admin&&TK_FILTER_UID)||(t.createdBy&&t.createdBy.uid===TK_FILTER_UID));
+  const n=s=>list.filter(t=>(t.status||'open')===s).length;
+  const resp=list.filter(t=>t.firstReplyAt&&t.createdAt).map(t=>t.firstReplyAt-tsMs(t.createdAt)).filter(x=>x>0);
+  const avg=resp.length?resp.reduce((a,b)=>a+b,0)/resp.length:null;
+  const rated=list.filter(t=>t.rating).map(t=>Number(t.rating));
+  const avgR=rated.length?rated.reduce((a,b)=>a+b,0)/rated.length:null;
+  const kn=(v,l,c)=>'<div class="ks"><b data-v="'+v+'"'+(c?' style="color:'+c+'"':'')+'>0</b><span>'+l+'</span></div>';
+  const kt=(t,l,c)=>'<div class="ks"><b'+(c?' style="color:'+c+'"':'')+'>'+t+'</b><span>'+l+'</span></div>';
+  const lb=admin?TK_ST_ADMIN:TK_ST_TR;
+  el.innerHTML=kn(n('open'),lb.open,n('open')?(admin?'#9c231b':'#a3690f'):'#1d5a35')+kn(n('answered'),lb.answered,'#1c4e8a')+kn(n('closed'),lb.closed,'#1d5a35')+
+    kt(avg==null?'—':tkDur(avg),'متوسط زمن أول رد','#14545c')+(avgR==null?'':kt('★ '+avgR.toFixed(1),'تقييم الردود','#c98a0b'));
+  el.querySelectorAll('b[data-v]').forEach(b=>itCountUp(b,+b.dataset.v,0));
+}
+function tkSetFilter(id,v){const s=document.getElementById(id); if(s)s.value=v; renderTkList();}
+function tkDecor(){
+  tkStats();
+  const admin=isAdminUser();
+  const base=TKS.filter(t=>!(admin&&TK_FILTER_UID)||(t.createdBy&&t.createdBy.uid===TK_FILTER_UID));
+  const st=gv('tk-st'), ty=gv('tk-type');
+  const lb=admin?TK_ST_ADMIN:TK_ST_TR;
+  const sc=document.getElementById('tk-chips');
+  if(sc) sc.innerHTML=[['','الكل'],['open',lb.open],['answered',lb.answered],['closed',lb.closed]].map(x=>'<button class="'+(st===x[0]?'on':'')+'" onclick="tkSetFilter(\'tk-st\',\''+x[0]+'\')">'+x[1]+' <i>'+(x[0]===''?base.length:base.filter(t=>(t.status||'open')===x[0]).length)+'</i></button>').join('');
+  const tc=document.getElementById('tk-tchips');
+  if(tc) tc.innerHTML='<button class="'+(ty===''?'on':'')+'" onclick="tkSetFilter(\'tk-type\',\'\')">كل الأنواع</button>'+
+    TK_TYPES.map(x=>{const c=base.filter(t=>t.type===x).length; return (c||ty===x)?'<button class="'+(ty===x?'on':'')+'" onclick="tkSetFilter(\'tk-type\',\''+x+'\')">'+(TK_TYPE_IC[x]||'')+' '+x+' <i>'+c+'</i></button>':'';}).join('');
+}
+function tkSort(list){
+  const so=gv('tk-sort')||'new', admin=isAdminUser();
+  const last=t=>t.lastMsgAt||tsMs(t.createdAt)||0, pri=t=>TK_PRI.indexOf(t.priority);
+  if(so==='old') list.sort((a,b)=>last(a)-last(b));
+  else if(so==='pri') list.sort((a,b)=>pri(b)-pri(a)||last(b)-last(a));
+  else if(so==='wait') list.sort((a,b)=>(((b.status||'open')==='open')-((a.status||'open')==='open'))||last(a)-last(b));
+  else list.sort((a,b)=>last(b)-last(a));
+  return list;
+}
+function tkNorm(s){return String(s||'').toLowerCase().replace(/[ً-ٟ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/[^ء-يa-z0-9\s]/g,' ');}
+const TK_STOP=new Set(['كيف','هل','ماذا','اين','متى','لماذا','على','عن','من','في','الى','هذا','هذه','ذلك','التي','الذي','انا','ما','هو','هي','مع','كل','او','ان','لا','لم','لن','قد','عند','بعد','قبل']);
+function tkTokens(s){return tkNorm(s).split(/\s+/).filter(w=>w.length>=3&&!TK_STOP.has(w)).map(w=>w.replace(/^ال/,''));}
+function tkSuggest(){
+  const box=document.getElementById('tk-sug'); if(!box) return;
+  const toks=Array.from(new Set(tkTokens(gv('tk-subj')+' '+gv('tk-body'))));
+  if(toks.length<2){box.innerHTML='';return;}
+  const scored=FAQS.filter(f=>f.active!==false).map(f=>{
+    const blob=tkNorm((f.q||'')+' '+(f.q||'')+' '+(f.a||''));
+    const sc=toks.reduce((n,w)=>n+(blob.includes(w)?1:0),0);
+    return {f,sc};
+  }).filter(x=>x.sc>=2).sort((a,b)=>b.sc-a.sc).slice(0,3);
+  if(!scored.length){box.innerHTML='';return;}
+  box.innerHTML='<div class="tk-sg"><b>💡 قد تجد إجابتك هنا قبل إرسال التذكرة:</b>'+scored.map(x=>'<details><summary>'+escH(x.f.q||'')+'</summary><div>'+escH(x.f.a||'')+'</div></details>').join('')+'</div>';
+}
+function fqSetCat(c){const s=document.getElementById('fq-cat'); if(s)s.value=c; renderFaqList();}
+function fqChips(){
+  const ch=document.getElementById('fq-chips'); if(!ch) return;
+  const admin=isAdminUser(), cat=gv('fq-cat');
+  const act=FAQS.filter(f=>admin||f.active!==false);
+  ch.innerHTML='<button class="'+(cat===''?'on':'')+'" onclick="fqSetCat(\'\')">الكل <i>'+act.length+'</i></button>'+
+    TK_TYPES.map(x=>{const c=act.filter(f=>f.cat===x).length; return (c||cat===x)?'<button class="'+(cat===x?'on':'')+'" onclick="fqSetCat(\''+x+'\')">'+(TK_TYPE_IC[x]||'')+' '+x+' <i>'+c+'</i></button>':'';}).join('');
+}
 function tkSince(ms){
   if(!ms) return '';
   const d=Date.now()-ms;
@@ -5413,15 +5515,15 @@ function renderTkTab(){
     const m={}; TKS.forEach(x=>{if(x.createdBy&&x.createdBy.uid) m[x.createdBy.uid]=x.createdBy.name||x.createdBy.email||x.createdBy.uid;});
     tOpts='<select id="tk-uid" onchange="TK_FILTER_UID=this.value;renderTkList()"><option value="">كل المتدربين</option>'+Object.keys(m).map(u=>'<option value="'+u+'"'+(TK_FILTER_UID===u?' selected':'')+'>'+escH(m[u])+'</option>').join('')+'</select>';
   }
-  let h='<div class="iv-bar"><input id="tk-q" placeholder="ابحث بالعنوان أو الكود أو نص الرسائل…" oninput="renderTkList()">'+tOpts+
-    '<select id="tk-st" onchange="renderTkList()"><option value="">كل الحالات</option><option value="open">'+(admin?'بانتظار ردك':'بانتظار المدرب')+'</option><option value="answered">'+(admin?'بانتظار المتدرب':'تم الرد')+'</option><option value="closed">مغلقة</option></select>'+
-    '<select id="tk-type" onchange="renderTkList()"><option value="">كل الأنواع</option>'+TK_TYPES.map(c=>'<option>'+c+'</option>').join('')+'</select>'+
-    '<select id="tk-pri" onchange="renderTkList()"><option value="">كل الأولويات</option>'+TK_PRI.map(c=>'<option>'+c+'</option>').join('')+'</select>'+
+  let h='<div id="tk-stats" class="iv-stats"></div><div class="iv-bar"><input id="tk-q" placeholder="ابحث بالعنوان أو الكود أو نص الرسائل…" oninput="renderTkList()">'+tOpts+
+    '<select id="tk-st" style="display:none" onchange="renderTkList()"><option value="">كل الحالات</option><option value="open">'+(admin?'بانتظار ردك':'بانتظار المدرب')+'</option><option value="answered">'+(admin?'بانتظار المتدرب':'تم الرد')+'</option><option value="closed">مغلقة</option></select>'+
+    '<select id="tk-type" style="display:none" onchange="renderTkList()"><option value="">كل الأنواع</option>'+TK_TYPES.map(c=>'<option>'+c+'</option>').join('')+'</select>'+
+    '<select id="tk-sort" onchange="renderTkList()"><option value="new">الأحدث</option><option value="wait">الأطول انتظارًا</option><option value="pri">الأعلى أولوية</option><option value="old">الأقدم</option></select><select id="tk-pri" onchange="renderTkList()"><option value="">كل الأولويات</option>'+TK_PRI.map(c=>'<option>'+c+'</option>').join('')+'</select>'+
     (admin?'':'<button onclick="tkNew()">+ تذكرة جديدة</button>')+'</div>';
   h+='<div class="h-note" style="margin:-6px 0 14px">'+(admin
     ?'كل استفسار أو مشكلة يرسلها المتدرب تصلك هنا كتذكرة بإشعار فوري. ردّك يصله في إشعار، وتبقى المحادثة كاملة داخل التذكرة. أغلق التذكرة عند حل الاستفسار — وإن كان السؤال يتكرر انشره كسؤال شائع من داخلها.'
     :'اسأل المدرب عن أي وحدة في الدليل، أو تمرين عملي، أو مشكلة في المنصة — تصل تذكرتك فورًا ويصلك الرد في الإشعارات 🔔 وتبقى المحادثة محفوظة هنا. للأمور العاجلة: واتساب المدرب <span dir="ltr">+966 58 000 8948</span>.')+'</div>';
-  h+='<div class="tk-list" id="tk-list"></div><div class="iv-empty" id="tk-empty" style="display:none"></div>';
+  h+='<div class="iv-chips" id="tk-chips"></div><div class="iv-chips" id="tk-tchips"></div><div class="tk-list" id="tk-list"></div><div class="iv-empty" id="tk-empty" style="display:none"></div>';
   document.getElementById('sp-body').innerHTML=h;
   renderTkList();
 }
@@ -5437,6 +5539,7 @@ function renderTkList(){
     if(q){const blob=[t.code,t.subject,t.type,(t.createdBy&&t.createdBy.name),(t.messages||[]).map(m=>m.text).join(' ')].join(' ').toLowerCase(); if(!blob.includes(q)) return false;}
     return true;
   });
+  tkSort(list); tkDecor();
   const empty=document.getElementById('tk-empty');
   empty.style.display=list.length?'none':'block';
   empty.textContent=TKS.length?'لا تذاكر مطابقة للتصفية':(admin?'لا تذاكر بعد — عندما يرسل متدرب استفسارًا يظهر هنا ويصلك إشعار':'لا تذاكر بعد — اضغط «+ تذكرة جديدة» لطرح أول سؤال على المدرب');
@@ -5448,7 +5551,7 @@ function renderTkList(){
     return '<div class="tk-row p-'+pi+(unread?' unread':'')+'" onclick="tkOpen(\''+t.id+'\')">'+
       '<div class="tk-ic">'+(TK_TYPE_IC[t.type]||'💬')+'</div>'+
       '<div class="tk-main"><b>'+escH(t.subject||'بدون عنوان')+'</b>'+
-      '<div class="tk-sub"><span class="tk-code">'+escH(t.code||'')+'</span>'+tkBadge(t.status)+tkPriBadge(t.priority)+'<span>'+escH(t.type||'')+'</span>'+(admin&&t.createdBy?'<span>👤 '+escH(t.createdBy.name||'')+'</span>':'')+'</div>'+
+      '<div class="tk-sub"><span class="tk-code">'+escH(t.code||'')+'</span>'+tkBadge(t.status)+tkPriBadge(t.priority)+tkAge(t)+'<span>'+escH(t.type||'')+'</span>'+(admin&&t.createdBy?'<span>👤 '+escH(t.createdBy.name||'')+'</span>':'')+'</div>'+
       (last?'<div class="tk-sub" style="color:var(--ink)">'+escH(who+tkExcerpt(last.text,90))+'</div>':'')+
       '</div>'+
       '<div class="tk-side"><span>'+fmtWhen(t.lastMsgAt||tsMs(t.createdAt))+'</span><span>💬 '+msgs.filter(m=>!m.sys).length+'</span>'+(unread?'<span class="dot" title="جديد"></span>':'')+(t.rating?'<span title="تقييم المتدرب">'+tkStars(t.rating)+'</span>':'')+'</div></div>';
@@ -5461,14 +5564,14 @@ async function tkNew(){
   if(!SOPS.length){try{await loadSops();}catch(e){}}
   let h='<div class="imod-head"><h2>🎫 تذكرة جديدة للمدرب</h2><button class="x" onclick="closeItem()">إغلاق ✕</button></div>';
   h+='<div class="imod-sec"><h3>ما موضوع استفسارك؟</h3><div class="fgrid">'+
-    '<div style="grid-column:1/-1"><label>العنوان * — جملة قصيرة تلخص السؤال</label><input id="tk-subj" maxlength="120" placeholder="مثال: كيف أحسب نسبة الهدر في ورقة المؤشرات؟"></div>'+
+    '<div style="grid-column:1/-1"><label>العنوان * — جملة قصيرة تلخص السؤال</label><input id="tk-subj" oninput="tkSuggest()" maxlength="120" placeholder="مثال: كيف أحسب نسبة الهدر في ورقة المؤشرات؟"></div>'+
     '<div><label>النوع</label><select id="tk-ntype">'+selOpts(TK_TYPES,TK_TYPES[0])+'</select></div>'+
     '<div><label>الأولوية</label><select id="tk-npri">'+selOpts(TK_PRI,'عادية')+'</select></div>'+
     '<div><label>مرتبطة بـ (اختياري)</label><select id="tk-rkind" onchange="tkRefKind()"><option value="">— لا شيء —</option><option value="unit">وحدة من الدليل</option><option value="sop">إجراء تشغيلي</option></select></div>'+
     '<div id="tk-refbox" style="display:none"><label>اختر</label><select id="tk-rid"></select></div>'+
     '</div>'+
-    '<div class="fw"><label>السؤال أو الوصف * — كلما كان أدق كان الرد أسرع (ماذا حاولت؟ أين توقفت؟ نص أي رسالة خطأ)</label><textarea id="tk-body" style="min-height:120px" placeholder="اكتب سؤالك هنا…"></textarea></div>'+
-    '<div class="h-note" style="margin-top:8px">💡 قبل الإرسال: جرّب البحث في «الأسئلة الشائعة» — قد تجد الإجابة فورًا.</div>'+
+    '<div class="fw"><label>السؤال أو الوصف * — كلما كان أدق كان الرد أسرع (ماذا حاولت؟ أين توقفت؟ نص أي رسالة خطأ)</label><textarea id="tk-body" oninput="tkSuggest()" style="min-height:120px" placeholder="اكتب سؤالك هنا…"></textarea></div>'+
+    '<div id="tk-sug"></div><div class="h-note" style="margin-top:8px">💡 قبل الإرسال: جرّب البحث في «الأسئلة الشائعة» — قد تجد الإجابة فورًا.</div>'+
     '<div id="pmod-msg" style="margin-top:10px;font-weight:700"></div>'+
     '<div class="imod-actions" style="margin:14px 0 0"><button class="btn-save" onclick="tkCreate()">📤 إرسال التذكرة</button><button class="btn-ghost" onclick="closeItem()">إلغاء</button></div></div>';
   const box=document.getElementById('imod-box'); box.innerHTML=h; box.classList.add('tk'); document.getElementById('imodal').classList.add('on');
@@ -5545,6 +5648,8 @@ function tkMetaHTML(t){
   h+='<span>🕒 '+(t.createdAt?'أُنشئت '+fmtWhen(tsMs(t.createdAt)):'أُنشئت الآن')+'</span>';
   if((t.status||'open')==='open'&&t.lastMsgAt) h+='<span class="tk-wait">⏳ '+(admin?'بانتظار ردك منذ ':'بانتظار المدرب منذ ')+tkSince(t.lastMsgAt)+'</span>';
   if(t.status==='closed'&&t.closedBy) h+='<span>🔒 أُغلقت بواسطة '+escH(t.closedBy.name||'')+(t.closedAt?' · '+fmtWhen(tsMs(t.closedAt)):'')+'</span>';
+  if(t.firstReplyAt&&t.createdAt&&t.firstReplyAt-tsMs(t.createdAt)>0) h+='<span title="زمن أول رد">⚡ أول رد خلال '+tkDur(t.firstReplyAt-tsMs(t.createdAt))+'</span>';
+  h+=tkStepHTML(t);
   if(t.rating) h+='<span title="تقييم المتدرب للرد" style="color:#c98a0b;font-weight:800">'+tkStars(t.rating)+'</span>';
   if(t.faqId) h+='<span class="badge tp">❓ منشورة كسؤال شائع</span>';
   return h;
@@ -5746,17 +5851,18 @@ async function loadFaqs(){
 function renderFaqTab(){
   const admin=isAdminUser();
   let h='<div class="iv-bar"><input id="fq-q" placeholder="ابحث في الأسئلة والإجابات…" oninput="renderFaqList()">'+
-    '<select id="fq-cat" onchange="renderFaqList()"><option value="">كل التصنيفات</option>'+TK_TYPES.map(c=>'<option>'+c+'</option>').join('')+'</select>'+
+    '<select id="fq-cat" style="display:none" onchange="renderFaqList()"><option value="">كل التصنيفات</option>'+TK_TYPES.map(c=>'<option>'+c+'</option>').join('')+'</select>'+
     (admin?'<button onclick="openFaqEditor(\'\')">+ سؤال شائع</button>'+(FAQS.length?'':'<button class="mbtn" style="padding:10px 16px;font-size:13px;background:var(--beige-deep)" onclick="seedFaqs()">📥 تحميل 10 أسئلة جاهزة عن المنصة</button>'):'')+'</div>';
   h+='<div class="h-note" style="margin:-6px 0 14px">'+(admin
     ?'إجابات تكتبها مرة وتظهر لكل المتدربين — كل سؤال شائع يوفّر تذكرة. يمكنك نشر أي تذكرة كسؤال شائع من داخلها، وغير النشط لا يراه المتدربون.'
     :'إجابات المدرب على الأسئلة المتكررة — ابحث هنا أولًا، وإن لم تجد سؤالك افتح تذكرة.')+'</div>';
-  h+='<div id="fq-list"></div><div class="iv-empty" id="fq-empty" style="display:none"></div>';
+  h+='<div class="iv-chips" id="fq-chips"></div><div id="fq-list"></div><div class="iv-empty" id="fq-empty" style="display:none"></div>';
   document.getElementById('sp-body').innerHTML=h;
   renderFaqList();
 }
 function renderFaqList(){
   const box=document.getElementById('fq-list'); if(!box) return;
+  fqChips();
   const admin=isAdminUser(); const q=(gv('fq-q')||'').toLowerCase(), cat=gv('fq-cat');
   const list=FAQS.filter(f=>{
     if(!admin&&f.active===false) return false;
