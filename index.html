@@ -684,6 +684,22 @@ body:not(.locked) #content{padding-top:64px}
 .badge.r-ok{background:#e8f3ec;color:#1d5a35}.badge.r-warn{background:#fff3e0;color:#8a5a00}.badge.r-bad{background:#fdf0ef;color:#9c231b}
 .badge.sev-1{background:#eef3f3;color:#4a5a5a}.badge.sev-2{background:#fff3e0;color:#8a5a00}.badge.sev-3{background:#fdf0ef;color:#9c231b}.badge.sev-4{background:#9c231b;color:#fff}
 .badge.dv-open{background:#fdf0ef;color:#9c231b}.badge.dv-progress{background:#e7effb;color:#1c4e8a}.badge.dv-closed{background:#e8f3ec;color:#1d5a35}
+/* ===== التذكيرات التلقائية ===== */
+.rem{background:linear-gradient(135deg,#fff8e6,#fff);border:1.5px solid #f0dbb0;border-radius:16px;padding:12px 16px;margin-bottom:16px;animation:pcIn .5s both}
+.rem.hot{border-color:#e9b3ad;background:linear-gradient(135deg,#fff1ef,#fff)}
+.rem-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.rem-h b{color:#7a4f00;font-size:15.5px}.rem.hot .rem-h b{color:#9c231b}
+.rem-h span{background:#e0a020;color:#fff;border-radius:12px;padding:1px 11px;font-weight:800;font-size:13px}.rem.hot .rem-h span{background:#d93a25}
+.rem-i{display:flex;gap:12px;align-items:center;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin-bottom:6px;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.rem-i:hover{transform:translateX(-3px);box-shadow:0 6px 14px rgba(11,53,60,.1)}
+.rem-i .ri{font-size:22px}
+.rem-i>div{flex:1;min-width:0}.rem-i b{display:block;font-size:13.5px;line-height:1.5}.rem-i small{display:block;color:var(--ink-soft);font-size:12px}
+.rem-i button{background:var(--red);color:#fff;border:0;border-radius:9px;padding:6px 14px;font-family:inherit;font-weight:800;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.rem-i.k-late{border-inline-start:4px solid #d93a25}.rem-i.k-due,.rem-i.k-returned{border-inline-start:4px solid #e0a020}.rem-i.k-absent{border-inline-start:4px solid #9c231b}.rem-i.k-session{border-inline-start:4px solid #2b93a0}
+.rem-m{text-align:center;font-size:12px;color:var(--ink-soft)}
+.rem-sw{display:flex;gap:8px;align-items:center;font-weight:700;font-size:13.5px;cursor:pointer}
+.rem-sw input{width:auto}
+@media print{#rem-card,#rem-admin{display:none!important}}
 .scard.ex-chk{border-top-color:#2b93a0}.scard.ex-dev{border-top-color:#9c231b}.scard.ex-kpi{border-top-color:#7a9a4f}
 /* ===== تطوير التطبيق العملي ===== */
 .scard.ex-chk,.scard.ex-dev,.scard.ex-kpi{padding-top:16px}
@@ -3871,7 +3887,7 @@ async function loadDashItems(){
 
 /* ============ المرحلة 5: الرئيسية — الإعلانات — الإصدارات — الإشعارات ============ */
 let NOTIFS=[], NUNSUB=null, ANNS=[], PVERS=[];
-const N_ICON={signup:'🧑‍🎓',review:'📤',approved:'✅',returned:'↩️',suspended:'⏸️',announcement:'📣',completed:'🏅',version:'🆕',system:'ℹ️',graded:'🎯',ticket:'🎫',session:'📅',assignment:'📝',submission:'📬',assessment:'🎯',certificate:'🎓'};
+const N_ICON={signup:'🧑‍🎓',review:'📤',approved:'✅',returned:'↩️',suspended:'⏸️',announcement:'📣',completed:'🏅',version:'🆕',system:'ℹ️',graded:'🎯',ticket:'🎫',session:'📅',assignment:'📝',submission:'📬',assessment:'🎯',certificate:'🎓',reminder:'🔔'};
 
 function escH(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function arCount(n,one,two,few,many){
@@ -4042,6 +4058,104 @@ function homeSkeleton(){
   if(v&&!v.dataset.init){v.dataset.init='1';v.innerHTML='<div id="home-welcome"></div><div id="home-body"></div>';}
   return v;
 }
+/* ==== التذكيرات التلقائية: للمتدرب (تنبيه على الرئيسية) وللمدرب (إرسال تلقائي للمتأخرين) ==== */
+let REM=null, REM_LOADING=false;
+function remDay(iso){return Math.floor(new Date(iso+'T00:00:00').getTime()/864e5);}
+function remRows(q){const o=[]; q.forEach(d=>o.push({id:d.id,...d.data()})); return o;}
+/* يحسب تذكيرات متدرب واحد من بيانات التكليفات والتسليمات والجلسات والحضور */
+function remItems(uid,D){
+  const t0=todayISO(), out=[];
+  D.asgs.filter(a=>a.status!=='closed'&&(a.targetAll!==false||(a.targetUids||[]).includes(uid))).forEach(a=>{
+    const s=D.subs.find(x=>x.assignmentId===a.id&&x.uid===uid);
+    if(s){ if(s.status==='returned') out.push({k:'returned',p:1,ic:'↩️',t:'أعاده المدرب للتعديل: '+(a.title||''),b:'عدّل وأعد الإرسال',link:'pf:asg:'+a.id,id:a.id}); return; }
+    if(!a.dueDate) return;
+    const d=remDay(a.dueDate)-remDay(t0);
+    if(d<0) out.push({k:'late',p:0,ic:'⏰',t:'تكليف متأخر: '+(a.title||''),d:'تجاوز موعده منذ '+arCount(-d,'يوم','يومين','أيام','يومًا')+' — سلّمه الآن',b:'سلّم الآن',link:'pf:asg:'+a.id,id:a.id,n:-d});
+    else if(d<=2) out.push({k:'due',p:1,ic:'📝',t:'موعد تسليم «'+(a.title||'')+'» '+(d===0?'اليوم':(d===1?'غدًا':'بعد يومين')),d:'لا تؤجله لآخر لحظة.',b:'افتح التكليف',link:'pf:asg:'+a.id,id:a.id,due:a.dueDate});
+  });
+  D.sessions.forEach(s=>{
+    if(!s.date) return; const d=remDay(s.date)-remDay(t0);
+    if(d>=0&&d<=1) out.push({k:'session',p:3,ic:'📅',t:'جلسة '+(d===0?'اليوم':'غدًا')+': '+(s.title||'')+(s.time?' · '+s.time:''),b:'التفاصيل',link:'pf:sess:'+s.id,id:s.id});
+    else if(d<0&&d>=-7){
+      const r=D.att.find(a=>a.sessionId===s.id&&a.uid===uid);
+      if(r&&r.st==='absent') out.push({k:'absent',p:2,ic:'🚫',t:'سُجّل غيابك عن جلسة «'+(s.title||'')+'» ('+fmtD(s.date)+')',d:'تواصل مع المدرب إن كان لديك عذر.',b:'التفاصيل',link:'pf:sess:'+s.id,id:s.id});
+    }
+  });
+  return out.sort((a,b)=>a.p-b.p);
+}
+async function remLoadMine(){
+  const uid=ME.uid;
+  const [gq,bq,sq,aq]=await Promise.all([db.collection('assignments').get(),db.collection('submissions').where('uid','==',uid).get(),db.collection('sessions').get(),db.collection('attendance').where('uid','==',uid).get()]);
+  REM={asgs:remRows(gq),subs:remRows(bq),sessions:remRows(sq),att:remRows(aq),at:Date.now()};
+}
+async function remRender(){
+  const body=document.getElementById('home-body'); if(!body) return;
+  if(isAdminUser()) return remRenderAdmin(body);
+  if(!REM||Date.now()-REM.at>120e3){
+    if(REM_LOADING) return; REM_LOADING=true;
+    try{await remLoadMine();}catch(e){REM_LOADING=false;return;}
+    REM_LOADING=false;
+  }
+  const b2=document.getElementById('home-body'); if(!b2) return;
+  const old=document.getElementById('rem-card'); if(old) old.remove();
+  const items=remItems(ME.uid,REM); if(!items.length) return;
+  const urgent=items.filter(x=>x.p<=1).length;
+  const card=document.createElement('div'); card.id='rem-card'; card.className='rem'+(items.some(x=>x.k==='late')?' hot':'');
+  card.innerHTML='<div class="rem-h"><b>🔔 تذكيراتك</b><span>'+items.length+'</span></div>'+
+    items.slice(0,6).map(x=>'<div class="rem-i k-'+x.k+'" onclick="openNotifLink(\''+x.link+'\')"><span class="ri">'+x.ic+'</span><div><b>'+escH(x.t)+'</b>'+(x.d?'<small>'+escH(x.d)+'</small>':'')+'</div><button>'+escH(x.b||'فتح')+' ←</button></div>').join('')+
+    (items.length>6?'<div class="rem-m">+ '+(items.length-6)+' تذكيرات أخرى</div>':'');
+  b2.insertBefore(card,b2.querySelector('.h-grid')||b2.firstChild);
+  /* تنبيه منبثق مرة واحدة يوميًا */
+  try{
+    const k='hops_rem_toast_'+ME.uid, today=todayISO();
+    if(urgent&&localStorage.getItem(k)!==today){localStorage.setItem(k,today); window.xToast&&window.xToast('🔔 لديك '+urgent+(urgent===1?' تذكير مهم':' تذكيرات مهمة')+' بانتظارك');}
+  }catch(e){}
+}
+function remAutoOn(){try{return localStorage.getItem('hops_rem_auto')!=='0';}catch(e){return true;}}
+function remAutoToggle(on){try{localStorage.setItem('hops_rem_auto',on?'1':'0');}catch(e){} const m=document.getElementById('rem-msg'); if(m) m.textContent=on?'مفعّل: يُفحص تلقائيًا مرة يوميًا عند فتحك المنصة.':'متوقف: لن تُرسل تذكيرات تلقائية.';}
+function remRenderAdmin(body){
+  if(document.getElementById('rem-admin')) return;
+  const last=(()=>{try{return localStorage.getItem('hops_rem_res')||'';}catch(e){return '';}})();
+  const el=document.createElement('div'); el.id='rem-admin'; el.className='h-sec';
+  el.innerHTML='<h3><span>🔔 التذكيرات التلقائية للمتدربين</span><button onclick="remRun(true)">▶ افحص وأرسل الآن</button></h3>'+
+    '<div class="h-note" style="margin-bottom:8px">يفحص النظام التكليفات المتأخرة، وما يحين موعده خلال يومين، والغياب عن الجلسات، ويرسل إشعاراً لكل متدرب معني مرة واحدة (والمتأخر يتكرر كل 3 أيام).</div>'+
+    '<label class="rem-sw"><input type="checkbox" '+(remAutoOn()?'checked':'')+' onchange="remAutoToggle(this.checked)"> تشغيل تلقائي مرة يوميًا عند فتح المنصة</label>'+
+    '<div id="rem-msg" style="margin-top:8px;font-size:13px;color:var(--ink-soft)">'+(last?escH(last):(remAutoOn()?'مفعّل: يُفحص تلقائيًا مرة يوميًا عند فتحك المنصة.':'متوقف: لن تُرسل تذكيرات تلقائية.'))+'</div>';
+  const grid=body.querySelector('.h-grid'); if(grid) grid.after(el); else body.appendChild(el);
+  try{
+    if(remAutoOn()&&localStorage.getItem('hops_rem_last')!==todayISO()) setTimeout(()=>remRun(false),2500);
+  }catch(e){}
+}
+async function remRun(manual){
+  const msg=document.getElementById('rem-msg'); if(msg) msg.textContent='جارٍ الفحص…';
+  try{
+    const [tq,gq,bq,sq,aq]=await Promise.all([db.collection('trainees').get(),db.collection('assignments').get(),db.collection('submissions').get(),db.collection('sessions').get(),db.collection('attendance').get()]);
+    const D={asgs:remRows(gq),subs:remRows(bq),sessions:remRows(sq),att:remRows(aq)};
+    const tr=remRows(tq).filter(t=>(t.status||'active')==='active'&&!ADMIN_EMAILS.includes((t.email||'').toLowerCase()));
+    const bucket=Math.floor(remDay(todayISO())/3); let sent=0; const ppl=new Set();
+    for(const t of tr){
+      for(const it of remItems(t.id,D)){
+        let id=null;
+        if(it.k==='late') id='rem-late-'+it.id+'-'+t.id+'-'+bucket;
+        else if(it.k==='due') id='rem-due-'+it.id+'-'+t.id+'-'+it.due;
+        else if(it.k==='absent') id='rem-abs-'+it.id+'-'+t.id;
+        else continue;
+        try{
+          await db.collection('notifications').doc(id).set({toUid:t.id,type:'reminder',title:'🔔 '+it.t,body:it.d||'',link:it.link,read:false,at:Date.now(),
+            createdAt:firebase.firestore.FieldValue.serverTimestamp(),from:{uid:ME.uid,name:(MYDOC&&MYDOC.name)||ME.email},auto:true});
+          sent++; ppl.add(t.id);
+        }catch(e){/* موجود مسبقًا ضمن الفترة نفسها: يُتجاوز */}
+      }
+    }
+    const res='آخر فحص: '+new Date().toLocaleString('ar-SA')+' — '+(sent?('أُرسل '+sent+' تذكير إلى '+ppl.size+' متدرب'):'لا تذكيرات جديدة للإرسال');
+    try{localStorage.setItem('hops_rem_last',todayISO()); localStorage.setItem('hops_rem_res',res);}catch(e){}
+    const m2=document.getElementById('rem-msg'); if(m2) m2.textContent=res;
+    if(manual||sent){try{window.xToast&&window.xToast(sent?('🔔 أُرسل '+sent+' تذكير تلقائي'):'لا تذكيرات جديدة');}catch(e){}}
+  }catch(e){
+    const m3=document.getElementById('rem-msg'); if(m3) m3.textContent='تعذر الفحص: '+(e.code||e.message);
+  }
+}
+
 async function loadHome(){
   homeSkeleton();
   const body=document.getElementById('home-body'); if(!body) return;
@@ -4088,6 +4202,7 @@ async function loadHome(){
       '</div></div>'+
     '</div></div>';
   loadAnns(); loadPVers(); if(admin) renderManualGateBox();
+  try{remRender();}catch(e){}
   if(admin) loadHomeAdmin(); else loadHomeMine();
 }
 function progressHTML(s){
