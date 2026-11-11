@@ -344,6 +344,55 @@ body:not(.locked) #content{padding-top:64px}
 .poster .pl .ar{font-size:16.5px;font-weight:700}
 .poster .pl .en{font-size:12px;color:var(--ink-soft);direction:ltr;text-align:left}
 .poster .pf{background:var(--beige);padding:10px 20px;display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-soft)}
+/* ===== تطوير مكتبة الملصقات: رسوم توضيحية وتفاعل ===== */
+.p-chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.p-chips button{border:1.5px solid var(--line);background:var(--white);color:var(--ink);border-radius:22px;padding:6px 14px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;transition:all .18s}
+.p-chips button i{font-style:normal;background:var(--beige-deep);border-radius:10px;padding:0 7px;font-size:11.5px;margin-inline-start:4px}
+.p-chips button:hover{transform:translateY(-2px);border-color:var(--ac,var(--red))}
+.p-chips button.on{background:var(--ac,var(--red));border-color:var(--ac,var(--red));color:#fff}
+.p-chips button.on i{background:rgba(255,255,255,.25);color:#fff}
+.p-grid{grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.pcard{position:relative;padding:0;overflow:hidden;text-align:right;animation:pcIn .5s both cubic-bezier(.2,.7,.2,1);transition:transform .22s,box-shadow .22s}
+.pcard:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(11,53,60,.2)}
+.pcard .pa{background:linear-gradient(135deg,var(--ac),#0b2f35);line-height:0}
+.pcard .pa svg,.p-tcard .pa svg,.poster .pa svg{width:100%;height:auto;display:block}
+.pcard .pbd{padding:12px 16px 14px}
+.pcard .pbd b{font-size:15px;line-height:1.5}
+.pcard:hover .pa svg{transform:scale(1.05)}
+.pcard .pa{overflow:hidden}.pcard .pa svg{transition:transform .4s}
+.pfav{position:absolute;top:8px;left:8px;z-index:2;width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.88);color:#999;font-size:17px;cursor:pointer;transition:transform .15s,color .15s}
+.pfav:hover{transform:scale(1.18)}
+.pfav.on{color:#e0432f}
+@keyframes pcIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.p-tcard{display:flex;gap:0;align-items:stretch;background:var(--white);border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;margin-bottom:16px;box-shadow:0 6px 22px rgba(11,53,60,.1);transition:transform .2s,box-shadow .2s}
+.p-tcard:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(11,53,60,.18)}
+.p-tcard .pa{flex:0 0 46%;background:linear-gradient(135deg,var(--ac),#0b2f35);line-height:0;display:flex;align-items:center}
+.p-tcard .pt{flex:1;padding:18px 22px;display:flex;flex-direction:column;gap:4px;justify-content:center}
+.p-tcard .pk{font-size:12px;font-weight:800;color:#a3690f;background:#fff3d6;border-radius:12px;padding:2px 12px;align-self:flex-start}
+.p-tcard b{font-size:19px;color:var(--ac)}
+.p-tcard small{color:var(--ink-soft);direction:ltr;text-align:right}
+.p-tcard button{align-self:flex-start;margin-top:8px;background:var(--ac);color:#fff;border:0;border-radius:10px;padding:8px 18px;font-family:inherit;font-weight:800;cursor:pointer}
+@media(max-width:640px){.p-tcard{flex-direction:column}.p-tcard .pa{flex:none}}
+/* الملصق الجديد */
+.poster{border-color:var(--ac,var(--red));box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.poster .ph{background:linear-gradient(135deg,var(--ac,var(--red)),#0b2f35);padding:0 0 14px}
+.poster .ph h2{padding:0 16px;margin-top:0}
+.poster .pa{line-height:0}
+.poster .pb{padding:10px 20px}
+.poster .pl{display:flex;gap:12px;align-items:center}
+.poster .pl .pt{flex:1}
+.pm{flex:0 0 30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;transition:transform .2s}
+.pm.ok{background:#2e9e62}.pm.no{background:#d93a25}.pm.n{background:var(--ac,var(--red))}
+.poster .pl:hover .pm{transform:scale(1.15) rotate(-6deg)}
+.poster .pl{animation:pcIn .45s both}
+.poster .pl:nth-child(2){animation-delay:.06s}.poster .pl:nth-child(3){animation-delay:.12s}.poster .pl:nth-child(4){animation-delay:.18s}.poster .pl:nth-child(5){animation-delay:.24s}.poster .pl:nth-child(n+6){animation-delay:.3s}
+.p-favbtn.on{color:#e0432f;border-color:#e0432f}
+.p-fl{animation:pFl 4.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.p-fl2{animation:pFl 5.2s ease-in-out infinite reverse;transform-box:fill-box;transform-origin:center}
+@keyframes pFl{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.p-st{animation:pSt 2.4s ease-in-out infinite}
+@keyframes pSt{0%,100%{opacity:.35}50%{opacity:1}}
+@media print{.p-chips,#p-today{display:none!important}}
 
 /* ============ المرحلة 5: الرئيسية — الإشعارات — الإعلانات — الإصدارات ============ */
 #appnav{overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
@@ -2970,62 +3019,216 @@ const POSTERS=[
 {g:3,i:'🍽️',t:'غسل وتعقيم الأدوات (الأحواض الثلاثة)',e:'Ware Washing — 3-Sink Method',L:[['اكشط البقايا أولًا','Scrape residues first'],['الحوض 1: غسل بماء دافئ ومنظف','Sink 1: wash with warm water & detergent'],['الحوض 2: شطف بماء نظيف','Sink 2: rinse with clean water'],['الحوض 3: تعقيم بالمحلول أو ماء ساخن ≥77°م','Sink 3: sanitize (solution or hot water ≥77°C)'],['تجفيف هوائي — لا تستخدم فوطة','Air dry — no towel drying']]},
 {g:4,i:'🥗',t:'الأغذية الجاهزة للأكل RTE',e:'Ready-to-Eat Foods',L:[['لا تلمسها باليد المجردة — ملقط أو قفاز','No bare-hand contact — use tongs or gloves'],['خزّنها فوق الأغذية النيئة دائمًا','Always store above raw foods'],['غطّها وضع بطاقة تاريخ','Keep covered and date-labeled'],['قدّمها ضمn مدة الصلاحية المحددة فقط','Serve only within its marked shelf life']]}
 ];
-let P_BRANCH='';try{P_BRANCH=localStorage.getItem('hops_branch')||'';}catch(e){}
+/* ===== مكتبة الرسوم التوضيحية للملصقات (SVG) ===== */
+const PC={skin:'#f4c7a1',water:'#5ec3e6',green:'#46b97a',red:'#e8523a',amber:'#f5b041',steel:'#c3d1d5',dark:'#2b3a3f',blue:'#3b86d6',white:'#fff',gold:'#e8c98f',brown:'#b9854f'};
+const pT=(x,y,s,sz,col,w)=>'<text x="'+x+'" y="'+y+'" text-anchor="middle" direction="ltr" font-family="Tajawal,Arial,sans-serif" font-size="'+s+'" font-weight="'+(w||800)+'" fill="'+col+'">'+sz+'</text>';
+const PA={
+ hand:(f)=>'<g fill="'+(f||PC.skin)+'"><rect x="24" y="14" width="11" height="44" rx="5.5"/><rect x="37" y="6" width="11" height="52" rx="5.5"/><rect x="50" y="8" width="11" height="50" rx="5.5"/><rect x="63" y="16" width="11" height="42" rx="5.5"/><rect x="8" y="46" width="11" height="34" rx="5.5" transform="rotate(-38 13 63)"/><rect x="24" y="44" width="52" height="46" rx="20"/></g>',
+ drop:(x,y,s)=>'<path transform="translate('+x+' '+y+') scale('+(s||1)+')" d="M0-12C7-3 9 3 0 9C-9 3-7-3 0-12Z" fill="'+PC.water+'"/>',
+ bub:(x,y,r)=>'<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="rgba(255,255,255,.35)" stroke="#fff" stroke-width="1.6"/>',
+ germ:(c)=>{let s='';for(let a=0;a<8;a++){const r=a*Math.PI/4;s+='<line x1="'+(50+26*Math.cos(r)).toFixed(1)+'" y1="'+(50+26*Math.sin(r)).toFixed(1)+'" x2="'+(50+39*Math.cos(r)).toFixed(1)+'" y2="'+(50+39*Math.sin(r)).toFixed(1)+'"/>';}
+   return '<g stroke="'+c+'" stroke-width="6" stroke-linecap="round">'+s+'</g><circle cx="50" cy="50" r="27" fill="'+c+'"/><circle cx="41" cy="45" r="6" fill="#fff"/><circle cx="59" cy="45" r="6" fill="#fff"/><circle cx="42" cy="46" r="2.6" fill="#222"/><circle cx="58" cy="46" r="2.6" fill="#222"/><path d="M39 62Q50 53 61 62" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/>';},
+ no:'<circle cx="50" cy="50" r="44" fill="none" stroke="#ff4d3a" stroke-width="8"/><line x1="19" y1="81" x2="81" y2="19" stroke="#ff4d3a" stroke-width="8" stroke-linecap="round"/>',
+ ok:'<circle cx="50" cy="50" r="40" fill="#46b97a"/><path d="M30 52L45 66L72 36" stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+ clock:(t)=>'<circle cx="50" cy="50" r="40" fill="#fff" stroke="#e8c98f" stroke-width="6"/><path d="M50 22V50L68 60" stroke="#2b3a3f" stroke-width="6" fill="none" stroke-linecap="round"/>'+(t?'<rect x="26" y="78" width="48" height="22" rx="11" fill="#e8c98f"/>'+pT(50,94,15,t,'#2b3a3f'):''),
+ thermo:(lv,c,t)=>'<rect x="40" y="4" width="20" height="72" rx="10" fill="#fff"/><circle cx="50" cy="80" r="15" fill="#fff"/><rect x="45" y="'+(68-58*lv).toFixed(1)+'" width="10" height="'+(12+58*lv).toFixed(1)+'" rx="5" fill="'+c+'"/><circle cx="50" cy="80" r="10" fill="'+c+'"/><g stroke="#9fb3b8" stroke-width="2"><line x1="64" y1="16" x2="72" y2="16"/><line x1="64" y1="30" x2="70" y2="30"/><line x1="64" y1="44" x2="72" y2="44"/><line x1="64" y1="58" x2="70" y2="58"/></g>'+(t?pT(50,106,17,t,'#fff'):''),
+ snow:'<g stroke="#fff" stroke-width="6" stroke-linecap="round"><line x1="50" y1="8" x2="50" y2="92"/><line x1="14" y1="29" x2="86" y2="71"/><line x1="14" y1="71" x2="86" y2="29"/></g><g stroke="#bfe9f7" stroke-width="4" stroke-linecap="round"><path d="M40 14L50 24L60 14M40 86L50 76L60 86"/></g>',
+ flame:'<path d="M50 6C58 26 78 36 76 60C74 80 60 92 50 92C40 92 26 80 28 60C29 48 38 44 43 30C46 38 50 24 50 6Z" fill="#f5b041"/><path d="M50 40C55 54 66 58 64 72C63 82 56 88 50 88C44 88 37 82 36 72C35 64 44 60 50 40Z" fill="#e8523a"/>',
+ steam:'<g stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"><path d="M30 40Q22 28 30 18Q38 8 30 -2" class="p-st"/><path d="M50 40Q42 28 50 18Q58 8 50 -2" class="p-st"/><path d="M70 40Q62 28 70 18Q78 8 70 -2" class="p-st"/></g>',
+ pot:'<rect x="14" y="48" width="72" height="40" rx="8" fill="#9fb3b8"/><rect x="10" y="42" width="80" height="10" rx="5" fill="#c3d1d5"/><rect x="2" y="58" width="12" height="7" rx="3.5" fill="#9fb3b8"/><rect x="86" y="58" width="12" height="7" rx="3.5" fill="#9fb3b8"/>',
+ bowl:'<path d="M10 46H90C90 74 72 90 50 90C28 90 10 74 10 46Z" fill="#fff"/><path d="M18 46C24 30 40 24 50 24C60 24 76 30 82 46Z" fill="#f5b041"/><circle cx="40" cy="38" r="5" fill="#e8523a"/><circle cx="58" cy="34" r="5" fill="#46b97a"/>',
+ crate:'<rect x="8" y="26" width="84" height="62" rx="6" fill="#b9854f"/><g fill="#8f6436"><rect x="8" y="40" width="84" height="6"/><rect x="8" y="58" width="84" height="6"/><rect x="8" y="76" width="84" height="6"/></g><rect x="30" y="8" width="40" height="22" rx="4" fill="#d9a766"/>',
+ tag:(a,b)=>'<path d="M10 26H66L92 50L66 74H10Z" fill="#fff" stroke="#e8c98f" stroke-width="4" stroke-linejoin="round"/><circle cx="78" cy="50" r="5" fill="#e8c98f"/>'+pT(38,46,15,a||'','#2b3a3f')+pT(38,64,13,b||'','#5c534e',700),
+ spray:'<rect x="30" y="38" width="38" height="56" rx="10" fill="#fff"/><rect x="36" y="52" width="26" height="24" rx="4" fill="#46b97a"/><rect x="38" y="22" width="22" height="18" rx="4" fill="#c3d1d5"/><path d="M60 26H80V34H60Z" fill="#9fb3b8"/><g fill="#7fd8f0"><circle cx="88" cy="22" r="3.5"/><circle cx="94" cy="34" r="3.5"/><circle cx="84" cy="40" r="3"/><circle cx="96" cy="14" r="2.5"/></g>',
+ sponge:'<rect x="14" y="30" width="72" height="42" rx="10" fill="#f5d442"/><rect x="14" y="58" width="72" height="14" rx="7" fill="#46b97a"/><g fill="#d8b52a"><circle cx="30" cy="42" r="3"/><circle cx="50" cy="38" r="3"/><circle cx="68" cy="44" r="3"/><circle cx="42" cy="50" r="2.5"/></g>',
+ spark:(x,y,s)=>'<path transform="translate('+x+' '+y+') scale('+s+')" d="M0-14C2-4 4-2 14 0C4 2 2 4 0 14C-2 4-4 2-14 0C-4-2-2-4 0-14Z" fill="#fff6c9"/>',
+ cog:()=>{let t='';for(let a=0;a<8;a++)t+='<rect x="43" y="4" width="14" height="22" rx="3" transform="rotate('+a*45+' 50 50)"/>';return '<g fill="#c3d1d5">'+t+'<circle cx="50" cy="50" r="32"/></g><circle cx="50" cy="50" r="14" fill="#14545c"/>';},
+ plug:'<rect x="30" y="38" width="40" height="34" rx="8" fill="#fff"/><rect x="38" y="16" width="7" height="26" rx="3" fill="#c3d1d5"/><rect x="55" y="16" width="7" height="26" rx="3" fill="#c3d1d5"/><path d="M50 72V92Q50 98 58 98H72" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round"/>',
+ cab:'<rect x="16" y="6" width="68" height="88" rx="6" fill="#d9e3e5"/><line x1="50" y1="6" x2="50" y2="94" stroke="#9fb3b8" stroke-width="3"/><rect x="38" y="46" width="5" height="14" rx="2" fill="#9fb3b8"/><rect x="57" y="46" width="5" height="14" rx="2" fill="#9fb3b8"/><rect x="40" y="62" width="20" height="18" rx="4" fill="#f5b041"/><path d="M44 62V56Q44 48 50 48Q56 48 56 56V62" stroke="#c98a14" stroke-width="4" fill="none"/>',
+ bottle:(c)=>'<rect x="36" y="38" width="28" height="54" rx="8" fill="'+c+'"/><rect x="42" y="22" width="16" height="18" rx="3" fill="#fff"/><rect x="40" y="56" width="20" height="16" rx="3" fill="rgba(255,255,255,.75)"/><path d="M50 60L55 70H45Z" fill="#e8523a"/>',
+ mouse:'<ellipse cx="46" cy="62" rx="30" ry="20" fill="#b3b8bb"/><circle cx="72" cy="52" r="15" fill="#b3b8bb"/><circle cx="64" cy="36" r="8" fill="#f2b8c0"/><circle cx="78" cy="38" r="7" fill="#f2b8c0"/><circle cx="76" cy="50" r="2.6" fill="#222"/><circle cx="87" cy="57" r="3" fill="#f2b8c0"/><path d="M16 66Q2 62 6 48Q8 40 2 36" stroke="#f2b8c0" stroke-width="5" fill="none" stroke-linecap="round"/>',
+ bug:'<g stroke="#5a3a1d" stroke-width="4" stroke-linecap="round"><line x1="30" y1="46" x2="10" y2="34"/><line x1="30" y1="58" x2="8" y2="60"/><line x1="32" y1="70" x2="14" y2="86"/><line x1="70" y1="46" x2="90" y2="34"/><line x1="70" y1="58" x2="92" y2="60"/><line x1="68" y1="70" x2="86" y2="86"/><line x1="44" y1="22" x2="36" y2="8"/><line x1="56" y1="22" x2="64" y2="8"/></g><ellipse cx="50" cy="60" rx="22" ry="30" fill="#8a5a2b"/><circle cx="50" cy="28" r="11" fill="#6e4521"/><line x1="50" y1="34" x2="50" y2="90" stroke="#5a3a1d" stroke-width="3"/>',
+ bin:(c)=>'<path d="M24 34H76L70 92H30Z" fill="'+c+'"/><rect x="18" y="22" width="64" height="12" rx="5" fill="#fff"/><rect x="42" y="14" width="16" height="10" rx="4" fill="#fff"/><g stroke="rgba(255,255,255,.55)" stroke-width="4" stroke-linecap="round"><line x1="40" y1="46" x2="42" y2="82"/><line x1="50" y1="46" x2="50" y2="82"/><line x1="60" y1="46" x2="58" y2="82"/></g>',
+ shield:'<path d="M50 4L90 18V50C90 74 72 90 50 98C28 90 10 74 10 50V18Z" fill="#fff"/><path d="M50 12L82 23V50C82 69 68 82 50 90C32 82 18 69 18 50V23Z" fill="#46b97a"/><path d="M33 50L46 63L68 37" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+ sink:(n)=>'<rect x="6" y="46" width="88" height="46" rx="10" fill="#e9f1f3"/><rect x="14" y="54" width="72" height="30" rx="6" fill="#5ec3e6"/><path d="M50 46V20Q50 10 60 10H72" stroke="#c3d1d5" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M14 66Q26 58 38 66T62 66T86 66" stroke="#fff" stroke-width="3" fill="none" opacity=".8"/>'+(n?'<circle cx="26" cy="22" r="15" fill="#e8c98f"/>'+pT(26,29,20,n,'#2b3a3f'):''),
+ hat:'<path d="M26 66V54C14 52 8 40 16 30C22 22 32 22 36 26C38 14 62 14 64 26C68 22 78 22 84 30C92 40 86 52 74 54V66Z" fill="#fff"/><rect x="26" y="62" width="48" height="16" rx="4" fill="#e9f1f3"/><line x1="40" y1="34" x2="40" y2="58" stroke="#dfe8ea" stroke-width="3"/><line x1="60" y1="34" x2="60" y2="58" stroke="#dfe8ea" stroke-width="3"/>',
+ apron:'<path d="M34 8H66V28L82 38V94H18V38L34 28Z" fill="#fff"/><path d="M34 8Q50 26 66 8" stroke="#c3d1d5" stroke-width="4" fill="none"/><rect x="34" y="60" width="32" height="20" rx="4" fill="#e9f1f3"/>',
+ door:'<rect x="22" y="4" width="56" height="92" rx="4" fill="#d9a766"/><rect x="30" y="14" width="40" height="30" rx="3" fill="#b9854f"/><rect x="30" y="52" width="40" height="36" rx="3" fill="#b9854f"/><circle cx="68" cy="56" r="4" fill="#f5d442"/>',
+ plate:'<circle cx="50" cy="50" r="42" fill="#fff"/><circle cx="50" cy="50" r="30" fill="#f3f6f6"/><circle cx="44" cy="46" r="10" fill="#e8523a"/><circle cx="58" cy="54" r="9" fill="#46b97a"/><circle cx="48" cy="60" r="7" fill="#f5b041"/>',
+ board:(c)=>'<rect x="8" y="30" width="84" height="44" rx="10" fill="'+c+'"/><circle cx="80" cy="52" r="5" fill="rgba(0,0,0,.25)"/>',
+ knife:'<path d="M4 62C18 36 48 30 72 32V52H10Z" fill="#e3eef1"/><path d="M10 58C24 44 44 40 72 40" stroke="#c3d1d5" stroke-width="3" fill="none"/><rect x="70" y="32" width="28" height="18" rx="8" fill="#5c534e"/><circle cx="80" cy="41" r="2.5" fill="#e8c98f"/><circle cx="90" cy="41" r="2.5" fill="#e8c98f"/>',
+ meat:'<path d="M18 52C14 30 40 14 62 20C86 26 92 48 80 66C68 84 36 88 24 72C20 66 19 58 18 52Z" fill="#e8523a"/><path d="M34 42C44 38 52 46 62 42M32 58C46 54 56 62 70 56" stroke="#fbd0c8" stroke-width="4" fill="none" stroke-linecap="round"/>',
+ shelves:'<rect x="10" y="6" width="80" height="88" rx="6" fill="#e9f1f3"/><g fill="#c3d1d5"><rect x="10" y="38" width="80" height="5"/><rect x="10" y="68" width="80" height="5"/></g><circle cx="32" cy="26" r="10" fill="#46b97a"/><rect x="50" y="18" width="28" height="18" rx="4" fill="#f5b041"/><rect x="18" y="46" width="30" height="20" rx="4" fill="#5ec3e6"/><path d="M58 70H84V92H58Z" fill="#e8523a"/><path d="M20 72H46V92H20Z" fill="#e8523a"/>',
+ stock:'<rect x="6" y="64" width="88" height="6" fill="#c3d1d5"/><rect x="12" y="34" width="22" height="30" rx="3" fill="#b9854f"/><rect x="38" y="34" width="22" height="30" rx="3" fill="#b9854f"/><rect x="64" y="34" width="22" height="30" rx="3" fill="#d9a766"/><path d="M20 22H80M72 14L82 22L72 30" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="12" y="74" width="76" height="16" rx="4" fill="rgba(255,255,255,.2)"/><path d="M50 72V92M44 78L50 72L56 78M44 86L50 92L56 86" stroke="#e8c98f" stroke-width="3" fill="none"/>',
+ fridge:(t)=>'<rect x="22" y="4" width="56" height="92" rx="9" fill="#eef5f6" stroke="#b7c6ca" stroke-width="3"/><line x1="22" y1="34" x2="78" y2="34" stroke="#b7c6ca" stroke-width="3"/><rect x="30" y="14" width="4" height="14" rx="2" fill="#9fb3b8"/><rect x="30" y="44" width="4" height="28" rx="2" fill="#9fb3b8"/>'+(t?pT(56,70,15,t,'#14545c'):'')+'<g transform="translate(56 22) scale(.17)">'+'<g stroke="#5ec3e6" stroke-width="12" stroke-linecap="round"><line x1="0" y1="-50" x2="0" y2="50"/><line x1="-43" y1="-25" x2="43" y2="25"/><line x1="-43" y1="25" x2="43" y2="-25"/></g></g>',
+ shower:'<path d="M20 20Q20 8 34 8H64Q80 8 80 24V30H20Z" fill="#c3d1d5"/><rect x="14" y="30" width="72" height="10" rx="5" fill="#9fb3b8"/>',
+ milk:'<path d="M36 10H64L68 26V92H32V26Z" fill="#fff"/><rect x="32" y="44" width="36" height="26" fill="#5ec3e6"/><path d="M36 10H64L68 26H32Z" fill="#e3eef1"/>',
+ egg:'<path d="M50 8C70 8 84 38 84 62C84 80 68 92 50 92C32 92 16 80 16 62C16 38 30 8 50 8Z" fill="#fff"/><circle cx="50" cy="62" r="14" fill="#f5b041"/>',
+ wheat:'<g fill="#e0b24f"><ellipse cx="38" cy="30" rx="8" ry="15" transform="rotate(-25 38 30)"/><ellipse cx="62" cy="30" rx="8" ry="15" transform="rotate(25 62 30)"/><ellipse cx="50" cy="20" rx="8" ry="15"/><ellipse cx="36" cy="54" rx="8" ry="15" transform="rotate(-25 36 54)"/><ellipse cx="64" cy="54" rx="8" ry="15" transform="rotate(25 64 54)"/><ellipse cx="50" cy="44" rx="8" ry="15"/></g><line x1="50" y1="40" x2="50" y2="96" stroke="#c9953a" stroke-width="5"/>',
+ peanut:'<path d="M32 18C48 4 70 12 66 34C64 44 70 48 72 58C76 76 54 94 38 84C22 74 30 62 34 52C38 42 22 30 32 18Z" fill="#d9a766"/><g fill="#b9854f"><circle cx="48" cy="26" r="2.5"/><circle cx="56" cy="34" r="2.5"/><circle cx="44" cy="70" r="2.5"/><circle cx="54" cy="62" r="2.5"/></g>',
+ fish:'<path d="M12 50C28 24 58 22 74 44L92 28V72L74 56C58 78 28 76 12 50Z" fill="#7fb3e6"/><circle cx="32" cy="46" r="4" fill="#222"/><path d="M48 36Q54 50 48 64" stroke="#5a92cf" stroke-width="3" fill="none"/>',
+ almond:'<path d="M50 6C74 22 82 56 62 90C58 96 42 96 38 90C18 56 26 22 50 6Z" fill="#c9985a"/><path d="M50 18C52 40 50 64 48 84" stroke="#a87a3f" stroke-width="3" fill="none"/>',
+ tongs:'<path d="M20 90L46 20L56 22L30 92Z" fill="#c3d1d5"/><path d="M80 90L54 20L44 22L70 92Z" fill="#9fb3b8"/><circle cx="50" cy="18" r="8" fill="#e3eef1"/>',
+ leaf:'<path d="M10 50H90C90 76 72 92 50 92C28 92 10 76 10 50Z" fill="#fff"/><g fill="#46b97a"><circle cx="30" cy="40" r="15"/><circle cx="50" cy="32" r="17"/><circle cx="70" cy="40" r="15"/></g><circle cx="42" cy="38" r="5" fill="#e8523a"/><circle cx="62" cy="34" r="4" fill="#f5b041"/>',
+ glove:(c)=>'<g fill="'+c+'"><rect x="24" y="14" width="11" height="44" rx="5.5"/><rect x="37" y="6" width="11" height="52" rx="5.5"/><rect x="50" y="8" width="11" height="50" rx="5.5"/><rect x="63" y="16" width="11" height="42" rx="5.5"/><rect x="8" y="46" width="11" height="34" rx="5.5" transform="rotate(-38 13 63)"/><rect x="24" y="44" width="52" height="40" rx="16"/></g><rect x="22" y="78" width="56" height="16" rx="5" fill="rgba(255,255,255,.55)"/>',
+ zone:'<rect x="30" y="4" width="40" height="92" rx="14" fill="#fff"/><rect x="36" y="10" width="28" height="80" rx="10" fill="url(#pz)"/><defs><linearGradient id="pz" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8523a"/><stop offset=".55" stop-color="#f5b041"/><stop offset=".62" stop-color="#e8523a"/><stop offset=".72" stop-color="#46b97a"/><stop offset="1" stop-color="#5ec3e6"/></linearGradient></defs><path d="M72 40L88 34V62L72 56Z" fill="#fff6c9"/>',
+ keys:(n)=>'<circle cx="50" cy="50" r="40" fill="#fff"/>'+pT(50,64,40,n,'#14545c',900)
+};
+/* مشاهد الملصقات: كل مشهد = قائمة [عنصر، مقياس] تُوزَّع أفقيًا بالتساوي */
+const PS=(()=>{
+  const hb=PA.hand()+PA.bub(18,20,7)+PA.bub(84,26,5)+PA.bub(12,60,4)+PA.drop(86,70,1.2)+PA.drop(50,98,1);
+  const gno=PA.germ('#7bd05a')+PA.no;
+  const ch=(c)=>PA.board(c)+'<g transform="translate(18 -2) scale(.7)">'+PA.knife+'</g>';
+  const al=(k,s)=>[PA[k],s||.82];
+  return{
+  '🖐️':[[hb,1.25],[PA.clock(''),1.1],[gno,1.15]],
+  '🧼':[[hb,1.2],[PA.sink(''),1.2],[PA.clock('20ث'),1.15]],
+  '🧤':[[PA.glove('#4ea7e8'),1.2],[PA.glove('#46b97a'),1.2],[gno,1.1]],
+  '🚿':[[PA.shower+'<g>'+[18,34,50,66,82].map(x=>PA.drop(x,58+(x%3)*6,1.1)+PA.drop(x+6,86,.9)).join('')+'</g>',1.2],[PA.hat,1.2],[PA.hand()+PA.spark(88,20,1.3)+PA.spark(10,70,1),1.15]],
+  '👕':[[PA.hat,1.15],[PA.apron,1.2],[PA.shield,1.05]],
+  '🔀':[[ch('#e8523a'),1.05],[ch('#46b97a'),1.05],[ch('#4ea7e8'),1.05],[gno,1.0]],
+  '🥩':[[PA.shelves,1.3],[PA.meat,1.15],[PA.plate,1.1]],
+  '🌡️':[[PA.thermo(.25,'#5ec3e6','5°C'),1.25],[PA.thermo(.05,'#8fd6f0','-18°C'),1.25],[PA.thermo(.85,'#e8523a','63°C'),1.25]],
+  '⚠️':[[PA.zone,1.3],[PA.germ('#e8523a'),1.15],[PA.clock('ساعتان'),1.15]],
+  '❄️':[[PA.snow,1.1],[PA.bowl,1.1],[PA.clock('4 ساعات'),1.15],[PA.thermo(.2,'#5ec3e6',''),1.1]],
+  '♨️':[[PA.pot+'<g transform="translate(0 6)">'+PA.steam+'</g>',1.25],[PA.thermo(.8,'#e8523a','74°C'),1.25],[PA.flame,1.05]],
+  '📦':[[PA.stock,1.3],[PA.crate,1.15],[PA.shelves,1.15]],
+  '🔁':[[PA.stock,1.3],[PA.tag('FIFO','الوارد أولًا'),1.2],[PA.clock('FEFO'),1.1]],
+  '🏷️':[[PA.tag('التاريخ','Date'),1.15],[PA.tag('الوقت','Time'),1.15],[PA.tag('الانتهاء','Expiry'),1.15]],
+  '🧊':[[PA.fridge('1-5°C'),1.3],[PA.fridge('-18°C'),1.3],[PA.thermo(.2,'#5ec3e6','3×'),1.15]],
+  '🧽':[[PA.spray,1.25],[PA.sponge,1.15],[PA.board('#e9f1f3')+PA.spark(30,44,1.2)+PA.spark(66,58,1),1.15]],
+  '⚙️':[[PA.cog(),1.2],[PA.plug,1.2],[hb,1.1]],
+  '🧪':[[PA.cab,1.25],[PA.bottle('#e8523a')+'<g transform="translate(34 0)">'+PA.bottle('#4ea7e8')+'</g>',1.15],[PA.germ('#7bd05a')+PA.no,1.0]],
+  '🐭':[[PA.mouse,1.2],[PA.bug,1.2],[PA.shield,1.1]],
+  '🗑️':[[PA.bin('#46b97a'),1.2],[PA.bin('#4ea7e8'),1.2],[hb,1.1]],
+  '🛡️':[[hb,.85],[ch('#e8523a')+'',.85],[PA.flame,.85],[PA.thermo(.25,'#5ec3e6',''),.85],[PA.drop(50,52,3.6),.85]],
+  '🥜':[al('milk'),al('egg'),al('wheat'),al('peanut'),al('fish'),al('almond')],
+  '🔪':[[PA.knife,1.3],[ch('#4ea7e8'),1.1],[PA.glove('#4ea7e8'),1.1]],
+  '🚫':[[PA.peanut+PA.no,1.2],[PA.plate,1.2],[PA.ok,1.05]],
+  '🚪':[[PA.door,1.25],[PA.hat,1.15],[PA.plate+PA.no,1.1]],
+  '🍽️':[[PA.sink('1'),1.1],[PA.sink('2'),1.1],[PA.sink('3'),1.1],[PA.plate+PA.spark(86,18,1.3),1]],
+  '🥗':[[PA.leaf,1.2],[PA.tongs,1.2],[PA.glove('#4ea7e8'),1.1]]
+};})();
+const P_ACC=['#14545c','#a8501c','#2e6b45','#1c4e8a','#7a2a5e'];
+function posterArt(p){
+  const sc=PS[p.i]||[[PA.shield,1.2]];
+  const n=sc.length,cw=560/n;
+  let g='<circle cx="60" cy="20" r="70" fill="rgba(255,255,255,.07)"/><circle cx="520" cy="150" r="90" fill="rgba(255,255,255,.06)"/>';
+  sc.forEach((it,k)=>{const s=it[1],x=cw*k+cw/2-50*s,y=80-50*s;g+='<g transform="translate('+x.toFixed(1)+' '+y.toFixed(1)+') scale('+s+')"><g class="'+(k%2?'p-fl2':'p-fl')+'">'+it[0]+'</g></g>';});
+  return '<svg viewBox="0 0 560 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+p.t.replace(/"/g,'')+'">'+g+'</svg>';
+}
 
+let P_BRANCH='';try{P_BRANCH=localStorage.getItem('hops_branch')||'';}catch(e){}
+let P_FAV=[];try{P_FAV=JSON.parse(localStorage.getItem('hops_pfav')||'[]');}catch(e){}
+let P_GSEL='', P_VIEW=[], P_OPEN=-1;
+const P_STEPS=['🧼','🍽️','⚙️'];
+const P_NEG_AR=/^(لا\s|لا$|ممنوع|تجنب|عدم|ابتعد)/, P_NEG_EN=/^(no\s|never|do not|don't|avoid|not\s)/i;
+function pAcc(p){return P_ACC[p.g]||P_ACC[0];}
+function pFavSave(){try{localStorage.setItem('hops_pfav',JSON.stringify(P_FAV));}catch(e){}}
+function pFav(id){
+  const k=P_FAV.indexOf(id); if(k>-1)P_FAV.splice(k,1); else P_FAV.push(id);
+  pFavSave(); renderPosters();
+  if(P_OPEN>-1){const b=document.getElementById('p-favbtn'); if(b){const on=P_FAV.indexOf(POSTERS[P_OPEN].i)>-1; b.textContent=on?'♥ في المفضلة':'♡ أضف للمفضلة'; b.classList.toggle('on',on);}}
+}
 function loadPosters(){
   const v=document.getElementById('posters-view');
   if(v.dataset.init){renderPosters();return;}
   v.dataset.init='1';
   v.innerHTML='<div class="iv-bar">'+
-    '<input id="p-q" placeholder="ابحث عن ملصق…" oninput="renderPosters()">'+
-    '<select id="p-g" onchange="renderPosters()"><option value="">كل التصنيفات</option>'+P_GROUPS.map((g,i)=>'<option value="'+i+'">'+g+'</option>').join('')+'</select>'+
+    '<input id="p-q" placeholder="ابحث عن ملصق أو كلمة داخله…" oninput="renderPosters()">'+
     '<input id="p-branch" placeholder="اسم الفرع / المنشأة (يظهر على الملصق)" value="'+P_BRANCH.replace(/"/g,'&quot;')+'" oninput="setBranch(this.value)" style="max-width:280px">'+
     '<select id="p-size"><option value="A4">طباعة A4</option><option value="A5">A5</option><option value="A3">A3</option></select>'+
-    '</div><div style="color:var(--ink-soft);font-size:12.5px;margin-bottom:14px">المحتوى مبني على ممارسات معيارية متعارف عليها في سلامة الغذاء والنظافة — راجع القيم مع اشتراطات جهتك الرقابية وعدّل ما يلزم قبل الاعتماد.</div>'+
-    '<div class="p-grid" id="p-grid"></div>';
+    '</div><div id="p-today"></div><div class="p-chips" id="p-chips"></div>'+
+    '<div style="color:var(--ink-soft);font-size:12.5px;margin-bottom:14px">المحتوى مبني على ممارسات معيارية متعارف عليها في سلامة الغذاء والنظافة — راجع القيم مع اشتراطات جهتك الرقابية وعدّل ما يلزم قبل الاعتماد والطباعة.</div>'+
+    '<div class="p-grid" id="p-grid"></div><div class="iv-empty" id="p-empty" style="display:none">لا توجد ملصقات مطابقة</div>';
   renderPosters();
 }
 function setBranch(v){P_BRANCH=v.trim();try{localStorage.setItem('hops_branch',P_BRANCH);}catch(e){}}
+function pSetG(g){P_GSEL=g;renderPosters();}
+function pMatch(p,q){
+  if(!q)return true;
+  return (p.t+' '+p.e+' '+p.L.map(l=>l[0]+' '+l[1]).join(' ')).toLowerCase().includes(q);
+}
 function renderPosters(){
-  const q=(document.getElementById('p-q').value||'').trim().toLowerCase();
-  const g=document.getElementById('p-g').value;
-  document.getElementById('p-grid').innerHTML=POSTERS.map((p,i)=>({p,i})).filter(x=>{
-    if(g!==''&&String(x.p.g)!==g)return false;
-    if(q&&!(x.p.t.toLowerCase().includes(q)||x.p.e.toLowerCase().includes(q)))return false;
-    return true;
-  }).map(x=>'<div class="pcard" onclick="openPoster('+x.i+')"><div class="pi">'+x.p.i+'</div><b>'+x.p.t+'</b><small>'+x.p.e+'</small><div class="pg"><span class="badge tp">'+P_GROUPS[x.p.g]+'</span></div></div>').join('');
+  const qe=document.getElementById('p-q'); if(!qe)return;
+  const q=(qe.value||'').trim().toLowerCase();
+  /* ملصق اليوم */
+  const td=POSTERS[Math.floor(Date.now()/864e5)%POSTERS.length], ti=POSTERS.indexOf(td);
+  document.getElementById('p-today').innerHTML='<div class="p-tcard" style="--ac:'+pAcc(td)+'" onclick="openPoster('+ti+')"><div class="pa">'+posterArt(td)+'</div><div class="pt"><span class="pk">⭐ ملصق اليوم</span><b>'+td.t+'</b><small>'+td.e+'</small><button>افتح الملصق ←</button></div></div>';
+  /* التصنيفات */
+  const cnt=g=>POSTERS.filter(p=>String(p.g)===g).length;
+  document.getElementById('p-chips').innerHTML=
+    '<button class="'+(P_GSEL===''?'on':'')+'" onclick="pSetG(\'\')">الكل <i>'+POSTERS.length+'</i></button>'+
+    P_GROUPS.map((g,i)=>'<button class="'+(P_GSEL===String(i)?'on':'')+'" style="--ac:'+P_ACC[i]+'" onclick="pSetG(\''+i+'\')">'+g+' <i>'+cnt(String(i))+'</i></button>').join('')+
+    '<button class="'+(P_GSEL==='fav'?'on':'')+'" onclick="pSetG(\'fav\')">♥ المفضلة <i>'+P_FAV.length+'</i></button>';
+  P_VIEW=[];
+  const html=POSTERS.map((p,i)=>({p,i})).filter(x=>{
+    if(P_GSEL==='fav'&&P_FAV.indexOf(x.p.i)<0)return false;
+    if(P_GSEL!==''&&P_GSEL!=='fav'&&String(x.p.g)!==P_GSEL)return false;
+    return pMatch(x.p,q);
+  }).map((x,n)=>{
+    P_VIEW.push(x.i);
+    const fv=P_FAV.indexOf(x.p.i)>-1;
+    return '<div class="pcard" style="--ac:'+pAcc(x.p)+';animation-delay:'+Math.min(n,14)*35+'ms" onclick="openPoster('+x.i+')">'+
+      '<button class="pfav'+(fv?' on':'')+'" title="مفضلة" onclick="event.stopPropagation();pFav(\''+x.p.i+'\')">'+(fv?'♥':'♡')+'</button>'+
+      '<div class="pa">'+posterArt(x.p)+'</div><div class="pbd"><b>'+x.p.t+'</b><small>'+x.p.e+'</small><span class="badge tp">'+P_GROUPS[x.p.g]+'</span></div></div>';
+  }).join('');
+  document.getElementById('p-grid').innerHTML=html;
+  document.getElementById('p-empty').style.display=html?'none':'block';
 }
 function posterHTML(p){
-  return '<div class="poster"><div class="ph"><div class="pi">'+p.i+'</div><h2>'+p.t+'</h2><div class="pe">'+p.e+'</div></div>'+
-    '<div class="pb">'+p.L.map(l=>'<div class="pl"><div class="ar">'+l[0]+'</div><div class="en">'+l[1]+'</div></div>').join('')+'</div>'+
+  const steps=P_STEPS.indexOf(p.i)>-1;
+  const lines=p.L.map((l,n)=>{
+    const neg=P_NEG_AR.test(l[0])||P_NEG_EN.test(l[1]);
+    const mk=steps?'<span class="pm n">'+(n+1)+'</span>':(neg?'<span class="pm no">✕</span>':'<span class="pm ok">✓</span>');
+    return '<div class="pl">'+mk+'<div class="pt"><div class="ar">'+l[0]+'</div><div class="en">'+l[1]+'</div></div></div>';
+  }).join('');
+  return '<div class="poster" style="--ac:'+pAcc(p)+'"><div class="ph"><div class="pa">'+posterArt(p)+'</div><h2>'+p.t+'</h2><div class="pe">'+p.e+'</div></div>'+
+    '<div class="pb">'+lines+'</div>'+
     '<div class="pf"><span>'+(P_BRANCH||'')+'</span><span>برنامج تأهيل التشغيل — Operations Training</span></div></div>';
 }
 function openPoster(i){
-  const p=POSTERS[i];
+  const p=POSTERS[i]; P_OPEN=i;
+  const pos=P_VIEW.indexOf(i), many=P_VIEW.length>1&&pos>-1;
+  const fv=P_FAV.indexOf(p.i)>-1;
   const box=document.getElementById('imod-box');
-  box.innerHTML='<div class="imod-head"><h2>معاينة الملصق</h2><button class="x" onclick="closeItem()">إغلاق ✕</button></div>'+
-    '<div style="padding:18px">'+posterHTML(p)+'</div>'+
+  box.innerHTML='<div class="imod-head"><h2>معاينة الملصق'+(many?' <small style="font-weight:400;font-size:12px;color:var(--ink-soft)">('+(pos+1)+' من '+P_VIEW.length+')</small>':'')+'</h2><button class="x" onclick="closeItem()">إغلاق ✕</button></div>'+
+    '<div style="padding:18px" class="p-modal-body">'+posterHTML(p)+'</div>'+
     '<div class="imod-actions"><button class="btn-save" onclick="printPoster('+i+')">🖨️ طباعة ('+((document.getElementById('p-size')||{}).value||'A4')+')</button>'+
+    '<button class="btn-ghost p-favbtn'+(fv?' on':'')+'" id="p-favbtn" onclick="pFav(\''+p.i+'\')">'+(fv?'♥ في المفضلة':'♡ أضف للمفضلة')+'</button>'+
+    (many?'<button class="btn-ghost" onclick="pNav(1)">→ التالي</button><button class="btn-ghost" onclick="pNav(-1)">السابق ←</button>':'')+
     '<button class="btn-ghost" onclick="closeItem()">إغلاق</button></div>';
   document.getElementById('imodal').classList.add('on');
 }
+function pNav(d){
+  const pos=P_VIEW.indexOf(P_OPEN); if(pos<0||!P_VIEW.length)return;
+  openPoster(P_VIEW[(pos+d+P_VIEW.length)%P_VIEW.length]);
+}
+document.addEventListener('keydown',e=>{
+  const m=document.getElementById('imodal');
+  if(!m||!m.classList.contains('on')||!m.querySelector('.poster'))return;
+  if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+  if(e.key==='ArrowLeft')pNav(1); else if(e.key==='ArrowRight')pNav(-1);
+});
 function printPoster(i){
   const p=POSTERS[i];
   const size=(document.getElementById('p-size')||{}).value||'A4';
   const scale=size==='A3'?1.4:(size==='A5'?0.75:1);
+  const z=n=>Math.round(n*scale);
   const w=window.open('','_blank');
   let d='<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>'+p.t+'</title>';
   d+='<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">';
-  d+='<style>@page{size:'+size+';margin:12mm}body{font-family:Tajawal,sans-serif;margin:0;display:flex;justify-content:center;padding:10mm;background:#fff}';
-  d+='.poster{border:4px solid #14545c;border-radius:16px;overflow:hidden;width:'+Math.round(560*scale)+'px}';
-  d+='.ph{background:#14545c;color:#fff;padding:'+Math.round(20*scale)+'px;text-align:center}.ph .pi{font-size:'+Math.round(52*scale)+'px}.ph h2{margin:6px 0 2px;font-size:'+Math.round(26*scale)+'px}.ph .pe{font-size:'+Math.round(13*scale)+'px;letter-spacing:1px;opacity:.9;text-transform:uppercase}';
-  d+='.pb{padding:'+Math.round(22*scale)+'px}.pl{border-bottom:1px dashed #cfd8d8;padding:'+Math.round(11*scale)+'px 0}.pl:last-child{border-bottom:none}';
-  d+='.ar{font-size:'+Math.round(19*scale)+'px;font-weight:800;color:#2b2320}.en{font-size:'+Math.round(13*scale)+'px;color:#5c534e;direction:ltr;text-align:left}';
-  d+='.pf{background:#f2f0ea;padding:'+Math.round(11*scale)+'px '+Math.round(20*scale)+'px;display:flex;justify-content:space-between;font-size:'+Math.round(12*scale)+'px;color:#5c534e}<'+'/style></head><body>';
-  d+=posterHTML(p).replace('class="poster"','class="poster"');
+  d+='<style>*{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{size:'+size+';margin:12mm}body{font-family:Tajawal,sans-serif;margin:0;display:flex;justify-content:center;padding:10mm;background:#fff}';
+  d+='.poster{border:4px solid var(--ac);border-radius:16px;overflow:hidden;width:'+z(560)+'px}';
+  d+='.ph{background:linear-gradient(135deg,var(--ac),#0b2f35);color:#fff;text-align:center;padding-bottom:'+z(14)+'px}.pa svg{display:block;width:100%;height:auto}.ph h2{margin:0;padding:0 '+z(16)+'px;font-size:'+z(26)+'px}.ph .pe{font-size:'+z(13)+'px;letter-spacing:1px;opacity:.9;text-transform:uppercase;margin-top:2px}';
+  d+='.pb{padding:'+z(14)+'px '+z(22)+'px}.pl{display:flex;gap:'+z(12)+'px;align-items:center;border-bottom:1px dashed #cfd8d8;padding:'+z(10)+'px 0}.pl:last-child{border-bottom:none}.pt{flex:1}';
+  d+='.pm{flex:0 0 '+z(30)+'px;height:'+z(30)+'px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:'+z(16)+'px;color:#fff}.pm.ok{background:#2e9e62}.pm.no{background:#d93a25}.pm.n{background:var(--ac)}';
+  d+='.ar{font-size:'+z(19)+'px;font-weight:800;color:#2b2320}.en{font-size:'+z(13)+'px;color:#5c534e;direction:ltr;text-align:left}';
+  d+='.pf{background:#f2f0ea;padding:'+z(11)+'px '+z(20)+'px;display:flex;justify-content:space-between;font-size:'+z(12)+'px;color:#5c534e}<'+'/style></head><body>';
+  d+=posterHTML(p);
   d+='<'+'/body><'+'/html>';
   w.document.write(d);w.document.close();
-  setTimeout(()=>{try{w.print();}catch(e){}},600);
+  setTimeout(()=>{try{w.print();}catch(e){}},700);
 }
 
 
