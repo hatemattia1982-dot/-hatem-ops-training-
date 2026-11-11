@@ -235,7 +235,36 @@ body:not(.locked) #bar{display:flex}
 @media(max-width:760px){.gate-wrap{flex-direction:column}.brand-panel{min-height:280px;padding:36px 24px}.bp-logo{font-size:34px}.bp-msg{font-size:16px;min-height:64px}}
 /* ==== بانر الترحيب ==== */
 #welcome{max-width:960px;margin:18px auto 0;background:linear-gradient(135deg,var(--red-dark),var(--red));color:#fff;border-radius:16px;padding:18px 26px;display:flex;align-items:center;gap:14px;box-shadow:0 10px 26px rgba(11,53,60,.25)}
-#welcome .wv{font-size:26px}
+/* ===== أفتار الترحيب والجولة ===== */
+#welcome .wv{flex:0 0 auto;line-height:0}
+.av-svg{display:block;filter:drop-shadow(0 6px 10px rgba(0,0,0,.28));animation:avBob 3.2s ease-in-out infinite}
+.av-svg .av-wave{transform-box:view-box;transform-origin:96px 92px;animation:avWave 1.6s ease-in-out infinite}
+.av-svg .av-eyes{transform-box:fill-box;transform-origin:center;animation:avBlink 4.5s infinite}
+.av-svg .av-m{transform-box:fill-box;transform-origin:center top}
+.av-svg.talk .av-m{animation:avTalk .26s ease-in-out infinite}
+@keyframes avBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes avWave{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(26deg)}}
+@keyframes avBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes avTalk{0%,100%{transform:scaleY(.55)}50%{transform:scaleY(1.15)}}
+#welcome .wt{flex:1}
+#welcome .w-tour{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:6px 14px;font-family:inherit;font-weight:700;font-size:12.5px;cursor:pointer;white-space:nowrap;transition:background .2s}
+#welcome .w-tour:hover{background:rgba(255,255,255,.28)}
+#tour{position:fixed;inset:0;background:rgba(11,40,46,.82);z-index:1100;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px);animation:pcIn .3s both}
+.tr-card{position:relative;background:var(--white);border-radius:22px;max-width:520px;width:100%;padding:24px 26px 22px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.tr-x{position:absolute;top:12px;left:14px;background:transparent;border:0;color:var(--ink-soft);font-family:inherit;font-weight:700;font-size:13px;cursor:pointer}
+.tr-av{display:flex;justify-content:center;margin:-62px 0 8px}
+.tr-av .av-svg{border:5px solid var(--white);border-radius:50%;background:#f7f2eb}
+.tr-bubble{position:relative;background:var(--beige);border:1.5px solid var(--line);border-radius:16px;padding:14px 18px;min-height:96px;font-size:15.5px;line-height:1.9;font-weight:700;color:var(--ink);display:flex;align-items:center;justify-content:center}
+.tr-bubble:before{content:"";position:absolute;top:-9px;left:50%;margin-left:-8px;width:14px;height:14px;background:var(--beige);border-top:1.5px solid var(--line);border-left:1.5px solid var(--line);transform:rotate(45deg)}
+.tr-dots{display:flex;gap:7px;justify-content:center;margin:14px 0}
+.tr-dots i{width:9px;height:9px;border-radius:50%;background:var(--line);transition:all .3s}
+.tr-dots i.done{background:#7a9a4f}.tr-dots i.on{background:var(--red);width:24px;border-radius:5px}
+.tr-act{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.tr-act button{border:0;border-radius:12px;padding:10px 20px;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;transition:transform .15s}
+.tr-act button:hover{transform:translateY(-2px)}
+.tr-act .main{background:var(--red);color:#fff}.tr-act .ghost{background:var(--beige-deep);color:var(--ink)}
+@media print{#tour{display:none!important}}
+
 #welcome .wt b{display:block;font-size:17px;margin-bottom:2px}
 #welcome .wt span{opacity:.92;font-size:14px;transition:opacity .5s;display:block}
 #welcome .wt span.fade{opacity:0}
@@ -2521,6 +2550,7 @@ auth.onAuthStateChanged(async u=>{
   renderBar();
   renderNav();
   showWelcome(MYDOC.name||u.displayName||'');
+  setTimeout(()=>{try{startTour();}catch(e){}},1200);
   startNotifs();
   startTickets();
   pfBadgeRefresh();
@@ -2722,12 +2752,71 @@ const WELCOME_MSGS=[
 "الفرق بين الجيد والممتاز: الالتزام بالمعيار حتى في يوم الذروة",
 "أول من يصل وأول من يعرف — هذا هو معيار مدير التشغيل"
 ];
+/* ==== أفتار الترحيب + جولة المتدرب الجديد ==== */
+function welcomeAvatar(size,cls){
+  return '<svg class="av-svg '+(cls||'')+'" viewBox="0 0 120 120" width="'+size+'" height="'+size+'" role="img" aria-label="مرشد المنصة">'+
+    '<circle cx="60" cy="60" r="58" fill="#f7f2eb"/>'+
+    '<g class="av-wave"><rect x="92" y="62" width="11" height="34" rx="5.5" fill="#f4c7a1" transform="rotate(18 96 92)"/><circle cx="105" cy="60" r="8" fill="#f4c7a1"/></g>'+
+    '<path d="M16 118Q16 88 60 88Q104 88 104 118Z" fill="#14545c"/>'+
+    '<path d="M47 88L60 103L73 88Z" fill="#fff"/><rect x="66" y="100" width="22" height="11" rx="3" fill="#e8c98f"/><rect x="69" y="104" width="16" height="2.5" rx="1" fill="#14545c"/>'+
+    '<rect x="53" y="76" width="14" height="14" rx="6" fill="#e3a678"/>'+
+    '<circle cx="60" cy="58" r="23" fill="#f4c7a1"/>'+
+    '<g fill="#fff" stroke="#dfe8ea" stroke-width="1.5"><circle cx="43" cy="33" r="11"/><circle cx="60" cy="27" r="13"/><circle cx="77" cy="33" r="11"/><rect x="41" y="36" width="38" height="12" rx="4"/></g>'+
+    '<g class="av-eyes" fill="#2b3a3f"><ellipse cx="51" cy="58" rx="3" ry="4"/><ellipse cx="69" cy="58" rx="3" ry="4"/></g>'+
+    '<circle cx="45" cy="66" r="4.5" fill="#f08a8a" opacity=".35"/><circle cx="75" cy="66" r="4.5" fill="#f08a8a" opacity=".35"/>'+
+    '<path class="av-m" d="M51 67Q60 79 69 67Z" fill="#a8553a"/>'+
+  '</svg>';
+}
+function welcomeGreet(){const h=new Date().getHours(); return h<12?'صباح الخير':(h<18?'مساء الخير':'مساء النور');}
+function tourSeenKey(){return 'hops_tour_'+(ME&&ME.uid);}
+function tourSeen(){try{return localStorage.getItem(tourSeenKey())==='1';}catch(e){return true;}}
+const TOUR_STEPS=[
+ {t:'أهلًا {n}! أنا مرشدك في المنصة 👋 سأعرّفك على أهم الأقسام في دقيقة واحدة.'},
+ {t:'📘 «الدليل التدريبي» هو قلب البرنامج: وحدات متتابعة، وفي نهاية كل وحدة اختبار — اجتزه بـ 80% فأكثر لتنتقل لما بعده.',go:'manual',b:'افتح الدليل'},
+ {t:'🍽️ «مكتبة الأصناف» و«الإجراءات التشغيلية» و«الملصقات»: مراجع جاهزة تتدرب منها، ويمكنك طباعتها للتعليق في الفرع.',go:'ops',b:'شاهد الإجراءات'},
+ {t:'🧪 «التطبيق العملي»: نفّذ قوائم فحص حقيقية، وسجّل الانحرافات، وتتبّع المؤشرات — والمدرب يقيّم عملك.',go:'practice',b:'افتح التطبيق العملي'},
+ {t:'🎫 تحتاج مساعدة؟ افتح تذكرة من «الدعم» وسيصلك الرد في الإشعارات 🔔. وفي «ملف المتدرب» ترى رحلتك نحو الاعتماد وأوسمتك 🏅.',go:'profile',b:'افتح ملفي'},
+ {t:'جاهز! ابدأ من الوحدة الأولى، وأنا هنا في الرئيسية كلما احتجت 😊 بالتوفيق يا {n}!'}
+];
+let TOUR_I=0, TOUR_T=null;
+function startTour(force){
+  if(!force&&(isAdminUser()||tourSeen()))return;
+  if(document.getElementById('tour'))return;
+  TOUR_I=0;
+  const el=document.createElement('div'); el.id='tour';
+  el.innerHTML='<div class="tr-card"><button class="tr-x" onclick="tourEnd()">تخطي ✕</button><div class="tr-av">'+welcomeAvatar(150,'big')+'</div><div class="tr-bubble" id="tr-b"></div><div class="tr-dots" id="tr-d"></div><div class="tr-act" id="tr-a"></div></div>';
+  document.body.appendChild(el);
+  tourDraw();
+}
+function tourName(){return ((MYDOC&&MYDOC.name)||'').trim().split(/\s+/)[0]||'صديقي';}
+function tourDraw(){
+  const s=TOUR_STEPS[TOUR_I], last=TOUR_I===TOUR_STEPS.length-1;
+  const txt=s.t.replace(/\{n\}/g,tourName());
+  const b=document.getElementById('tr-b'); if(!b)return;
+  clearInterval(TOUR_T); const svg=document.querySelector('#tour .av-svg');
+  const rm=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(rm){b.textContent=txt;}
+  else{b.textContent=''; let i=0; if(svg)svg.classList.add('talk'); TOUR_T=setInterval(()=>{i+=2; b.textContent=txt.slice(0,i); if(i>=txt.length){clearInterval(TOUR_T); if(svg)svg.classList.remove('talk');}},28);}
+  document.getElementById('tr-d').innerHTML=TOUR_STEPS.map((x,i)=>'<i class="'+(i===TOUR_I?'on':(i<TOUR_I?'done':''))+'"></i>').join('');
+  document.getElementById('tr-a').innerHTML=
+    (TOUR_I>0?'<button class="ghost" onclick="tourGo(-1)">→ السابق</button>':'')+
+    (s.go&&!last?'<button class="ghost" onclick="tourOpen(\''+s.go+'\')">'+s.b+'</button>':'')+
+    '<button class="main" onclick="'+(last?'tourEnd()':'tourGo(1)')+'">'+(last?'ابدأ الآن 🚀':'التالي ←')+'</button>';
+}
+function tourGo(d){TOUR_I=Math.max(0,Math.min(TOUR_STEPS.length-1,TOUR_I+d)); tourDraw();}
+function tourOpen(v){tourEnd(); try{showView(v);}catch(e){}}
+function tourEnd(){
+  clearInterval(TOUR_T);
+  try{localStorage.setItem(tourSeenKey(),'1');}catch(e){}
+  const el=document.getElementById('tour'); if(el)el.remove();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('tour'))tourEnd();});
 function showWelcome(name){
   if(document.getElementById('welcome')) return;
   const first=(name||'').trim().split(/\s+/)[0]||'بك';
   const w=document.createElement('div');
   w.id='welcome';
-  w.innerHTML='<div class="wv">👋</div><div class="wt"><b>أهلًا '+first+'، سعيد بوجودك في رحلة الاعتماد!</b><span id="wm-msg">'+WELCOME_MSGS[0]+'</span></div>';
+  w.innerHTML='<div class="wv">'+welcomeAvatar(78)+'</div><div class="wt"><b>'+welcomeGreet()+' يا '+first+'، سعيد بوجودك في رحلة الاعتماد!</b><span id="wm-msg">'+WELCOME_MSGS[0]+'</span></div>'+(isAdminUser()?'':'<button class="w-tour" onclick="startTour(true)">🎬 جولة تعريفية</button>');
   homeSkeleton();
   const host=document.getElementById('home-welcome')||document.getElementById('content');
   host.insertBefore(w,host.firstChild);
