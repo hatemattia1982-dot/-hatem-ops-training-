@@ -546,6 +546,48 @@ body:not(.locked) #content{padding-top:64px}
 .sop-step input{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:13px;background:#fff}
 .sop-step input:disabled{background:var(--beige);color:var(--ink)}
 .sop-step .ss-check{border-color:#bfe0c8;background:#f4faf6}
+/* ===== تطوير الإجراءات التشغيلية ===== */
+.scard{border-top-color:var(--sc,var(--red));animation:pcIn .5s both cubic-bezier(.2,.7,.2,1);position:relative;transition:transform .22s,box-shadow .22s}
+.scard:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(11,53,60,.2)}
+.scard .sc-ic{width:34px;height:34px;border-radius:10px;background:var(--sc,var(--red));display:inline-flex;align-items:center;justify-content:center;font-size:19px;box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.scard .sc-top{align-items:center}
+.scard .sc-top .ifav{position:static;margin-inline-start:auto;width:28px;height:28px;background:var(--beige)}
+.scard .sc-code{color:var(--sc,#2b93a0)}
+.scard .sc-top .badge{font-size:11px;padding:2px 9px;white-space:nowrap}
+.scard .sc-top{gap:5px}
+.sc-pv{list-style:none;counter-reset:s;margin:2px 0;padding:0;font-size:12.5px;color:var(--ink-soft)}
+.sc-pv li{counter-increment:s;display:flex;gap:7px;align-items:baseline;padding:1px 0}
+.sc-pv li:before{content:counter(s);flex:0 0 17px;height:17px;border-radius:50%;background:var(--beige-deep);color:var(--ink);font-size:10.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
+.sc-pv li.more:before{content:"…"}.sc-pv li.more{color:#8a8079;font-size:11.5px}
+.sc-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
+.sc-run{background:var(--sc,var(--red));color:#fff;border:0;border-radius:18px;padding:5px 14px;font-family:inherit;font-weight:800;font-size:12.5px;cursor:pointer;transition:transform .15s}
+.sc-run:hover{transform:scale(1.08)}
+/* مخطط التنفيذ */
+.fl{position:relative;padding:4px 0 4px;display:flex;flex-direction:column;gap:0}
+.fl-cap{align-self:flex-start;border-radius:20px;padding:4px 16px;font-weight:800;font-size:13px}
+.fl-cap.start{background:#e8f3ec;color:#1d5a35}.fl-cap.end{background:#fff3d6;color:#a3690f}
+.fl-n{display:flex;gap:12px;align-items:flex-start;position:relative;padding:10px 0 10px}
+.fl-n:before{content:"";position:absolute;inset-inline-start:15px;top:-6px;bottom:-6px;width:3px;background:repeating-linear-gradient(180deg,var(--line) 0 6px,transparent 6px 10px)}
+.fl-num{flex:0 0 33px;height:33px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;box-shadow:0 0 0 4px var(--white)}
+.fl-b{flex:1;background:var(--beige);border:1px solid var(--line);border-radius:12px;padding:8px 14px}
+.fl-b b{display:block;font-size:14px;line-height:1.6}.fl-b small{display:block;color:var(--ink-soft);margin-top:2px}
+.fl-ck{display:inline-block;margin-top:4px;background:#e8f3ec;color:#1d5a35;border:1px solid #bfe0c8;border-radius:14px;padding:1px 10px;font-size:12px;font-weight:700}
+/* وضع التدريب */
+.sr-top{padding:14px 20px 0}
+.sr-bar{height:12px;background:var(--beige-deep);border-radius:8px;overflow:hidden}
+.sr-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--red),#2b93a0,#7a9a4f);transition:width .4s;border-radius:8px}
+.sr-info{display:flex;justify-content:space-between;font-weight:800;font-size:13px;color:var(--ink-soft);margin-top:6px}
+.sr-list{padding:10px 18px 4px;display:flex;flex-direction:column;gap:8px}
+.sr-s{display:flex;gap:12px;align-items:flex-start;background:var(--white);border:2px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;transition:all .2s}
+.sr-s:hover{transform:translateX(-3px);border-color:var(--red)}
+.sr-s .sr-b{flex:0 0 36px;height:36px;border-radius:50%;background:var(--beige-deep);color:var(--ink);font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .25s}
+.sr-s b{font-size:15px;line-height:1.6;display:block}.sr-s small{display:block;color:var(--ink-soft)}
+.sr-s.cur{border-color:#2b93a0;box-shadow:0 0 0 4px rgba(43,147,160,.18)}.sr-s.cur .sr-b{background:#2b93a0;color:#fff}
+.sr-s.ok{background:#f1f8f3;border-color:#bfe0c8}.sr-s.ok .sr-b{background:#2e9e62;color:#fff;transform:scale(1.1)}.sr-s.ok b{text-decoration:line-through;opacity:.65}
+.sr-fin{margin:6px 18px 0;background:linear-gradient(135deg,#14545c,#2b93a0);color:#fff;border-radius:14px;padding:16px 20px;text-align:center;font-size:16px;animation:pcIn .5s both}
+.sr-fin small{opacity:.9;font-size:12.5px}
+@media print{#sp-stats,#sp-chips{display:none!important}}
+
 @media(max-width:720px){.sop-steps-head{display:none}.sop-step{grid-template-columns:28px 1fr 84px}.sop-step .ss-check,.sop-step .ss-note{grid-column:2}}
 
 
@@ -3909,18 +3951,27 @@ function unitOptions(sel,dis){
 }
 
 /* ==== المكتبة ==== */
+const SOP_IC={'فتح الفرع':'🔓','إغلاق الفرع':'🔒','النظافة والتعقيم':'🧼','الاستلام والتخزين':'📦','التحضير والإنتاج':'🍳','الخدمة والتقديم':'🍽️','سلامة الغذاء':'🛡️','الصيانة والمعدات':'🔧','الموارد البشرية':'👥','المالية والرقابة':'💰','خدمة العملاء':'🤝','الطوارئ والسلامة':'🚨'};
+const SOP_COL={'فتح الفرع':'#2e6b45','إغلاق الفرع':'#1c4e8a','النظافة والتعقيم':'#2b93a0','الاستلام والتخزين':'#a8501c','التحضير والإنتاج':'#c98a14','الخدمة والتقديم':'#8a2a5b','سلامة الغذاء':'#14545c','الصيانة والمعدات':'#5c6e78','الموارد البشرية':'#6b4fa0','المالية والرقابة':'#7a6a1c','خدمة العملاء':'#c0507a','الطوارئ والسلامة':'#c0392b'};
+const SOP_FIC={'يومي':'📅','كل وردية':'🔄','أسبوعي':'🗓️','شهري':'📆','عند الحاجة':'⚡'};
+let SP_CAT='', SP_FAV=[];
+try{SP_FAV=JSON.parse(localStorage.getItem('hops_sfav')||'[]');}catch(e){}
+function spFav(id){const k=SP_FAV.indexOf(id);if(k>-1)SP_FAV.splice(k,1);else SP_FAV.push(id);try{localStorage.setItem('hops_sfav',JSON.stringify(SP_FAV));}catch(e){}renderSops();}
+function spSetCat(c){SP_CAT=c;renderSops();}
+let SP_LOADED=false;
 async function loadSops(){
   const view=document.getElementById('ops-view');
   if(!view.dataset.init){
     view.dataset.init='1';
-    view.innerHTML='<div class="iv-bar">'+
-      '<input id="sp-q" placeholder="ابحث بالعنوان أو الكود…" oninput="renderSops()">'+
-      '<select id="sp-cat" onchange="renderSops()"><option value="">كل التصنيفات</option>'+SOP_CATS.map(c=>'<option>'+c+'</option>').join('')+'</select>'+
+    view.innerHTML='<div id="sp-stats" class="iv-stats"></div><div class="iv-bar">'+
+      '<input id="sp-q" placeholder="ابحث بالعنوان أو الكود أو المسؤول أو نص الخطوات…" oninput="renderSops()">'+
       '<select id="sp-st" onchange="renderSops()"><option value="">كل الحالات</option><option value="approved">معتمدة</option><option value="review">قيد المراجعة</option><option value="draft">مسودة</option><option value="suspended">موقوفة</option></select>'+
+      '<select id="sp-freq-f" onchange="renderSops()"><option value="">كل التكرارات</option>'+SOP_FREQ.map(f=>'<option>'+f+'</option>').join('')+'</select>'+
+      '<select id="sp-sort" onchange="renderSops()"><option value="code">حسب الكود</option><option value="new">الأحدث</option><option value="steps">الأكثر خطوات</option><option value="name">الاسم (أ‑ي)</option></select>'+
       '<button onclick="openSop(null)">+ إجراء جديد</button>'+
       '<span id="sp-seed"></span>'+
-      '</div><div class="h-note" style="margin:-6px 0 14px">الإجراء التشغيلي (SOP) وثيقة موحدة لطريقة تنفيذ عملية محددة — يكتبه المتدرب كتمرين ويعتمده المدرب، والمعتمد يراه الجميع ويُطبع للتعليق في الفرع.</div>'+
-      '<div class="iv-grid" id="sp-grid"></div><div class="iv-empty" id="sp-empty" style="display:none">لا توجد إجراءات مطابقة</div>';
+      '</div><div class="iv-chips" id="sp-chips"></div><div class="h-note" style="margin:-4px 0 14px">الإجراء التشغيلي (SOP) وثيقة موحدة لطريقة تنفيذ عملية محددة — يكتبه المتدرب كتمرين ويعتمده المدرب، والمعتمد يراه الجميع ويُطبع للتعليق في الفرع. اضغط ▶ على أي إجراء لتتدرّب على تنفيذه خطوة بخطوة.</div>'+
+      '<div class="iv-grid" id="sp-grid">'+Array(7).join('<div class="icard sk"><div class="ib" style="padding:30px 14px"><b></b><small></small></div></div>')+'</div><div class="iv-empty" id="sp-empty" style="display:none">لا توجد إجراءات مطابقة</div>';
   }
   try{
     const col=db.collection('sops');
@@ -3932,6 +3983,7 @@ async function loadSops(){
       SOPS=Object.values(map);
     }
     SOPS.sort((a,b)=>(a.code||'').localeCompare(b.code||'')||((b.updatedAt&&b.updatedAt.seconds||0)-(a.updatedAt&&a.updatedAt.seconds||0)));
+    SP_LOADED=true;
     renderSops();
     const seed=document.getElementById('sp-seed');
     if(seed) seed.innerHTML=(isAdminUser()&&!SOPS.some(s=>/^SOP-0(0[1-9]|1[0-2])$/.test(s.code||'')))?'<button class="mbtn" style="padding:10px 16px;font-size:13px;background:var(--beige-deep)" onclick="seedSops()">📥 تحميل 12 إجراءً جاهزًا</button>':'';
@@ -3939,23 +3991,116 @@ async function loadSops(){
     document.getElementById('sp-grid').innerHTML='<div class="iv-empty">تعذر التحميل: '+(e.code||e.message)+' — تأكد من نشر قواعد v8</div>';
   }
 }
+function spStats(){
+  const el=document.getElementById('sp-stats'); if(!el)return;
+  const ap=SOPS.filter(s=>s.status==='approved').length, rv=SOPS.filter(s=>s.status==='review').length;
+  const st=SOPS.reduce((n,s)=>n+(s.steps||[]).length,0);
+  const cv=new Set(SOPS.filter(s=>s.status==='approved').map(s=>s.cat)).size;
+  const k=(v,l,c)=>'<div class="ks"><b data-v="'+v+'"'+(c?' style="color:'+c+'"':'')+'>0</b><span>'+l+'</span></div>';
+  el.innerHTML=k(SOPS.length,'إجمالي الإجراءات')+k(ap,'معتمدة','#1d5a35')+k(rv,'قيد المراجعة','#1c4e8a')+k(st,'إجمالي الخطوات','#a3690f')+
+    '<div class="ks"><b style="color:'+(cv>=SOP_CATS.length?'#1d5a35':'#14545c')+'"><span data-v="'+cv+'" style="font-size:inherit;color:inherit">0</span>/'+SOP_CATS.length+'</b><span>تصنيفات مغطّاة (معتمد)</span></div>';
+  el.querySelectorAll('[data-v]').forEach(b=>itCountUp(b,+b.dataset.v,0));
+}
 function renderSops(){
-  const q=(document.getElementById('sp-q').value||'').trim().toLowerCase();
-  const fc=document.getElementById('sp-cat').value, fs=document.getElementById('sp-st').value;
+  const qe=document.getElementById('sp-q'); if(!qe)return;
+  const q=(qe.value||'').trim().toLowerCase();
+  const fs=document.getElementById('sp-st').value, ff=document.getElementById('sp-freq-f').value, so=document.getElementById('sp-sort').value;
   const grid=document.getElementById('sp-grid');
+  const cnt=c=>SOPS.filter(s=>s.cat===c).length;
+  document.getElementById('sp-chips').innerHTML=
+    '<button class="'+(SP_CAT===''?'on':'')+'" onclick="spSetCat(\'\')">الكل <i>'+SOPS.length+'</i></button>'+
+    SOP_CATS.map(c=>(cnt(c)||SP_CAT===c)?'<button class="'+(SP_CAT===c?'on':'')+'" onclick="spSetCat(\''+c+'\')">'+(SOP_IC[c]||'')+' '+c+' <i>'+cnt(c)+'</i></button>':'').join('')+
+    '<button class="'+(SP_CAT==='★'?'on':'')+'" onclick="spSetCat(\'★\')">★ المفضلة <i>'+SP_FAV.filter(id=>SOPS.some(s=>s.id===id)).length+'</i></button>';
   const list=SOPS.filter(s=>{
-    if(fc&&s.cat!==fc) return false;
-    if(fs&&s.status!==fs) return false;
-    if(q&&!((s.titleAr||'').toLowerCase().includes(q)||(s.titleEn||'').toLowerCase().includes(q)||(s.code||'').toLowerCase().includes(q))) return false;
+    if(SP_CAT==='★'){if(SP_FAV.indexOf(s.id)<0)return false;}
+    else if(SP_CAT&&s.cat!==SP_CAT)return false;
+    if(fs&&s.status!==fs)return false;
+    if(ff&&s.freq!==ff)return false;
+    if(q){
+      const hay=[s.titleAr,s.titleEn,s.code,s.owner,s.purpose,s.cat].concat((s.steps||[]).map(x=>x.text)).join(' ').toLowerCase();
+      if(!hay.includes(q))return false;
+    }
     return true;
   });
+  if(so==='new')list.sort((a,b)=>((b.updatedAt&&b.updatedAt.seconds)||0)-((a.updatedAt&&a.updatedAt.seconds)||0));
+  else if(so==='steps')list.sort((a,b)=>(b.steps||[]).length-(a.steps||[]).length);
+  else if(so==='name')list.sort((a,b)=>(a.titleAr||'').localeCompare(b.titleAr||'','ar'));
   document.getElementById('sp-empty').style.display=list.length?'none':'block';
-  grid.innerHTML=list.map(s=>'<div class="scard" onclick="openSop(\''+s.id+'\')">'+
-    '<div class="sc-top"><span class="badge tp">'+escH(s.cat||'—')+'</span>'+stBadge(s.status)+(s.version?'<span class="badge tp">v'+s.version+'</span>':'')+'</div>'+
+  if(!SP_LOADED)return;
+  spStats();
+  grid.innerHTML=list.map((s,n)=>{
+    const col=SOP_COL[s.cat]||'#14545c', fv=SP_FAV.indexOf(s.id)>-1, steps=s.steps||[];
+    return '<div class="scard" style="--sc:'+col+';animation-delay:'+Math.min(n,12)*40+'ms" onclick="openSop(\''+s.id+'\')">'+
+    '<div class="sc-top"><span class="sc-ic">'+(SOP_IC[s.cat]||'📋')+'</span><span class="badge tp">'+escH(s.cat||'—')+'</span>'+stBadge(s.status)+(s.version?'<span class="badge tp">v'+s.version+'</span>':'')+
+      '<button class="ifav'+(fv?' on':'')+'" title="مفضلة" onclick="event.stopPropagation();spFav(\''+s.id+'\')">'+(fv?'★':'☆')+'</button></div>'+
     '<div class="sc-code">'+escH(s.code||'')+'</div><b>'+escH(s.titleAr||'بدون عنوان')+'</b>'+(s.titleEn?'<small dir="ltr">'+escH(s.titleEn)+'</small>':'')+
-    '<div class="sc-meta"><span>📋 '+((s.steps||[]).length)+' خطوة</span>'+(s.freq?'<span>🔁 '+escH(s.freq)+'</span>':'')+(s.owner?'<span>👤 '+escH(s.owner)+'</span>':'')+'</div>'+
+    (steps.length?'<ol class="sc-pv">'+steps.slice(0,3).map(x=>'<li>'+escH(x.text.length>58?x.text.slice(0,58)+'…':x.text)+'</li>').join('')+(steps.length>3?'<li class="more">+ '+(steps.length-3)+' خطوات أخرى</li>':'')+'</ol>':'')+
+    '<div class="sc-meta"><span>📋 '+steps.length+' خطوة</span>'+(s.freq?'<span>'+(SOP_FIC[s.freq]||'🔁')+' '+escH(s.freq)+'</span>':'')+(s.owner?'<span>👤 '+escH(s.owner)+'</span>':'')+'</div>'+
     (s.unit?'<div class="sc-unit">📘 '+escH(unitTitle(s.unit))+'</div>':'')+
-    '<div class="sc-by">'+escH((s.createdBy&&s.createdBy.name)||'')+'</div></div>').join('');
+    '<div class="sc-foot"><span class="sc-by">'+escH((s.createdBy&&s.createdBy.name)||'')+'</span>'+(steps.length?'<button class="sc-run" onclick="event.stopPropagation();sopRun(\''+s.id+'\')">▶ تدرّب</button>':'')+'</div></div>';
+  }).join('');
+}
+
+/* ==== مخطط التنفيذ + وضع التدريب التفاعلي ==== */
+function sopStepsNow(){
+  if(document.getElementById('sop-steps'))return readSopSteps();
+  return [];
+}
+function sopFlow(){
+  const box=document.getElementById('sop-flow'); if(!box)return;
+  const st=readSopSteps();
+  if(!st.length){box.innerHTML='<div class="np-empty">أضف خطوات التنفيذ لتظهر هنا كمخطط</div>';return;}
+  box.innerHTML='<div class="fl"><div class="fl-cap start">🚦 البداية</div>'+
+    st.map((x,i)=>'<div class="fl-n"><span class="fl-num">'+(i+1)+'</span><div class="fl-b"><b>'+escH(x.text)+'</b>'+(x.check?'<span class="fl-ck">✓ '+escH(x.check)+'</span>':'')+(x.note?'<small>'+escH(x.note)+'</small>':'')+'</div></div>').join('')+
+    '<div class="fl-cap end">🏁 تم التنفيذ</div></div>';
+}
+let SR=null;
+function sopRun(id){
+  let s=id?SOPS.find(x=>x.id===id):SCUR;
+  if(!s)return;
+  let steps=(id||!document.getElementById('sop-steps'))?(s.steps||[]):readSopSteps();
+  if(!steps.length){alert('لا توجد خطوات لتنفيذها');return;}
+  const title=id?s.titleAr:(gv('sp-titleAr')||s.titleAr), code=id?s.code:(gv('sp-code')||s.code);
+  if(SR&&SR.iv)clearInterval(SR.iv);
+  SR={steps,done:new Set(),t0:Date.now(),fin:false,title,code,iv:null};
+  document.getElementById('gmod-box').innerHTML=
+    '<div class="imod-head"><h2>▶ تدرّب على: '+escH(title||'')+' <small style="font-weight:400;font-size:12px;opacity:.8">'+escH(code||'')+'</small></h2><button class="x" onclick="sopRunClose()">إغلاق ✕</button></div>'+
+    '<div class="sr-top"><div class="sr-bar"><i id="sr-fill"></i></div><div class="sr-info"><span id="sr-cnt"></span><span id="sr-time">⏱ 00:00</span></div></div>'+
+    '<div id="sr-list" class="sr-list"></div><div id="sr-done"></div>'+
+    '<div class="imod-actions"><button class="btn-ghost" onclick="sopRunReset()">↺ إعادة من البداية</button><button class="btn-ghost" onclick="sopRunClose()">إغلاق</button></div>';
+  document.getElementById('gmodal').classList.add('on');
+  SR.iv=setInterval(sopRunTick,1000);
+  sopRunDraw();
+}
+function sopRunTick(){
+  if(!SR||SR.fin)return;
+  const e=document.getElementById('sr-time'); if(!e){clearInterval(SR.iv);return;}
+  const t=Math.floor((Date.now()-SR.t0)/1000);
+  e.textContent='⏱ '+String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
+}
+function sopRunToggle(i){
+  if(!SR||SR.fin)return;
+  if(SR.done.has(i))SR.done.delete(i); else SR.done.add(i);
+  sopRunDraw();
+  if(SR.done.size===SR.steps.length){
+    SR.fin=true; clearInterval(SR.iv);
+    const t=Math.floor((Date.now()-SR.t0)/1000);
+    const tm=String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
+    document.getElementById('sr-time').textContent='⏱ '+tm;
+    document.getElementById('sr-done').innerHTML='<div class="sr-fin">🏁 أحسنت! نفّذت كل خطوات الإجراء في <b>'+tm+'</b><br><small>طبّق نفس الترتيب في الفرع ووثّق نقاط التحقق في السجل المطلوب.</small></div>';
+    try{window.xConfetti&&window.xConfetti();window.xToast&&window.xToast('🎉 أكملت الإجراء');}catch(e){}
+  }
+}
+function sopRunReset(){ if(!SR)return; clearInterval(SR.iv); SR.done=new Set();SR.t0=Date.now();SR.fin=false; SR.iv=setInterval(sopRunTick,1000); document.getElementById('sr-done').innerHTML=''; sopRunDraw(); sopRunTick(); }
+function sopRunClose(){ if(SR&&SR.iv)clearInterval(SR.iv); SR=null; document.getElementById('gmodal').classList.remove('on'); }
+function sopRunDraw(){
+  if(!SR)return;
+  const n=SR.steps.length,d=SR.done.size;
+  document.getElementById('sr-fill').style.width=(d/n*100)+'%';
+  document.getElementById('sr-cnt').textContent=d+' من '+n+' خطوة';
+  let cur=-1; for(let i=0;i<n;i++){if(!SR.done.has(i)){cur=i;break;}}
+  document.getElementById('sr-list').innerHTML=SR.steps.map((x,i)=>'<div class="sr-s'+(SR.done.has(i)?' ok':'')+(i===cur?' cur':'')+'" onclick="sopRunToggle('+i+')">'+
+    '<span class="sr-b">'+(SR.done.has(i)?'✓':(i+1))+'</span><div><b>'+escH(x.text)+'</b>'+(x.check?'<span class="fl-ck">✓ تحقق: '+escH(x.check)+'</span>':'')+(x.note?'<small>'+escH(x.note)+'</small>':'')+'</div></div>').join('');
 }
 
 /* ==== المحرر ==== */
@@ -3985,6 +4130,7 @@ function openSop(id){
   h+='<div class="imod-sec"><h3>خطوات التنفيذ</h3><div class="h-note">رتّب الخطوات كما تُنفَّذ فعليًا — «نقطة التحقق» هي الحد الحرج أو الدليل على تنفيذ الخطوة (قراءة حرارة، توقيع، صورة…)</div>'+
     '<div class="sop-steps-head"><span></span><span>الخطوة</span><span>نقطة التحقق / الحد الحرج</span><span>ملاحظة</span><span></span></div><div id="sop-steps"></div>'+
     (editable?'<button class="ing-add" onclick="addSopStep()">+ إضافة خطوة</button>':'')+'</div>';
+  h+='<div class="imod-sec"><h3>🧭 مخطط التنفيذ</h3><div id="sop-flow"></div></div>';
   h+='<div class="imod-sec"><h3>معايير القبول والسجلات</h3>'+
     T('sp-criteria','معايير القبول (كيف نعرف أن الإجراء نُفّذ بشكل صحيح؟)',s.criteria)+
     T('sp-records','السجلات والنماذج المطلوبة',s.records,'مثال: سجل الحرارة — 3 مرات يوميًا — يوقّعه مدير الوردية')+
@@ -3996,6 +4142,7 @@ function openSop(id){
   if(admin&&SCUR&&(SCUR.status==='draft'||SCUR.status==='review'||SCUR.status==='suspended')) h+='<button class="btn-approve" onclick="setSopStatus(\'approved\')">✓ اعتماد</button>';
   if(admin&&SCUR&&SCUR.status==='approved') h+='<button class="btn-revert" onclick="setSopStatus(\'suspended\')">⏸ إيقاف</button>';
   if(admin&&SCUR&&SCUR.status!=='draft') h+='<button class="btn-revert" onclick="setSopStatus(\'draft\')">إرجاع لمسودة</button>';
+  if(SCUR) h+='<button class="btn-approve" onclick="sopRun()">▶ تدرّب على التنفيذ</button>';
   if(SCUR&&SCUR.status==='approved') h+='<button class="btn-ghost" onclick="printSop()">🖨️ طباعة الإجراء</button>';
   else if(admin&&SCUR) h+='<button class="btn-ghost" onclick="printSop()">🖨️ طباعة (نسخة غير معتمدة)</button>';
   if(admin&&SCUR) h+='<button class="btn-del" onclick="delSop()">حذف</button>';
@@ -4003,6 +4150,8 @@ function openSop(id){
   document.getElementById('imod-box').innerHTML=h;
   document.getElementById('imodal').classList.add('on');
   (s.steps&&s.steps.length?s.steps:(editable?[{}]:[])).forEach(st=>addSopStep(st,editable));
+  const sb=document.getElementById('sop-steps'); if(sb) sb.addEventListener('input',()=>{try{sopFlow();}catch(e){}});
+  sopFlow();
   if(admin&&SCUR) loadSopVersions();
 }
 function nextSopCode(){
@@ -4024,7 +4173,7 @@ function mvSopStep(btn,dir){
   const row=btn.closest('.sop-step'); const sib=dir<0?row.previousElementSibling:row.nextElementSibling; if(!sib) return;
   if(dir<0) row.parentNode.insertBefore(row,sib); else row.parentNode.insertBefore(sib,row); numSopSteps();
 }
-function numSopSteps(){document.querySelectorAll('#sop-steps .sop-step .n').forEach((n,i)=>n.textContent=i+1);}
+function numSopSteps(){document.querySelectorAll('#sop-steps .sop-step .n').forEach((n,i)=>n.textContent=i+1);try{sopFlow();}catch(e){}}
 function readSopSteps(){
   return Array.from(document.querySelectorAll('#sop-steps .sop-step')).map(r=>({text:r.querySelector('.ss-text').value.trim(),check:r.querySelector('.ss-check').value.trim(),note:r.querySelector('.ss-note').value.trim()})).filter(s=>s.text);
 }
@@ -6939,6 +7088,7 @@ function wrapGrade(){
   w._x=1;window.grade=w;
 }
 wrapGrade();
+window.xConfetti=confetti;window.xToast=toast;
 onScroll();
 })();
 </script>
