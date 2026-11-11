@@ -264,6 +264,26 @@ body:not(.locked) #bar{display:flex}
 .av-card.on:after{content:"✓";position:absolute;top:-8px;left:-8px;width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
 .av-card span{font-size:13px}
 @media(max-width:520px){.av-gal{grid-template-columns:repeat(4,1fr)}}
+/* ===== الصورة الرمزية الواقعية ===== */
+.av-photo{display:inline-block;border-radius:50%;overflow:hidden;position:relative;background:var(--beige-deep);box-shadow:0 0 0 3px rgba(255,255,255,.85),0 8px 18px rgba(0,0,0,.28);flex-shrink:0;vertical-align:middle;transition:transform .3s}
+.av-photo img{display:block;width:100%;height:100%;object-fit:cover}
+#welcome .av-photo{animation:avBreath 4.5s ease-in-out infinite}
+#welcome .av-photo:hover{transform:scale(1.08)}
+.av-photo.speaking{animation:avSpeak 1s ease-in-out infinite!important}
+@keyframes avBreath{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}
+@keyframes avSpeak{0%,100%{box-shadow:0 0 0 3px rgba(255,255,255,.9),0 0 0 3px rgba(232,201,143,.7)}50%{box-shadow:0 0 0 3px rgba(255,255,255,.9),0 0 0 14px rgba(232,201,143,0)}}
+.av-photo.still{animation:none;box-shadow:0 0 0 2px var(--line)}
+.av-pv .av-photo{box-shadow:0 0 0 4px var(--white),0 0 0 7px var(--red),0 14px 30px rgba(0,0,0,.25)}
+.av-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.av-row>b{flex:0 0 64px;font-size:13px}
+.av-card{padding:3px;border-radius:50%;border:3px solid transparent;background:transparent}
+.av-card.on{border-color:var(--red);box-shadow:none}
+.av-card.on:after{display:none}
+.av-gal{display:block}
+.av-vt{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:16px}
+.tr-card .av-vt{position:absolute;top:10px;right:14px;background:var(--beige-deep);color:var(--ink);border:0}
+.pf-av .av-photo{box-shadow:0 0 0 3px rgba(255,255,255,.7)}
+.pf-av.has-svg{width:auto;height:auto}
 .av-svg{display:block;filter:drop-shadow(0 6px 10px rgba(0,0,0,.28));animation:avBob 3.2s ease-in-out infinite}
 .av-svg .av-wave{transform-box:view-box;transform-origin:96px 92px;animation:avWave 1.6s ease-in-out infinite}
 .av-svg .av-eyes{transform-box:fill-box;transform-origin:center;animation:avBlink 4.5s infinite}
@@ -2782,9 +2802,8 @@ const WELCOME_MSGS=[
 "أول من يصل وأول من يعرف — هذا هو معيار مدير التشغيل"
 ];
 /* ==== أفتار الترحيب + جولة المتدرب الجديد ==== */
-/* ==== أفتار شخصي لكل متدرب: الجنس ولون البشرة ولون المنصة المفضل ==== */
-const AV_ON=false; /* إخفاء الأفتار الكرتوني مؤقتًا حتى تجهز الصور الواقعية */
-const AV_TONES=['#f4c7a1','#e3a678','#c68642','#8d5524'];
+/* ==== الصورة الرمزية الواقعية لكل متدرب: اختيار من صور جاهزة + لون المنصة + قراءة صوتية ==== */
+const AV_ON=true;
 const AV_THEMES={
  teal:{n:'أخضر مزرق',a:'#14545c',d:'#0b353c',s:'#1f7a85'},
  navy:{n:'أزرق ملكي',a:'#1c4e8a',d:'#0f2f55',s:'#2b6bb3'},
@@ -2793,61 +2812,82 @@ const AV_THEMES={
  clay:{n:'قرميدي',a:'#a8501c',d:'#6b300e',s:'#c9692f'},
  slate:{n:'رمادي أزرق',a:'#34495e',d:'#1f2d3a',s:'#52708a'}
 };
-function avShade(hex,f){const n=parseInt(hex.slice(1),16);const r=Math.round((n>>16)*f),g=Math.round(((n>>8)&255)*f),b=Math.round((n&255)*f);return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
-function avNorm(a){a=a||{}; return {g:a.g==='f'?'f':'m',tone:Math.max(0,Math.min(AV_TONES.length-1,Number(a.tone)||0)),col:AV_THEMES[a.col]?a.col:'teal'};}
-function avGet(){
+function avNorm(a){a=a||{}; const g=a.g==='f'?'f':'m'; let i=Number(a.i); if(isNaN(i))i=0; i=Math.max(0,Math.min(3,Math.floor(i))); return {g:g,i:i,col:AV_THEMES[a.col]?a.col:'teal'};}
+function avStored(){
   let a=(MYDOC&&MYDOC.avatar)||null;
   if(!a){try{a=JSON.parse(localStorage.getItem('hops_av_'+(ME&&ME.uid))||'null');}catch(e){}}
-  return avNorm(a);
+  return a;
 }
+function avHas(){return !!avStored();}
+function avGet(){return avNorm(avStored());}
+function avSrc(a,small){a=avNorm(a); return 'avatars/'+a.g+(a.i+1)+(small?'-s':'')+'.jpg';}
 function applyAvatarTheme(a){
   if(!AV_ON) return;
   const t=AV_THEMES[avNorm(a||avGet()).col], r=document.documentElement.style;
   r.setProperty('--red',t.a); r.setProperty('--red-dark',t.d); r.setProperty('--red-soft',t.s);
 }
+/* صورة دائرية؛ بدون opt تُعرض صورة المستخدم الحالية إن اختارها */
 function welcomeAvatar(size,cls,opt){
   if(!AV_ON) return '';
-  const a=avNorm(opt===undefined?avGet():opt), t=AV_THEMES[a.col], sk=AV_TONES[a.tone], sk2=avShade(sk,.88);
-  const f=a.g==='f';
-  const arm='<g class="av-wave"><rect x="92" y="62" width="11" height="34" rx="5.5" fill="'+sk+'" transform="rotate(18 96 92)"/><circle cx="105" cy="60" r="8" fill="'+sk+'"/></g>';
-  const body='<path d="M16 118Q16 88 60 88Q104 88 104 118Z" fill="'+t.a+'"/><path d="M47 88L60 103L73 88Z" fill="#fff"/><rect x="66" y="100" width="22" height="11" rx="3" fill="#e8c98f"/><rect x="69" y="104" width="16" height="2.5" rx="1" fill="'+t.a+'"/>';
-  const neck='<rect x="53" y="76" width="14" height="14" rx="6" fill="'+sk2+'"/>';
-  let head;
-  if(f){
-    head='<path d="M27 64Q27 28 60 28Q93 28 93 64Q93 88 78 96L42 96Q27 88 27 64Z" fill="'+t.d+'"/>'+
-      '<ellipse cx="60" cy="60" rx="19.5" ry="22" fill="'+sk+'"/>'+
-      '<path d="M40 52Q60 34 80 52Q60 44 40 52Z" fill="'+t.d+'"/>'+
-      '<path d="M36 84Q60 104 84 84L94 104Q60 118 26 104Z" fill="'+t.s+'"/>';
-  }else{
-    head='<circle cx="60" cy="58" r="23" fill="'+sk+'"/>'+
-      '<g fill="#fff" stroke="#dfe8ea" stroke-width="1.5"><circle cx="43" cy="33" r="11"/><circle cx="60" cy="27" r="13"/><circle cx="77" cy="33" r="11"/><rect x="41" y="36" width="38" height="12" rx="4"/></g>';
-  }
-  const ey=f?60:58;
-  const face='<g class="av-eyes" fill="#2b3a3f"><ellipse cx="51" cy="'+ey+'" rx="3" ry="4"/><ellipse cx="69" cy="'+ey+'" rx="3" ry="4"/></g>'+
-    (f?'<g stroke="#2b3a3f" stroke-width="1" stroke-linecap="round"><path d="M47.8 '+(ey-3.6)+'L46.3 '+(ey-5)+'M51 '+(ey-4.5)+'L50.7 '+(ey-6)+'M54.2 '+(ey-3.6)+'L55.4 '+(ey-5)+'M65.8 '+(ey-3.6)+'L64.6 '+(ey-5)+'M69 '+(ey-4.5)+'L69.3 '+(ey-6)+'M72.2 '+(ey-3.6)+'L73.7 '+(ey-5)+'"/></g>':'')+
-    '<circle cx="45" cy="'+(ey+8)+'" r="4.5" fill="#f08a8a" opacity=".35"/><circle cx="75" cy="'+(ey+8)+'" r="4.5" fill="#f08a8a" opacity=".35"/>'+
-    '<path class="av-m" d="M51 '+(ey+9)+'Q60 '+(ey+21)+' 69 '+(ey+9)+'Z" fill="#a8553a"/>';
-  return '<svg class="av-svg '+(cls||'')+'" viewBox="0 0 120 120" width="'+size+'" height="'+size+'" role="img" aria-label="الأفتار الشخصي">'+
-    '<circle cx="60" cy="60" r="58" fill="#f7f2eb"/>'+arm+body+neck+head+face+'</svg>';
+  if(opt===undefined&&!avHas()) return '';
+  const a=avNorm(opt===undefined?avGet():opt);
+  return '<span class="av-photo '+(cls||'')+'" style="width:'+size+'px;height:'+size+'px"><img src="'+avSrc(a,size<=120)+'" alt="" width="'+size+'" height="'+size+'" decoding="async"></span>';
 }
+/* ==== القراءة الصوتية (صوت المتصفح العربي — مجاني) ==== */
+function avVoiceOn(){try{return localStorage.getItem('hops_voice')!=='0';}catch(e){return true;}}
+function avVoiceToggle(){
+  const on=!avVoiceOn(); try{localStorage.setItem('hops_voice',on?'1':'0');}catch(e){}
+  if(!on) avStop();
+  document.querySelectorAll('.av-vt').forEach(b=>{b.textContent=on?'🔊':'🔇'; b.title=on?'الصوت مفعّل':'الصوت متوقف';});
+}
+function avPickVoice(){
+  if(!('speechSynthesis' in window)) return null;
+  const vs=speechSynthesis.getVoices().filter(v=>/^ar/i.test(v.lang)); if(!vs.length) return null;
+  const f=avGet().g==='f';
+  const fem=/female|zariyah|hoda|salma|laila|amina|fatima|noura|sana|hala|amira/i, mal=/male|naayf|hamed|maged|shakir|tarik|fahed|omar|salem/i;
+  return vs.find(v=>(f?fem:mal).test(v.name)&&!(f?mal:fem).test(v.name))||vs.find(v=>/ar-SA/i.test(v.lang))||vs[0];
+}
+function avClean(t){return String(t).replace(/[\u{1F000}-\u{1FFFF}\u2600-\u27BF\uFE0F]/gu,'').replace(/[«»]/g,'').replace(/\s+/g,' ').trim();}
+function avSetSpeaking(on){document.querySelectorAll('#welcome .av-photo,#pf-me .av-photo').forEach(e=>e.classList.toggle('speaking',on));}
+function avStop(){try{speechSynthesis.cancel();}catch(e){} avSetSpeaking(false);}
+function avSpeak(text,force){
+  if(!('speechSynthesis' in window)||(!force&&!avVoiceOn())) return false;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(avClean(text)); u.lang='ar-SA'; u.rate=.96;
+    const v=avPickVoice(); if(v){u.voice=v; u.lang=v.lang;} if(avGet().g==='f') u.pitch=1.08;
+    u.onstart=()=>avSetSpeaking(true); u.onend=u.onerror=()=>avSetSpeaking(false);
+    speechSynthesis.speak(u); return true;
+  }catch(e){return false;}
+}
+if('speechSynthesis' in window){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{};}catch(e){}}
+function avGreet(){
+  const n=((MYDOC&&MYDOC.name)||'').trim().split(/\s+/)[0]||'';
+  if(!avSpeak(welcomeGreet()+' '+n+'، أهلاً بك في منصة تأهيل مديري التشغيل. أنا سعيد بوجودك، وأتمنى لك رحلة تدريبية ممتعة ومثمرة نحو الاعتماد. بالتوفيق!',true)){
+    try{window.xToast&&window.xToast('الصوت غير مدعوم في هذا المتصفح');}catch(e){}
+  }
+}
+/* ==== الحفظ ==== */
 function avSave(a,done){
   a=avNorm(a);
   try{localStorage.setItem('hops_av_'+ME.uid,JSON.stringify(a));}catch(e){}
   MYDOC=Object.assign(MYDOC||{},{avatar:a});
   const me=(typeof pfTr==='function')?pfTr(ME.uid):null; if(me)me.avatar=a;
   applyAvatarTheme(a);
-  const w=document.querySelector('#welcome .wv'); if(w)w.innerHTML=welcomeAvatar(78);
+  const w=document.querySelector('#welcome .wv'); if(w)w.innerHTML=welcomeAvatar(78)||'👋';
+  const wb=document.querySelector('#welcome .w-av'); if(wb)wb.textContent='🎨 غيّر صورتك';
   try{if(document.getElementById('pf-me'))pfRenderMe();}catch(e){}
   return db.collection('trainees').doc(ME.uid).update({avatar:a,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})
     .then(()=>done(true),e=>done(false,e));
 }
+/* ==== نافذة الاختيار ==== */
 let AV_EDIT=null, AV_ORIG=null;
 function openAvatarEditor(){
   AV_ORIG=avGet(); AV_EDIT=Object.assign({},AV_ORIG);
   const box=document.getElementById('imod-box');
-  box.innerHTML='<div class="imod-head"><h2>🎨 اختر شخصيتك</h2><button class="x" onclick="avCancel()">إغلاق ✕</button></div>'+
+  box.innerHTML='<div class="imod-head"><h2>🎨 اختر صورتك الرمزية</h2><button class="x" onclick="avCancel()">إغلاق ✕</button></div>'+
     '<div class="imod-sec"><div class="av-ed"><div class="av-pv" id="av-pv"></div><div class="av-opts">'+
-    '<div><label>اختر شخصيتك</label><div class="av-gal" id="av-gal"></div></div>'+
+    '<div><label>اختر صورتك — الجنس يحدد الصور</label><div class="av-gal" id="av-gal"></div></div>'+
     '<div><label>اختر لون المنصة المفضل <small style="font-weight:400">— يلوّن المنصة كلها على حسابك</small></label><div class="av-cols">'+Object.keys(AV_THEMES).map(k=>'<button id="avc-'+k+'" onclick="avSet({col:\''+k+'\'})"><i style="background:'+AV_THEMES[k].a+'"></i>'+AV_THEMES[k].n+'</button>').join('')+'</div></div>'+
     '</div></div><div id="av-msg" style="margin-top:12px;font-weight:700;font-size:13px"></div>'+
     '<div class="imod-actions" style="margin:14px 0 0"><button class="btn-save" id="av-save" onclick="avCommit()">✓ اعتماد اختياري</button><button class="btn-ghost" onclick="avCancel()">إلغاء</button></div></div>';
@@ -2857,14 +2897,16 @@ function openAvatarEditor(){
 function avSet(o){Object.assign(AV_EDIT,o); applyAvatarTheme(AV_EDIT); avDraw();}
 function avDraw(){
   const pv=document.getElementById('av-pv'); if(!pv)return;
-  pv.innerHTML=welcomeAvatar(150,'',AV_EDIT);
+  pv.innerHTML=welcomeAvatar(170,'',AV_EDIT);
   const gal=document.getElementById('av-gal');
   if(gal){
     let h='';
-    ['m','f'].forEach(g=>AV_TONES.forEach((c,i)=>{
-      const on=AV_EDIT.g===g&&AV_EDIT.tone===i;
-      h+='<button class="av-card'+(on?' on':'')+'" onclick="avSet({g:\''+g+'\',tone:'+i+'})" aria-label="'+(g==='m'?'شخصية ذكر':'شخصية أنثى')+' '+(i+1)+'">'+welcomeAvatar(64,'still',{g:g,tone:i,col:AV_EDIT.col})+'<span>'+(g==='m'?'👨':'👩')+'</span></button>';
-    }));
+    [['m','رجل'],['f','امرأة']].forEach(g=>{
+      h+='<div class="av-row"><b>'+(g[0]==='m'?'👨 ':'👩 ')+g[1]+'</b>';
+      for(let i=0;i<4;i++){const on=AV_EDIT.g===g[0]&&AV_EDIT.i===i;
+        h+='<button class="av-card'+(on?' on':'')+'" onclick="avSet({g:\''+g[0]+'\',i:'+i+'})" aria-label="صورة '+g[1]+' '+(i+1)+'">'+welcomeAvatar(84,'still',{g:g[0],i:i})+'</button>';}
+      h+='</div>';
+    });
     gal.innerHTML=h;
   }
   Object.keys(AV_THEMES).forEach(k=>{const b=document.getElementById('avc-'+k); if(b)b.classList.toggle('on',AV_EDIT.col===k);});
@@ -2875,7 +2917,7 @@ function avCommit(){
   avSave(AV_EDIT,(ok,e)=>{
     const m=document.getElementById('av-msg'); if(b)b.disabled=false;
     if(ok){closeItem();}
-    else if(m){m.style.color='#8a5a00'; m.innerHTML='✓ حُفظ اختيارك على هذا الجهاز. لم يُحفظ في الحساب ('+escH((e&&(e.code||e.message))||'')+') — ليظهر للمدرب ولتنتقل معك بين الأجهزة، يجب نشر قواعد Firestore المحدّثة.';}
+    else if(m){m.style.color='#8a5a00'; m.innerHTML='✓ حُفظ اختيارك على هذا الجهاز. لم يُحفظ في الحساب ('+escH((e&&(e.code||e.message))||'')+') — تأكد من نشر قواعد Firestore المحدّثة.';}
   });
 }
 
@@ -2883,12 +2925,12 @@ function welcomeGreet(){const h=new Date().getHours(); return h<12?'صباح ا�
 function tourSeenKey(){return 'hops_tour_'+(ME&&ME.uid);}
 function tourSeen(){try{return localStorage.getItem(tourSeenKey())==='1';}catch(e){return true;}}
 const TOUR_STEPS=[
- {t:'أهلًا {n}! أنا مرشدك في المنصة 👋 سأعرّفك على أهم الأقسام في دقيقة واحدة.'},
+ {t:'أهلًا {n}! 👋 سأعرّفك على أهم أقسام المنصة في دقيقة واحدة. ولا تنسَ أن تختار صورتك الرمزية ولون المنصة المفضل.',go:'__avatar',b:'اختر صورتك الرمزية'},
  {t:'📘 «الدليل التدريبي» هو قلب البرنامج: وحدات متتابعة، وفي نهاية كل وحدة اختبار — اجتزه بـ 80% فأكثر لتنتقل لما بعده.',go:'manual',b:'افتح الدليل'},
  {t:'🍽️ «مكتبة الأصناف» و«الإجراءات التشغيلية» و«الملصقات»: مراجع جاهزة تتدرب منها، ويمكنك طباعتها للتعليق في الفرع.',go:'ops',b:'شاهد الإجراءات'},
  {t:'🧪 «التطبيق العملي»: نفّذ قوائم فحص حقيقية، وسجّل الانحرافات، وتتبّع المؤشرات — والمدرب يقيّم عملك.',go:'practice',b:'افتح التطبيق العملي'},
  {t:'🎫 تحتاج مساعدة؟ افتح تذكرة من «الدعم» وسيصلك الرد في الإشعارات 🔔. وفي «ملف المتدرب» ترى رحلتك نحو الاعتماد وأوسمتك 🏅.',go:'profile',b:'افتح ملفي'},
- {t:'جاهز! ابدأ من الوحدة الأولى، وأنا هنا في الرئيسية كلما احتجت 😊 بالتوفيق يا {n}!'}
+ {t:'جاهز! ابدأ من الوحدة الأولى، والصفحة الرئيسية تلخّص لك كل شيء 😊 بالتوفيق يا {n}!'}
 ];
 let TOUR_I=0, TOUR_T=null;
 function startTour(force){
@@ -2896,7 +2938,7 @@ function startTour(force){
   if(document.getElementById('tour'))return;
   TOUR_I=0;
   const el=document.createElement('div'); el.id='tour';
-  el.innerHTML='<div class="tr-card"><button class="tr-x" onclick="tourEnd()">تخطي ✕</button>'+(AV_ON?'<div class="tr-av">'+welcomeAvatar(150,'big')+'</div>':'<div class="tr-emo">👋</div>')+'<div class="tr-bubble" id="tr-b"></div><div class="tr-dots" id="tr-d"></div><div class="tr-act" id="tr-a"></div></div>';
+  el.innerHTML='<div class="tr-card"><button class="tr-x" onclick="tourEnd()">تخطي ✕</button>'+'<button class="av-vt" onclick="avVoiceToggle()" title="الصوت">'+(avVoiceOn()?'🔊':'🔇')+'</button><div class="tr-emo">👋</div>'+'<div class="tr-bubble" id="tr-b"></div><div class="tr-dots" id="tr-d"></div><div class="tr-act" id="tr-a"></div></div>';
   document.body.appendChild(el);
   tourDraw();
 }
@@ -2907,6 +2949,7 @@ function tourDraw(){
   const b=document.getElementById('tr-b'); if(!b)return;
   clearInterval(TOUR_T); const svg=document.querySelector('#tour .av-svg');
   const rm=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+  avSpeak(txt);
   if(rm){b.textContent=txt;}
   else{b.textContent=''; let i=0; if(svg)svg.classList.add('talk'); TOUR_T=setInterval(()=>{i+=2; b.textContent=txt.slice(0,i); if(i>=txt.length){clearInterval(TOUR_T); if(svg)svg.classList.remove('talk');}},28);}
   document.getElementById('tr-d').innerHTML=TOUR_STEPS.map((x,i)=>'<i class="'+(i===TOUR_I?'on':(i<TOUR_I?'done':''))+'"></i>').join('');
@@ -2916,9 +2959,9 @@ function tourDraw(){
     '<button class="main" onclick="'+(last?'tourEnd()':'tourGo(1)')+'">'+(last?'ابدأ الآن 🚀':'التالي ←')+'</button>';
 }
 function tourGo(d){TOUR_I=Math.max(0,Math.min(TOUR_STEPS.length-1,TOUR_I+d)); tourDraw();}
-function tourOpen(v){tourEnd(); try{showView(v);}catch(e){}}
+function tourOpen(v){tourEnd(); try{if(v==='__avatar')openAvatarEditor(); else showView(v);}catch(e){}}
 function tourEnd(){
-  clearInterval(TOUR_T);
+  clearInterval(TOUR_T); avStop();
   try{localStorage.setItem(tourSeenKey(),'1');}catch(e){}
   const el=document.getElementById('tour'); if(el)el.remove();
 }
@@ -2928,7 +2971,7 @@ function showWelcome(name){
   const first=(name||'').trim().split(/\s+/)[0]||'بك';
   const w=document.createElement('div');
   w.id='welcome';
-  w.innerHTML='<div class="wv">'+(AV_ON?welcomeAvatar(78):'👋')+'</div><div class="wt"><b>'+welcomeGreet()+' يا '+first+'، سعيد بوجودك في رحلة الاعتماد!</b><span id="wm-msg">'+WELCOME_MSGS[0]+'</span></div>'+(AV_ON?'<button class="w-av" onclick="openAvatarEditor()">🎨 اختر شخصيتك</button>':'')+(isAdminUser()?'':'<button class="w-tour" onclick="startTour(true)">🎬 جولة تعريفية</button>');
+  w.innerHTML='<div class="wv">'+(welcomeAvatar(78)||'👋')+'</div><div class="wt"><b>'+welcomeGreet()+' يا '+first+'، سعيد بوجودك في رحلة الاعتماد!</b><span id="wm-msg">'+WELCOME_MSGS[0]+'</span></div>'+(AV_ON?'<button class="w-av" onclick="openAvatarEditor()">🎨 '+(avHas()?'غيّر صورتك':'اختر صورتك')+'</button><button class="av-vt" onclick="avGreet()" title="استمع للترحيب">🔊</button>':'')+(isAdminUser()?'':'<button class="w-tour" onclick="startTour(true)">🎬 جولة تعريفية</button>');
   homeSkeleton();
   const host=document.getElementById('home-welcome')||document.getElementById('content');
   host.insertBefore(w,host.firstChild);
@@ -6536,10 +6579,10 @@ function pfRenderMe(){
   const t=pfMyState(); const s=stats(t.scores||{}); const r=pfReadiness(ME.uid); const cert=r.cert;
   const initial=((t.name||'؟').trim().charAt(0))||'؟';
   const meta=[t.jobTitle,t.employer,t.branch,t.city].filter(Boolean).map(escH).join(' · ');
-  box.innerHTML='<div class="pf-head"><div class="pf-av'+(AV_ON?' has-svg':'')+'">'+(AV_ON?welcomeAvatar(66,'',t.avatar||avGet()):escH(initial))+'</div><div class="pf-nm"><b>'+escH(t.name||'')+'</b><span dir="ltr" style="text-align:right">'+escH(t.email||'')+'</span>'+(meta?'<span>'+meta+'</span>':'<span style="opacity:.75">أكمل بياناتك: المسمى الوظيفي، جهة العمل، الفرع، المدينة</span>')+'</div>'+
+  box.innerHTML='<div class="pf-head"><div class="pf-av'+(AV_ON&&(t.avatar||avHas())?' has-svg':'')+'">'+(AV_ON&&(t.avatar||avHas())?welcomeAvatar(66,'',t.avatar||avGet()):escH(initial))+'</div><div class="pf-nm"><b>'+escH(t.name||'')+'</b><span dir="ltr" style="text-align:right">'+escH(t.email||'')+'</span>'+(meta?'<span>'+meta+'</span>':'<span style="opacity:.75">أكمل بياناتك: المسمى الوظيفي، جهة العمل، الفرع، المدينة</span>')+'</div>'+
     '<div class="pf-chips">'+(cert?'<span class="badge">🎓 معتمد — '+escH((cert.classification&&cert.classification.name)||'')+'</span>':'')+
     '<span class="badge">انضم '+(t.createdAt?new Date(tsMs(t.createdAt)).toLocaleDateString('ar-SA'):'—')+'</span>'+
-    ''+(AV_ON?'<button class="mbtn" onclick="openAvatarEditor()">🎨 اختر شخصيتك</button> ':'')+'<button class="mbtn" onclick="pfEditMe()">✏️ تعديل بياناتي</button></div></div>'+
+    ''+(AV_ON?'<button class="mbtn" onclick="openAvatarEditor()">🎨 صورتي الرمزية</button> ':'')+'<button class="mbtn" onclick="pfEditMe()">✏️ تعديل بياناتي</button></div></div>'+
     '<div class="h-grid">'+
     '<div class="cbox"><b>'+s.done+' / '+MODS.length+'</b><span>الوحدات المجتازة</span></div>'+
     '<div class="cbox"><b>'+s.avg+'%</b><span>متوسط الاختبارات</span></div>'+
@@ -6604,7 +6647,7 @@ function pfRenderDirTable(){
       const s=stats(t.scores||{}); const r=pfReadiness(t.uid); const susp=t.status==='suspended';
       const fin=r.final.has?('<span class="num" dir="ltr">'+r.final.total+'%</span> '+pfClsBadge(r.final.cls)):'<span class="badge tp">لم يُقيَّم</span>';
       const cert=r.cert?'<span class="badge ct-valid">🎓 '+escH(r.cert.serial||'معتمد')+'</span>':(r.ready?'<span class="badge st-review">جاهز للإصدار</span>':'<span class="badge ct-none">—</span>');
-      return '<tr class="clk" onclick="pfOpenTrainee(\''+t.uid+'\')"><td>'+(AV_ON?'<span class="dir-av">'+welcomeAvatar(34,'still',t.avatar||{})+'</span>':'')+'<b>'+escH(t.name||'—')+'</b>'+(susp?' <span class="badge st-suspended">موقوف</span>':'')+(pfAttn(t.uid).length?' <span class="badge r-warn" title="'+escH(pfAttn(t.uid).join(' · '))+'">⚠ '+escH(pfAttn(t.uid)[0])+'</span>':'')+'<br><small dir="ltr" style="color:var(--ink-soft);display:inline-block">'+escH(t.email||'')+'</small></td>'+
+      return '<tr class="clk" onclick="pfOpenTrainee(\''+t.uid+'\')"><td>'+(AV_ON&&t.avatar?'<span class="dir-av">'+welcomeAvatar(34,'still',t.avatar)+'</span>':'')+'<b>'+escH(t.name||'—')+'</b>'+(susp?' <span class="badge st-suspended">موقوف</span>':'')+(pfAttn(t.uid).length?' <span class="badge r-warn" title="'+escH(pfAttn(t.uid).join(' · '))+'">⚠ '+escH(pfAttn(t.uid)[0])+'</span>':'')+'<br><small dir="ltr" style="color:var(--ink-soft);display:inline-block">'+escH(t.email||'')+'</small></td>'+
         '<td class="hm">'+escH([t.employer,t.branch].filter(Boolean).join(' — ')||'—')+'</td>'+
         '<td class="num">'+s.done+' / '+MODS.length+'<br><small style="font-weight:400;color:var(--ink-soft)">متوسط '+s.avg+'%</small></td>'+
         '<td class="hm num">'+(r.att.pct==null?'—':r.att.pct+'%')+'</td>'+
