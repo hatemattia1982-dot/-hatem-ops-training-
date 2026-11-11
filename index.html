@@ -237,6 +237,33 @@ body:not(.locked) #bar{display:flex}
 #welcome{max-width:960px;margin:18px auto 0;background:linear-gradient(135deg,var(--red-dark),var(--red));color:#fff;border-radius:16px;padding:18px 26px;display:flex;align-items:center;gap:14px;box-shadow:0 10px 26px rgba(11,53,60,.25)}
 /* ===== أفتار الترحيب والجولة ===== */
 #welcome .wv{flex:0 0 auto;line-height:0}
+/* ===== تخصيص الأفتار ===== */
+.av-svg.still,.av-svg.still *{animation:none!important}
+.av-ed{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.av-pv{flex:0 0 auto;background:var(--beige);border-radius:50%;padding:6px;box-shadow:inset 0 0 0 2px var(--line)}
+.av-opts{flex:1;min-width:240px;display:flex;flex-direction:column;gap:14px}
+.av-opts label{display:block;font-size:13px;font-weight:800;color:var(--ink-soft);margin-bottom:6px}
+.av-seg{display:flex;gap:8px}
+.av-seg button{flex:1;border:2px solid var(--line);background:var(--white);border-radius:12px;padding:10px;font-family:inherit;font-weight:800;font-size:15px;cursor:pointer;transition:all .15s}
+.av-seg button.on{border-color:var(--red);background:var(--red);color:#fff}
+.av-tones{display:flex;gap:10px}
+.av-tones button{width:38px;height:38px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px var(--line);cursor:pointer;transition:transform .15s}
+.av-tones button:hover{transform:scale(1.12)}.av-tones button.on{box-shadow:0 0 0 3px var(--red)}
+.av-cols{display:flex;gap:8px;flex-wrap:wrap}
+.av-cols button{display:inline-flex;align-items:center;gap:7px;border:2px solid var(--line);background:var(--white);border-radius:20px;padding:5px 12px 5px 8px;font-family:inherit;font-weight:700;font-size:12.5px;cursor:pointer;transition:all .15s}
+.av-cols button i{width:18px;height:18px;border-radius:50%;display:block}
+.av-cols button:hover{transform:translateY(-2px)}.av-cols button.on{border-color:var(--red);box-shadow:0 0 0 2px var(--red) inset}
+.pf-av.has-svg{background:transparent;padding:0;overflow:visible}
+.dir-av{display:inline-block;vertical-align:middle;margin-inline-end:8px;line-height:0}
+#welcome .w-av{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:6px 14px;font-family:inherit;font-weight:700;font-size:12.5px;cursor:pointer;white-space:nowrap}
+#welcome .w-av:hover{background:rgba(255,255,255,.28)}
+.av-gal{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.av-card{position:relative;border:2.5px solid var(--line);background:var(--white);border-radius:16px;padding:6px 4px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .15s,border-color .15s,box-shadow .15s}
+.av-card:hover{transform:translateY(-3px);box-shadow:0 8px 16px rgba(11,53,60,.14)}
+.av-card.on{border-color:var(--red);box-shadow:0 0 0 3px rgba(20,84,92,.18)}
+.av-card.on:after{content:"✓";position:absolute;top:-8px;left:-8px;width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+.av-card span{font-size:13px}
+@media(max-width:520px){.av-gal{grid-template-columns:repeat(4,1fr)}}
 .av-svg{display:block;filter:drop-shadow(0 6px 10px rgba(0,0,0,.28));animation:avBob 3.2s ease-in-out infinite}
 .av-svg .av-wave{transform-box:view-box;transform-origin:96px 92px;animation:avWave 1.6s ease-in-out infinite}
 .av-svg .av-eyes{transform-box:fill-box;transform-origin:center;animation:avBlink 4.5s infinite}
@@ -2544,6 +2571,7 @@ auth.onAuthStateChanged(async u=>{
     if(st==='rejected'){await auth.signOut(); err('لم يُقبل طلب انضمامك — تواصل مع المدرب للاستفسار'); return;}
     if(st==='suspended'){await auth.signOut(); err('حسابك موقوف مؤقتًا — تواصل مع المدرب'); return;}
   }
+  try{applyAvatarTheme();}catch(e){}
   document.body.classList.remove('locked');
   const g=document.getElementById('gate'); if(g) g.remove();
   injectQuizzes();
@@ -2753,20 +2781,100 @@ const WELCOME_MSGS=[
 "أول من يصل وأول من يعرف — هذا هو معيار مدير التشغيل"
 ];
 /* ==== أفتار الترحيب + جولة المتدرب الجديد ==== */
-function welcomeAvatar(size,cls){
-  return '<svg class="av-svg '+(cls||'')+'" viewBox="0 0 120 120" width="'+size+'" height="'+size+'" role="img" aria-label="مرشد المنصة">'+
-    '<circle cx="60" cy="60" r="58" fill="#f7f2eb"/>'+
-    '<g class="av-wave"><rect x="92" y="62" width="11" height="34" rx="5.5" fill="#f4c7a1" transform="rotate(18 96 92)"/><circle cx="105" cy="60" r="8" fill="#f4c7a1"/></g>'+
-    '<path d="M16 118Q16 88 60 88Q104 88 104 118Z" fill="#14545c"/>'+
-    '<path d="M47 88L60 103L73 88Z" fill="#fff"/><rect x="66" y="100" width="22" height="11" rx="3" fill="#e8c98f"/><rect x="69" y="104" width="16" height="2.5" rx="1" fill="#14545c"/>'+
-    '<rect x="53" y="76" width="14" height="14" rx="6" fill="#e3a678"/>'+
-    '<circle cx="60" cy="58" r="23" fill="#f4c7a1"/>'+
-    '<g fill="#fff" stroke="#dfe8ea" stroke-width="1.5"><circle cx="43" cy="33" r="11"/><circle cx="60" cy="27" r="13"/><circle cx="77" cy="33" r="11"/><rect x="41" y="36" width="38" height="12" rx="4"/></g>'+
-    '<g class="av-eyes" fill="#2b3a3f"><ellipse cx="51" cy="58" rx="3" ry="4"/><ellipse cx="69" cy="58" rx="3" ry="4"/></g>'+
-    '<circle cx="45" cy="66" r="4.5" fill="#f08a8a" opacity=".35"/><circle cx="75" cy="66" r="4.5" fill="#f08a8a" opacity=".35"/>'+
-    '<path class="av-m" d="M51 67Q60 79 69 67Z" fill="#a8553a"/>'+
-  '</svg>';
+/* ==== أفتار شخصي لكل متدرب: الجنس ولون البشرة ولون المنصة المفضل ==== */
+const AV_TONES=['#f4c7a1','#e3a678','#c68642','#8d5524'];
+const AV_THEMES={
+ teal:{n:'أخضر مزرق',a:'#14545c',d:'#0b353c',s:'#1f7a85'},
+ navy:{n:'أزرق ملكي',a:'#1c4e8a',d:'#0f2f55',s:'#2b6bb3'},
+ green:{n:'أخضر',a:'#2e6b45',d:'#1b432a',s:'#3f8f58'},
+ plum:{n:'بنفسجي',a:'#7a2a5e',d:'#4a1838',s:'#a64584'},
+ clay:{n:'قرميدي',a:'#a8501c',d:'#6b300e',s:'#c9692f'},
+ slate:{n:'رمادي أزرق',a:'#34495e',d:'#1f2d3a',s:'#52708a'}
+};
+function avShade(hex,f){const n=parseInt(hex.slice(1),16);const r=Math.round((n>>16)*f),g=Math.round(((n>>8)&255)*f),b=Math.round((n&255)*f);return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
+function avNorm(a){a=a||{}; return {g:a.g==='f'?'f':'m',tone:Math.max(0,Math.min(AV_TONES.length-1,Number(a.tone)||0)),col:AV_THEMES[a.col]?a.col:'teal'};}
+function avGet(){
+  let a=(MYDOC&&MYDOC.avatar)||null;
+  if(!a){try{a=JSON.parse(localStorage.getItem('hops_av_'+(ME&&ME.uid))||'null');}catch(e){}}
+  return avNorm(a);
 }
+function applyAvatarTheme(a){
+  const t=AV_THEMES[avNorm(a||avGet()).col], r=document.documentElement.style;
+  r.setProperty('--red',t.a); r.setProperty('--red-dark',t.d); r.setProperty('--red-soft',t.s);
+}
+function welcomeAvatar(size,cls,opt){
+  const a=avNorm(opt===undefined?avGet():opt), t=AV_THEMES[a.col], sk=AV_TONES[a.tone], sk2=avShade(sk,.88);
+  const f=a.g==='f';
+  const arm='<g class="av-wave"><rect x="92" y="62" width="11" height="34" rx="5.5" fill="'+sk+'" transform="rotate(18 96 92)"/><circle cx="105" cy="60" r="8" fill="'+sk+'"/></g>';
+  const body='<path d="M16 118Q16 88 60 88Q104 88 104 118Z" fill="'+t.a+'"/><path d="M47 88L60 103L73 88Z" fill="#fff"/><rect x="66" y="100" width="22" height="11" rx="3" fill="#e8c98f"/><rect x="69" y="104" width="16" height="2.5" rx="1" fill="'+t.a+'"/>';
+  const neck='<rect x="53" y="76" width="14" height="14" rx="6" fill="'+sk2+'"/>';
+  let head;
+  if(f){
+    head='<path d="M27 64Q27 28 60 28Q93 28 93 64Q93 88 78 96L42 96Q27 88 27 64Z" fill="'+t.d+'"/>'+
+      '<ellipse cx="60" cy="60" rx="19.5" ry="22" fill="'+sk+'"/>'+
+      '<path d="M40 52Q60 34 80 52Q60 44 40 52Z" fill="'+t.d+'"/>'+
+      '<path d="M36 84Q60 104 84 84L94 104Q60 118 26 104Z" fill="'+t.s+'"/>';
+  }else{
+    head='<circle cx="60" cy="58" r="23" fill="'+sk+'"/>'+
+      '<g fill="#fff" stroke="#dfe8ea" stroke-width="1.5"><circle cx="43" cy="33" r="11"/><circle cx="60" cy="27" r="13"/><circle cx="77" cy="33" r="11"/><rect x="41" y="36" width="38" height="12" rx="4"/></g>';
+  }
+  const ey=f?60:58;
+  const face='<g class="av-eyes" fill="#2b3a3f"><ellipse cx="51" cy="'+ey+'" rx="3" ry="4"/><ellipse cx="69" cy="'+ey+'" rx="3" ry="4"/></g>'+
+    (f?'<g stroke="#2b3a3f" stroke-width="1" stroke-linecap="round"><path d="M47.8 '+(ey-3.6)+'L46.3 '+(ey-5)+'M51 '+(ey-4.5)+'L50.7 '+(ey-6)+'M54.2 '+(ey-3.6)+'L55.4 '+(ey-5)+'M65.8 '+(ey-3.6)+'L64.6 '+(ey-5)+'M69 '+(ey-4.5)+'L69.3 '+(ey-6)+'M72.2 '+(ey-3.6)+'L73.7 '+(ey-5)+'"/></g>':'')+
+    '<circle cx="45" cy="'+(ey+8)+'" r="4.5" fill="#f08a8a" opacity=".35"/><circle cx="75" cy="'+(ey+8)+'" r="4.5" fill="#f08a8a" opacity=".35"/>'+
+    '<path class="av-m" d="M51 '+(ey+9)+'Q60 '+(ey+21)+' 69 '+(ey+9)+'Z" fill="#a8553a"/>';
+  return '<svg class="av-svg '+(cls||'')+'" viewBox="0 0 120 120" width="'+size+'" height="'+size+'" role="img" aria-label="الأفتار الشخصي">'+
+    '<circle cx="60" cy="60" r="58" fill="#f7f2eb"/>'+arm+body+neck+head+face+'</svg>';
+}
+function avSave(a,done){
+  a=avNorm(a);
+  try{localStorage.setItem('hops_av_'+ME.uid,JSON.stringify(a));}catch(e){}
+  MYDOC=Object.assign(MYDOC||{},{avatar:a});
+  const me=(typeof pfTr==='function')?pfTr(ME.uid):null; if(me)me.avatar=a;
+  applyAvatarTheme(a);
+  const w=document.querySelector('#welcome .wv'); if(w)w.innerHTML=welcomeAvatar(78);
+  try{if(document.getElementById('pf-me'))pfRenderMe();}catch(e){}
+  return db.collection('trainees').doc(ME.uid).update({avatar:a,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})
+    .then(()=>done(true),e=>done(false,e));
+}
+let AV_EDIT=null, AV_ORIG=null;
+function openAvatarEditor(){
+  AV_ORIG=avGet(); AV_EDIT=Object.assign({},AV_ORIG);
+  const box=document.getElementById('imod-box');
+  box.innerHTML='<div class="imod-head"><h2>🎨 اختر شخصيتك</h2><button class="x" onclick="avCancel()">إغلاق ✕</button></div>'+
+    '<div class="imod-sec"><div class="av-ed"><div class="av-pv" id="av-pv"></div><div class="av-opts">'+
+    '<div><label>اختر شخصيتك</label><div class="av-gal" id="av-gal"></div></div>'+
+    '<div><label>اختر لون المنصة المفضل <small style="font-weight:400">— يلوّن المنصة كلها على حسابك</small></label><div class="av-cols">'+Object.keys(AV_THEMES).map(k=>'<button id="avc-'+k+'" onclick="avSet({col:\''+k+'\'})"><i style="background:'+AV_THEMES[k].a+'"></i>'+AV_THEMES[k].n+'</button>').join('')+'</div></div>'+
+    '</div></div><div id="av-msg" style="margin-top:12px;font-weight:700;font-size:13px"></div>'+
+    '<div class="imod-actions" style="margin:14px 0 0"><button class="btn-save" id="av-save" onclick="avCommit()">✓ اعتماد اختياري</button><button class="btn-ghost" onclick="avCancel()">إلغاء</button></div></div>';
+  document.getElementById('imodal').classList.add('on');
+  avDraw();
+}
+function avSet(o){Object.assign(AV_EDIT,o); applyAvatarTheme(AV_EDIT); avDraw();}
+function avDraw(){
+  const pv=document.getElementById('av-pv'); if(!pv)return;
+  pv.innerHTML=welcomeAvatar(150,'',AV_EDIT);
+  const gal=document.getElementById('av-gal');
+  if(gal){
+    let h='';
+    ['m','f'].forEach(g=>AV_TONES.forEach((c,i)=>{
+      const on=AV_EDIT.g===g&&AV_EDIT.tone===i;
+      h+='<button class="av-card'+(on?' on':'')+'" onclick="avSet({g:\''+g+'\',tone:'+i+'})" aria-label="'+(g==='m'?'شخصية ذكر':'شخصية أنثى')+' '+(i+1)+'">'+welcomeAvatar(64,'still',{g:g,tone:i,col:AV_EDIT.col})+'<span>'+(g==='m'?'👨':'👩')+'</span></button>';
+    }));
+    gal.innerHTML=h;
+  }
+  Object.keys(AV_THEMES).forEach(k=>{const b=document.getElementById('avc-'+k); if(b)b.classList.toggle('on',AV_EDIT.col===k);});
+}
+function avCancel(){applyAvatarTheme(AV_ORIG); AV_EDIT=null; closeItem();}
+function avCommit(){
+  const b=document.getElementById('av-save'); if(b)b.disabled=true;
+  avSave(AV_EDIT,(ok,e)=>{
+    const m=document.getElementById('av-msg'); if(b)b.disabled=false;
+    if(ok){closeItem();}
+    else if(m){m.style.color='#8a5a00'; m.innerHTML='✓ حُفظ اختيارك على هذا الجهاز. لم يُحفظ في الحساب ('+escH((e&&(e.code||e.message))||'')+') — ليظهر للمدرب ولتنتقل معك بين الأجهزة، يجب نشر قواعد Firestore المحدّثة.';}
+  });
+}
+
 function welcomeGreet(){const h=new Date().getHours(); return h<12?'صباح الخير':(h<18?'مساء الخير':'مساء النور');}
 function tourSeenKey(){return 'hops_tour_'+(ME&&ME.uid);}
 function tourSeen(){try{return localStorage.getItem(tourSeenKey())==='1';}catch(e){return true;}}
@@ -2816,7 +2924,7 @@ function showWelcome(name){
   const first=(name||'').trim().split(/\s+/)[0]||'بك';
   const w=document.createElement('div');
   w.id='welcome';
-  w.innerHTML='<div class="wv">'+welcomeAvatar(78)+'</div><div class="wt"><b>'+welcomeGreet()+' يا '+first+'، سعيد بوجودك في رحلة الاعتماد!</b><span id="wm-msg">'+WELCOME_MSGS[0]+'</span></div>'+(isAdminUser()?'':'<button class="w-tour" onclick="startTour(true)">🎬 جولة تعريفية</button>');
+  w.innerHTML='<div class="wv">'+welcomeAvatar(78)+'</div><div class="wt"><b>'+welcomeGreet()+' يا '+first+'، سعيد بوجودك في رحلة الاعتماد!</b><span id="wm-msg">'+WELCOME_MSGS[0]+'</span></div>'+'<button class="w-av" onclick="openAvatarEditor()">🎨 اختر شخصيتك</button>'+(isAdminUser()?'':'<button class="w-tour" onclick="startTour(true)">🎬 جولة تعريفية</button>');
   homeSkeleton();
   const host=document.getElementById('home-welcome')||document.getElementById('content');
   host.insertBefore(w,host.firstChild);
@@ -6424,10 +6532,10 @@ function pfRenderMe(){
   const t=pfMyState(); const s=stats(t.scores||{}); const r=pfReadiness(ME.uid); const cert=r.cert;
   const initial=((t.name||'؟').trim().charAt(0))||'؟';
   const meta=[t.jobTitle,t.employer,t.branch,t.city].filter(Boolean).map(escH).join(' · ');
-  box.innerHTML='<div class="pf-head"><div class="pf-av">'+escH(initial)+'</div><div class="pf-nm"><b>'+escH(t.name||'')+'</b><span dir="ltr" style="text-align:right">'+escH(t.email||'')+'</span>'+(meta?'<span>'+meta+'</span>':'<span style="opacity:.75">أكمل بياناتك: المسمى الوظيفي، جهة العمل، الفرع، المدينة</span>')+'</div>'+
+  box.innerHTML='<div class="pf-head"><div class="pf-av has-svg">'+welcomeAvatar(66,'',t.avatar||avGet())+'</div><div class="pf-nm"><b>'+escH(t.name||'')+'</b><span dir="ltr" style="text-align:right">'+escH(t.email||'')+'</span>'+(meta?'<span>'+meta+'</span>':'<span style="opacity:.75">أكمل بياناتك: المسمى الوظيفي، جهة العمل، الفرع، المدينة</span>')+'</div>'+
     '<div class="pf-chips">'+(cert?'<span class="badge">🎓 معتمد — '+escH((cert.classification&&cert.classification.name)||'')+'</span>':'')+
     '<span class="badge">انضم '+(t.createdAt?new Date(tsMs(t.createdAt)).toLocaleDateString('ar-SA'):'—')+'</span>'+
-    '<button class="mbtn" onclick="pfEditMe()">✏️ تعديل بياناتي</button></div></div>'+
+    '<button class="mbtn" onclick="openAvatarEditor()">🎨 اختر شخصيتك</button> <button class="mbtn" onclick="pfEditMe()">✏️ تعديل بياناتي</button></div></div>'+
     '<div class="h-grid">'+
     '<div class="cbox"><b>'+s.done+' / '+MODS.length+'</b><span>الوحدات المجتازة</span></div>'+
     '<div class="cbox"><b>'+s.avg+'%</b><span>متوسط الاختبارات</span></div>'+
@@ -6492,7 +6600,7 @@ function pfRenderDirTable(){
       const s=stats(t.scores||{}); const r=pfReadiness(t.uid); const susp=t.status==='suspended';
       const fin=r.final.has?('<span class="num" dir="ltr">'+r.final.total+'%</span> '+pfClsBadge(r.final.cls)):'<span class="badge tp">لم يُقيَّم</span>';
       const cert=r.cert?'<span class="badge ct-valid">🎓 '+escH(r.cert.serial||'معتمد')+'</span>':(r.ready?'<span class="badge st-review">جاهز للإصدار</span>':'<span class="badge ct-none">—</span>');
-      return '<tr class="clk" onclick="pfOpenTrainee(\''+t.uid+'\')"><td><b>'+escH(t.name||'—')+'</b>'+(susp?' <span class="badge st-suspended">موقوف</span>':'')+(pfAttn(t.uid).length?' <span class="badge r-warn" title="'+escH(pfAttn(t.uid).join(' · '))+'">⚠ '+escH(pfAttn(t.uid)[0])+'</span>':'')+'<br><small dir="ltr" style="color:var(--ink-soft);display:inline-block">'+escH(t.email||'')+'</small></td>'+
+      return '<tr class="clk" onclick="pfOpenTrainee(\''+t.uid+'\')"><td><span class="dir-av">'+welcomeAvatar(34,'still',t.avatar||{})+'</span><b>'+escH(t.name||'—')+'</b>'+(susp?' <span class="badge st-suspended">موقوف</span>':'')+(pfAttn(t.uid).length?' <span class="badge r-warn" title="'+escH(pfAttn(t.uid).join(' · '))+'">⚠ '+escH(pfAttn(t.uid)[0])+'</span>':'')+'<br><small dir="ltr" style="color:var(--ink-soft);display:inline-block">'+escH(t.email||'')+'</small></td>'+
         '<td class="hm">'+escH([t.employer,t.branch].filter(Boolean).join(' — ')||'—')+'</td>'+
         '<td class="num">'+s.done+' / '+MODS.length+'<br><small style="font-weight:400;color:var(--ink-soft)">متوسط '+s.avg+'%</small></td>'+
         '<td class="hm num">'+(r.att.pct==null?'—':r.att.pct+'%')+'</td>'+
