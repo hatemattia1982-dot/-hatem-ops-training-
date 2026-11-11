@@ -276,6 +276,7 @@ body:not(.locked) #bar{display:flex}
 #welcome .wt{flex:1}
 #welcome .w-tour{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:6px 14px;font-family:inherit;font-weight:700;font-size:12.5px;cursor:pointer;white-space:nowrap;transition:background .2s}
 #welcome .w-tour:hover{background:rgba(255,255,255,.28)}
+#tour .tr-emo{font-size:54px;margin:2px 0 6px}
 #tour{position:fixed;inset:0;background:rgba(11,40,46,.82);z-index:1100;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px);animation:pcIn .3s both}
 .tr-card{position:relative;background:var(--white);border-radius:22px;max-width:520px;width:100%;padding:24px 26px 22px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.45)}
 .tr-x{position:absolute;top:12px;left:14px;background:transparent;border:0;color:var(--ink-soft);font-family:inherit;font-weight:700;font-size:13px;cursor:pointer}
@@ -2782,6 +2783,7 @@ const WELCOME_MSGS=[
 ];
 /* ==== أفتار الترحيب + جولة المتدرب الجديد ==== */
 /* ==== أفتار شخصي لكل متدرب: الجنس ولون البشرة ولون المنصة المفضل ==== */
+const AV_ON=false; /* إخفاء الأفتار الكرتوني مؤقتًا حتى تجهز الصور الواقعية */
 const AV_TONES=['#f4c7a1','#e3a678','#c68642','#8d5524'];
 const AV_THEMES={
  teal:{n:'أخضر مزرق',a:'#14545c',d:'#0b353c',s:'#1f7a85'},
@@ -2799,10 +2801,12 @@ function avGet(){
   return avNorm(a);
 }
 function applyAvatarTheme(a){
+  if(!AV_ON) return;
   const t=AV_THEMES[avNorm(a||avGet()).col], r=document.documentElement.style;
   r.setProperty('--red',t.a); r.setProperty('--red-dark',t.d); r.setProperty('--red-soft',t.s);
 }
 function welcomeAvatar(size,cls,opt){
+  if(!AV_ON) return '';
   const a=avNorm(opt===undefined?avGet():opt), t=AV_THEMES[a.col], sk=AV_TONES[a.tone], sk2=avShade(sk,.88);
   const f=a.g==='f';
   const arm='<g class="av-wave"><rect x="92" y="62" width="11" height="34" rx="5.5" fill="'+sk+'" transform="rotate(18 96 92)"/><circle cx="105" cy="60" r="8" fill="'+sk+'"/></g>';
@@ -2892,7 +2896,7 @@ function startTour(force){
   if(document.getElementById('tour'))return;
   TOUR_I=0;
   const el=document.createElement('div'); el.id='tour';
-  el.innerHTML='<div class="tr-card"><button class="tr-x" onclick="tourEnd()">تخطي ✕</button><div class="tr-av">'+welcomeAvatar(150,'big')+'</div><div class="tr-bubble" id="tr-b"></div><div class="tr-dots" id="tr-d"></div><div class="tr-act" id="tr-a"></div></div>';
+  el.innerHTML='<div class="tr-card"><button class="tr-x" onclick="tourEnd()">تخطي ✕</button>'+(AV_ON?'<div class="tr-av">'+welcomeAvatar(150,'big')+'</div>':'<div class="tr-emo">👋</div>')+'<div class="tr-bubble" id="tr-b"></div><div class="tr-dots" id="tr-d"></div><div class="tr-act" id="tr-a"></div></div>';
   document.body.appendChild(el);
   tourDraw();
 }
@@ -2924,7 +2928,7 @@ function showWelcome(name){
   const first=(name||'').trim().split(/\s+/)[0]||'بك';
   const w=document.createElement('div');
   w.id='welcome';
-  w.innerHTML='<div class="wv">'+welcomeAvatar(78)+'</div><div class="wt"><b>'+welcomeGreet()+' يا '+first+'، سعيد بوجودك في رحلة الاعتماد!</b><span id="wm-msg">'+WELCOME_MSGS[0]+'</span></div>'+'<button class="w-av" onclick="openAvatarEditor()">🎨 اختر شخصيتك</button>'+(isAdminUser()?'':'<button class="w-tour" onclick="startTour(true)">🎬 جولة تعريفية</button>');
+  w.innerHTML='<div class="wv">'+(AV_ON?welcomeAvatar(78):'👋')+'</div><div class="wt"><b>'+welcomeGreet()+' يا '+first+'، سعيد بوجودك في رحلة الاعتماد!</b><span id="wm-msg">'+WELCOME_MSGS[0]+'</span></div>'+(AV_ON?'<button class="w-av" onclick="openAvatarEditor()">🎨 اختر شخصيتك</button>':'')+(isAdminUser()?'':'<button class="w-tour" onclick="startTour(true)">🎬 جولة تعريفية</button>');
   homeSkeleton();
   const host=document.getElementById('home-welcome')||document.getElementById('content');
   host.insertBefore(w,host.firstChild);
@@ -6532,10 +6536,10 @@ function pfRenderMe(){
   const t=pfMyState(); const s=stats(t.scores||{}); const r=pfReadiness(ME.uid); const cert=r.cert;
   const initial=((t.name||'؟').trim().charAt(0))||'؟';
   const meta=[t.jobTitle,t.employer,t.branch,t.city].filter(Boolean).map(escH).join(' · ');
-  box.innerHTML='<div class="pf-head"><div class="pf-av has-svg">'+welcomeAvatar(66,'',t.avatar||avGet())+'</div><div class="pf-nm"><b>'+escH(t.name||'')+'</b><span dir="ltr" style="text-align:right">'+escH(t.email||'')+'</span>'+(meta?'<span>'+meta+'</span>':'<span style="opacity:.75">أكمل بياناتك: المسمى الوظيفي، جهة العمل، الفرع، المدينة</span>')+'</div>'+
+  box.innerHTML='<div class="pf-head"><div class="pf-av'+(AV_ON?' has-svg':'')+'">'+(AV_ON?welcomeAvatar(66,'',t.avatar||avGet()):escH(initial))+'</div><div class="pf-nm"><b>'+escH(t.name||'')+'</b><span dir="ltr" style="text-align:right">'+escH(t.email||'')+'</span>'+(meta?'<span>'+meta+'</span>':'<span style="opacity:.75">أكمل بياناتك: المسمى الوظيفي، جهة العمل، الفرع، المدينة</span>')+'</div>'+
     '<div class="pf-chips">'+(cert?'<span class="badge">🎓 معتمد — '+escH((cert.classification&&cert.classification.name)||'')+'</span>':'')+
     '<span class="badge">انضم '+(t.createdAt?new Date(tsMs(t.createdAt)).toLocaleDateString('ar-SA'):'—')+'</span>'+
-    '<button class="mbtn" onclick="openAvatarEditor()">🎨 اختر شخصيتك</button> <button class="mbtn" onclick="pfEditMe()">✏️ تعديل بياناتي</button></div></div>'+
+    ''+(AV_ON?'<button class="mbtn" onclick="openAvatarEditor()">🎨 اختر شخصيتك</button> ':'')+'<button class="mbtn" onclick="pfEditMe()">✏️ تعديل بياناتي</button></div></div>'+
     '<div class="h-grid">'+
     '<div class="cbox"><b>'+s.done+' / '+MODS.length+'</b><span>الوحدات المجتازة</span></div>'+
     '<div class="cbox"><b>'+s.avg+'%</b><span>متوسط الاختبارات</span></div>'+
@@ -6600,7 +6604,7 @@ function pfRenderDirTable(){
       const s=stats(t.scores||{}); const r=pfReadiness(t.uid); const susp=t.status==='suspended';
       const fin=r.final.has?('<span class="num" dir="ltr">'+r.final.total+'%</span> '+pfClsBadge(r.final.cls)):'<span class="badge tp">لم يُقيَّم</span>';
       const cert=r.cert?'<span class="badge ct-valid">🎓 '+escH(r.cert.serial||'معتمد')+'</span>':(r.ready?'<span class="badge st-review">جاهز للإصدار</span>':'<span class="badge ct-none">—</span>');
-      return '<tr class="clk" onclick="pfOpenTrainee(\''+t.uid+'\')"><td><span class="dir-av">'+welcomeAvatar(34,'still',t.avatar||{})+'</span><b>'+escH(t.name||'—')+'</b>'+(susp?' <span class="badge st-suspended">موقوف</span>':'')+(pfAttn(t.uid).length?' <span class="badge r-warn" title="'+escH(pfAttn(t.uid).join(' · '))+'">⚠ '+escH(pfAttn(t.uid)[0])+'</span>':'')+'<br><small dir="ltr" style="color:var(--ink-soft);display:inline-block">'+escH(t.email||'')+'</small></td>'+
+      return '<tr class="clk" onclick="pfOpenTrainee(\''+t.uid+'\')"><td>'+(AV_ON?'<span class="dir-av">'+welcomeAvatar(34,'still',t.avatar||{})+'</span>':'')+'<b>'+escH(t.name||'—')+'</b>'+(susp?' <span class="badge st-suspended">موقوف</span>':'')+(pfAttn(t.uid).length?' <span class="badge r-warn" title="'+escH(pfAttn(t.uid).join(' · '))+'">⚠ '+escH(pfAttn(t.uid)[0])+'</span>':'')+'<br><small dir="ltr" style="color:var(--ink-soft);display:inline-block">'+escH(t.email||'')+'</small></td>'+
         '<td class="hm">'+escH([t.employer,t.branch].filter(Boolean).join(' — ')||'—')+'</td>'+
         '<td class="num">'+s.done+' / '+MODS.length+'<br><small style="font-weight:400;color:var(--ink-soft)">متوسط '+s.avg+'%</small></td>'+
         '<td class="hm num">'+(r.att.pct==null?'—':r.att.pct+'%')+'</td>'+
