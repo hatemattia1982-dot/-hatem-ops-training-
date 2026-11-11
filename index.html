@@ -744,6 +744,55 @@ body:not(.locked) #content{padding-top:64px}
 .pf-head .pf-chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .pf-head .badge{background:rgba(255,255,255,.18);color:#fff}
 .pf-head .mbtn{color:#fff;border-color:rgba(255,255,255,.5)}
+/* ===== تطوير ملف المتدرب ===== */
+.pj{padding:4px 0}
+.pj-top{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.pj-ring{position:relative;flex-shrink:0}
+.pj-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.pj-ring circle{fill:none;stroke-width:9}
+.pj-ring .bg{stroke:var(--beige-deep)}
+.pj-ring .fg{stroke:url(#pjg);stroke:#2b93a0;stroke-linecap:round;transition:stroke-dashoffset 1.4s cubic-bezier(.2,.7,.2,1)}
+.pj-ring b{direction:ltr;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Cairo',sans-serif;font-size:26px;font-weight:800;color:var(--red)}
+.pj-ring b small{font-size:13px;margin-top:6px}
+.pj-ring span{position:absolute;left:0;right:0;bottom:-20px;text-align:center;font-size:11px;color:var(--ink-soft)}
+.pj-steps{flex:1;min-width:260px;display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;position:relative}
+.pj-s{background:var(--beige);border:1.5px solid var(--line);border-radius:14px;padding:10px 8px;text-align:center;transition:transform .2s,box-shadow .2s}
+.pj-s:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(11,53,60,.12)}
+.pj-s .pj-c{width:38px;height:38px;border-radius:50%;margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:18px;background:#fff;border:2px solid var(--line);font-weight:800}
+.pj-s b{display:block;font-size:12.5px;line-height:1.4}
+.pj-s small{display:block;color:var(--ink-soft);font-size:11.5px}
+.pj-s .pj-b{height:5px;background:var(--beige-deep);border-radius:4px;margin-top:6px;overflow:hidden}
+.pj-s .pj-b i{display:block;height:100%;background:#2b93a0;border-radius:4px}
+.pj-s.done{background:#eaf5ee;border-color:#bfe0c8}.pj-s.done .pj-c{background:#2e9e62;border-color:#2e9e62;color:#fff}
+.pj-s.prog{border-color:#2b93a0}.pj-s.prog .pj-c{border-color:#2b93a0}
+.pj-s.na{opacity:.65}
+.pj-mini{display:flex;align-items:center;gap:6px;min-width:90px}
+.pj-mini>div{flex:1;height:7px;background:var(--beige-deep);border-radius:4px;overflow:hidden}
+.pj-mini i{display:block;height:100%;border-radius:4px}
+.pj-mini b{font-size:12px}
+.pf-next{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:14px;background:linear-gradient(135deg,#fff8e6,#fff);border:1.5px solid #f0dbb0;border-radius:16px;padding:14px 18px;animation:pcIn .5s both}
+.pf-next .pn-ic{font-size:32px}
+.pf-next .pn-tx{flex:1;min-width:200px}
+.pf-next .pn-tx b{display:block;font-size:15.5px;color:#7a4f00}
+.pf-next .pn-tx span{font-size:13px;color:var(--ink-soft)}
+.pf-next button{background:var(--red);color:#fff;border:0;border-radius:10px;padding:9px 18px;font-family:inherit;font-weight:800;cursor:pointer;transition:transform .15s}
+.pf-next button:hover{transform:translateY(-2px)}
+.pf-sess{display:flex;gap:14px;align-items:center;margin-top:10px;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:10px 16px;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.pf-sess:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(11,53,60,.1)}
+.pf-sess .ps-w{background:var(--red);color:#fff;border-radius:12px;padding:6px 14px;font-weight:800;font-size:13.5px;white-space:nowrap}
+.pf-sess small{display:block;color:var(--ink-soft)}
+.pf-two{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;align-items:start}
+@media(max-width:820px){.pf-two{grid-template-columns:1fr}}
+.pf-bd-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--beige-deep)}
+.pf-bd-h b{color:var(--red);font-size:16px}.pf-bd-h span{background:var(--beige-deep);border-radius:12px;padding:2px 12px;font-weight:800;font-size:12.5px}
+.pf-bd{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.pf-bdg{text-align:center;background:var(--beige);border:1.5px dashed var(--line);border-radius:14px;padding:10px 6px;filter:grayscale(1);opacity:.55;transition:all .25s}
+.pf-bdg span{font-size:28px;display:block}.pf-bdg b{display:block;font-size:12.5px}.pf-bdg small{display:block;font-size:10.5px;color:var(--ink-soft);line-height:1.4}
+.pf-bdg.on{filter:none;opacity:1;background:linear-gradient(135deg,#fff8e6,#fff);border:1.5px solid #f0dbb0}
+.pf-bdg.on:hover{transform:translateY(-4px) rotate(-2deg);box-shadow:0 10px 20px rgba(163,105,15,.18)}
+.pf-radar svg{width:100%;height:auto;max-width:420px;display:block;margin:0 auto;direction:ltr}
+@media print{#pf-extras .pf-next button{display:none}}
+
 .pf-head .mbtn:hover{background:rgba(255,255,255,.14)}
 .pf-table{width:100%;font-size:13.5px;border-collapse:collapse}
 .pf-table th{background:var(--red);color:#fff;padding:8px 6px;font-size:12.5px;text-align:right;white-space:nowrap}
@@ -6045,6 +6094,130 @@ async function pfHomeMine(){
   }catch(e){if(el) el.textContent='—'; if(ec) ec.textContent='—';}
 }
 
+/* ==== تطوير ملف المتدرب: رحلة الاعتماد · الإجراء التالي · الأوسمة · الرادار ==== */
+function pfJourney(uid){
+  const r=pfReadiness(uid), t=pfTr(uid)||{};
+  const unitsP=MODS.length?r.units.done/MODS.length:0;
+  const asgP=r.asg.total?(r.asg.total-r.asg.pending)/r.asg.total:null;
+  const ojtP=Math.min(1,r.ojt.n/30);
+  const finP=r.final.ok?1:(r.final.has?Math.min(.9,(r.final.total||0)/100):0);
+  const st=(p,done)=>done?'done':(p>0?'prog':'todo');
+  const steps=[
+    {k:'u',ic:'📘',label:'الوحدات النظرية',p:unitsP,txt:r.units.done+' / '+MODS.length,state:st(unitsP,r.units.ok)},
+    {k:'a',ic:'📝',label:'التكليفات',p:asgP==null?0:asgP,txt:r.asg.total?((r.asg.total-r.asg.pending)+' / '+r.asg.total):'لا تكليفات',state:asgP==null?'na':st(asgP,r.asg.pending===0)},
+    {k:'o',ic:'🗓️',label:'سجل الـ30 يومًا',p:ojtP,txt:r.ojt.n+' / 30',state:st(ojtP,r.ojt.ok)},
+    {k:'f',ic:'🎯',label:'التقييم النهائي',p:finP,txt:r.final.has?(r.final.total+'%'):'لم يُقيَّم',state:st(finP,r.final.ok)},
+    {k:'c',ic:'🎓',label:'شهادة الاعتماد',p:r.cert?1:0,txt:r.cert?'صادرة':(r.ready?'جاهز':'—'),state:r.cert?'done':(r.ready?'prog':'todo')}
+  ];
+  const core=[unitsP,ojtP,finP].concat(asgP==null?[]:[asgP]);
+  const overall=Math.round(core.reduce((a,b)=>a+b,0)/core.length*100);
+  return {steps,overall,r};
+}
+function pfRingHTML(pct,size,label){
+  const C=2*Math.PI*44;
+  return '<div class="pj-ring" style="width:'+size+'px;height:'+size+'px"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" class="bg"/><circle cx="50" cy="50" r="44" class="fg" style="stroke-dasharray:'+C.toFixed(1)+';stroke-dashoffset:'+C.toFixed(1)+'" data-to="'+(C*(1-pct/100)).toFixed(1)+'"/></svg><b>'+pct+'<small>%</small></b>'+(label?'<span>'+label+'</span>':'')+'</div>';
+}
+function pfJourneyHTML(uid){
+  const j=pfJourney(uid);
+  return '<div class="pj"><div class="pj-top">'+pfRingHTML(j.overall,96,'إكمال المتطلبات')+
+    '<div class="pj-steps">'+j.steps.map((s,i)=>'<div class="pj-s '+s.state+'"><div class="pj-c">'+(s.state==='done'?'✓':s.ic)+'</div><b>'+s.label+'</b><small>'+s.txt+'</small>'+
+      (s.state==='prog'||s.state==='todo'?'<div class="pj-b"><i style="width:'+Math.round(s.p*100)+'%"></i></div>':'')+'</div>').join('')+'</div></div></div>';
+}
+function pfAnimRings(root){
+  setTimeout(()=>{(root||document).querySelectorAll('.pj-ring .fg[data-to]').forEach(c=>{c.style.strokeDashoffset=c.dataset.to;});},120);
+}
+function pfNextAction(uid){
+  const r=pfReadiness(uid), mods=MODS, sc=(pfTr(uid)||{}).scores||{};
+  const late=ASGS.filter(a=>a.status!=='closed'&&pfAsgTargeted(a,uid)&&['late','returned'].includes(pfAsgState(a,uid))).length;
+  const todo=ASGS.filter(a=>a.status!=='closed'&&pfAsgTargeted(a,uid)&&pfAsgState(a,uid)==='todo').length;
+  if(r.cert) return {ic:'🎉',t:'مبروك! شهادة الاعتماد صادرة',d:'يمكنك فتحها وطباعتها من تبويب «شهادتي».',b:'فتح شهادتي',f:"pfTab('cert')"};
+  if(late) return {ic:'⏰',t:'لديك '+late+(late===1?' تكليف':' تكليفات')+' متأخر أو مُعاد للتعديل',d:'عالجها أولًا حتى لا تتأخر عن الدفعة.',b:'فتح التكليفات',f:"pfTab('asg')"};
+  if(todo) return {ic:'📝',t:'لديك '+todo+(todo===1?' تكليف مطلوب':' تكليفات مطلوبة'),d:'سلّمها قبل موعدها لتُقيَّم في وقتها.',b:'فتح التكليفات',f:"pfTab('asg')"};
+  const nu=mods.find(m=>!sc[m]||sc[m].pct<80);
+  if(nu) return {ic:'📘',t:'وحدتك التالية: '+unitTitle(nu),d:'اجتزها بنسبة 80% فأكثر ثم انتقل لما بعدها.',b:'متابعة الوحدة',f:"goUnit('"+nu+"')"};
+  if(r.ojt.n<30) return {ic:'🗓️',t:'سجل التطبيق العملي: '+r.ojt.n+' من 30 يومًا',d:'نفّذ مهمة اليوم التالي ووثّقها ليوقّعها المشرف.',b:'فتح سجل الـ30 يومًا',f:"pfTab('ojt')"};
+  if(!r.final.has) return {ic:'🎯',t:'أنجزت المتطلبات — بانتظار التقييم النهائي',d:'تواصل مع المدرب لتحديد موعد التقييم العملي النهائي.',b:'',f:''};
+  if(!r.final.ok) return {ic:'📈',t:'التقييم النهائي دون حد الاعتماد',d:'راجع المحاور الضعيفة مع المدرب لإعادة التقييم.',b:'تبويب التقييم',f:"pfTab('ass')"};
+  return {ic:'✅',t:'جاهز للاعتماد',d:'بانتظار إصدار الشهادة من المدرب.',b:'',f:''};
+}
+function pfNextSession(){
+  const t0=todayISO(); const s=SESSIONS.filter(x=>(x.date||'')>=t0).sort((a,b)=>((a.date||'').localeCompare(b.date||''))||((a.time||'').localeCompare(b.time||'')))[0];
+  if(!s) return null;
+  const d=Math.round((new Date(s.date+'T00:00:00')-new Date(t0+'T00:00:00'))/864e5);
+  return {s,when:d===0?'اليوم':(d===1?'غدًا':(d===2?'بعد يومين':'بعد '+d+' أيام'))};
+}
+function pfBadgeDefs(uid){
+  const r=pfReadiness(uid);
+  const half=Math.ceil(MODS.length/2);
+  return [
+    {ic:'🌱',n:'البداية',d:'اجتزت أول وحدة',ok:r.units.done>=1},
+    {ic:'🔥',n:'خمس وحدات',d:'اجتزت 5 وحدات',ok:r.units.done>=5},
+    {ic:'⛰️',n:'منتصف الطريق',d:'اجتزت نصف الوحدات',ok:r.units.done>=half},
+    {ic:'📚',n:'متمكّن',d:'اجتزت كل الوحدات',ok:r.units.ok},
+    {ic:'📅',n:'ملتزم',d:'حضور 100% (3 جلسات فأكثر)',ok:r.att.pct===100&&r.att.n>=3},
+    {ic:'📝',n:'منجز',d:'سلّمت كل التكليفات',ok:r.asg.total>0&&r.asg.pending===0},
+    {ic:'🗓️',n:'10 أيام',d:'10 أيام ميدانية موقّعة',ok:r.ojt.n>=10},
+    {ic:'🏪',n:'20 يومًا',d:'20 يومًا ميدانيًا',ok:r.ojt.n>=20},
+    {ic:'⚡',n:'30 يومًا',d:'أنهيت سجل الـ30 يومًا',ok:r.ojt.ok},
+    {ic:'🎯',n:'اجتاز التقييم',d:'التقييم النهائي بحد الاعتماد',ok:r.final.ok},
+    {ic:'🎓',n:'معتمد',d:'صدرت شهادة الاعتماد',ok:!!r.cert}
+  ];
+}
+function pfBadgesHTML(uid){
+  const b=pfBadgeDefs(uid), n=b.filter(x=>x.ok).length;
+  return '<div class="pf-bd-h"><b>🏅 أوسمتي</b><span>'+n+' من '+b.length+'</span></div><div class="pf-bd">'+
+    b.map(x=>'<div class="pf-bdg'+(x.ok?' on':'')+'" title="'+escH(x.d)+'"><span>'+(x.ok?x.ic:'🔒')+'</span><b>'+x.n+'</b><small>'+x.d+'</small></div>').join('')+'</div>';
+}
+const PF_SHORT={fs:'سلامة الغذاء',hy:'النظافة والتعقيم',op:'التشغيل اليومي',inv:'المخزون والتكاليف',rep:'التقارير',ld:'القيادة',capa:'حل المشكلات',th:'المعرفة النظرية'};
+function pfRadarHTML(uid){
+  const fin=pfLatestFinal(uid); if(!fin||!fin.scores) return '';
+  const n=PF_AXES.length, cx=210, cy=150, R=100;
+  const pt=(i,v)=>{const a=-Math.PI/2+i*2*Math.PI/n; return [cx+R*v*Math.cos(a),cy+R*v*Math.sin(a)];};
+  let g='';
+  [.25,.5,.75,1].forEach(l=>{g+='<polygon points="'+PF_AXES.map((a,i)=>pt(i,l).map(x=>x.toFixed(1)).join(',')).join(' ')+'" fill="none" stroke="#dcd3c3" stroke-width="1"/>';});
+  PF_AXES.forEach((a,i)=>{const p=pt(i,1); g+='<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'" stroke="#dcd3c3"/>';});
+  const vals=PF_AXES.map(a=>Math.max(0,Math.min(100,Number(fin.scores[a.k])||0))/100);
+  g+='<polygon points="'+vals.map((v,i)=>pt(i,v).map(x=>x.toFixed(1)).join(',')).join(' ')+'" fill="rgba(43,147,160,.28)" stroke="#14545c" stroke-width="2.5" stroke-linejoin="round"/>';
+  vals.forEach((v,i)=>{const p=pt(i,v); g+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="4" fill="#14545c"/>';});
+  PF_AXES.forEach((a,i)=>{const p=pt(i,1.16), ang=-Math.PI/2+i*2*Math.PI/n; const anc=Math.cos(ang)>.3?'end':(Math.cos(ang)<-.3?'start':'middle');
+    const nm=PF_SHORT[a.k]||a.name;
+    g+='<text x="'+p[0].toFixed(1)+'" y="'+p[1].toFixed(1)+'" text-anchor="'+anc+'" font-size="10.5" direction="rtl" font-family="Tajawal,sans-serif" fill="#2b2320" font-weight="700">'+escH(nm)+'</text><text x="'+p[0].toFixed(1)+'" y="'+(p[1]+12).toFixed(1)+'" text-anchor="'+anc+'" font-size="11" font-family="Tajawal,sans-serif" fill="#14545c" font-weight="800">'+(fin.scores[a.k]!=null&&fin.scores[a.k]!==''?fin.scores[a.k]:'—')+'</text>';});
+  return '<div class="pf-radar"><svg viewBox="0 0 420 310" role="img" aria-label="مخطط المحاور">'+g+'</svg></div>';
+}
+function pfMeExtras(uid){
+  const nx=pfNextAction(uid), ns=pfNextSession();
+  let h='<div class="pf-next"><div class="pn-ic">'+nx.ic+'</div><div class="pn-tx"><b>'+escH(nx.t)+'</b><span>'+escH(nx.d)+'</span></div>'+(nx.b?'<button onclick="'+nx.f+'">'+escH(nx.b)+' ←</button>':'')+'</div>';
+  if(ns) h+='<div class="pf-sess" onclick="pfTab(\'sess\')"><span class="ps-w">'+ns.when+'</span><div><b>'+escH(ns.s.title||'جلسة تدريبية')+'</b><small>📅 '+pfDateTime(ns.s)+(SESS_KIND_IC[ns.s.kind]?' · '+SESS_KIND_IC[ns.s.kind]+' '+escH(ns.s.kind):'')+'</small></div></div>';
+  const rad=pfRadarHTML(uid);
+  h+='<div class="h-sec" style="margin-top:14px"><h3><span>🧭 رحلتي نحو الاعتماد</span></h3>'+pfJourneyHTML(uid)+'</div>';
+  h+='<div class="pf-two">'+'<div class="h-sec">'+pfBadgesHTML(uid)+'</div>'+(rad?'<div class="h-sec"><h3><span>🕸️ محاور تقييمي النهائي</span></h3>'+rad+'</div>':'')+'</div>';
+  return '<div id="pf-extras">'+h+'</div>';
+}
+/* ==== مؤشرات دليل المتدربين (المدرب) ==== */
+function pfAttn(uid){
+  const out=[]; const t=pfTr(uid)||{}; if((t.status||'active')!=='active') return out;
+  const late=ASGS.filter(a=>a.status!=='closed'&&pfAsgTargeted(a,uid)&&pfAsgState(a,uid)==='late').length;
+  if(late) out.push(late+' تكليف متأخر');
+  const att=pfAttRate(uid), n=ATT.filter(a=>a.uid===uid&&a.st).length;
+  if(att!=null&&n>=2&&att<70) out.push('حضور منخفض '+att+'%');
+  return out;
+}
+function pfMini(uid){
+  const j=pfJourney(uid); const col=j.overall>=80?'#2e9e62':(j.overall>=40?'#2b93a0':'#e0a020');
+  return '<div class="pj-mini" title="إكمال متطلبات الاعتماد"><div><i style="width:'+j.overall+'%;background:'+col+'"></i></div><b>'+j.overall+'%</b></div>';
+}
+function pfDirStats(){
+  const el=document.getElementById('pf-dir-stats'); if(!el) return;
+  const act=pfActive(), js=act.map(t=>pfJourney(t.uid));
+  const ready=act.filter(t=>{const r=pfReadiness(t.uid);return r.ready&&!r.cert;}).length;
+  const cert=PF_TRAINEES.filter(t=>pfValidCert(t.uid)).length;
+  const attn=act.filter(t=>pfAttn(t.uid).length).length;
+  const avg=js.length?Math.round(js.reduce((s,j)=>s+j.overall,0)/js.length):0;
+  const k=(v,l,c,suf)=>'<div class="ks"><b data-v="'+v+'"'+(c?' style="color:'+c+'"':'')+'>0</b>'+(suf?'<em>'+suf+'</em>':'')+'<span>'+l+'</span></div>';
+  el.innerHTML=k(act.length,'متدربون نشطون')+k(avg,'متوسط إكمال المتطلبات','#14545c','%')+k(ready,'جاهزون للاعتماد',ready?'#1d5a35':'','')+k(cert,'حاصلون على الشهادة','#a3690f')+k(attn,'يحتاجون متابعة',attn?'#9c231b':'#1d5a35');
+  el.querySelectorAll('b[data-v]').forEach(b=>itCountUp(b,+b.dataset.v,0));
+}
+
 /* ==== رأس صفحة «ملفي» (المتدرب) ==== */
 function pfRenderMe(){
   const box=document.getElementById('pf-me'); if(!box) return;
@@ -6063,7 +6236,8 @@ function pfRenderMe(){
     '<div class="cbox"><b style="color:'+(r.final.has?(r.final.ok?'#1d5a35':'#9c231b'):'var(--red)')+'">'+(r.final.has?r.final.total+'%':'—')+'</b><span>التقييم النهائي</span></div>'+
     '<div class="cbox"><b>'+r.ojt.n+' / 30</b><span>أيام التطبيق الموقّعة</span></div>'+
     '<div class="cbox"><b style="color:'+(cert?'#1d5a35':'var(--red)')+'">'+(cert?'🎓 صادرة':(r.ready?'جاهزة للإصدار':'—'))+'</b><span>شهادة الاعتماد</span></div>'+
-    '</div>';
+    '</div>'+pfMeExtras(ME.uid);
+  pfAnimRings(box);
 }
 function pfEditMe(){
   const t=pfMyState();
@@ -6094,10 +6268,10 @@ async function pfSaveMe(){
 function pfRenderDir(){
   const body=document.getElementById('pf-body'); if(!body) return;
   let h='<div class="iv-bar"><input id="pf-dir-q" placeholder="ابحث بالاسم أو البريد أو جهة العمل…" oninput="pfRenderDirTable()">'+
-    '<select id="pf-dir-st" onchange="pfRenderDirTable()"><option value="">كل الحالات</option><option value="active">نشط</option><option value="suspended">موقوف</option><option value="ready">جاهز للاعتماد</option><option value="certified">معتمد</option></select></div>';
+    '<select id="pf-dir-st" onchange="pfRenderDirTable()"><option value="">كل الحالات</option><option value="active">نشط</option><option value="suspended">موقوف</option><option value="ready">جاهز للاعتماد</option><option value="certified">معتمد</option><option value="attn">⚠ يحتاج متابعة</option></select></div>';
   h+='<div class="h-note" style="margin:-6px 0 14px">اضغط على أي متدرب لفتح ملفه الكامل: بياناته، تقدمه في الوحدات، حضوره، تكليفاته، تقييماته العملية، سجل الـ30 يومًا، وإصدار شهادة الاعتماد.</div>';
   h+='<div id="pf-dir-table"></div>';
-  body.innerHTML=h; pfRenderDirTable();
+  body.innerHTML='<div id="pf-dir-stats" class="iv-stats"></div>'+h; pfDirStats(); pfRenderDirTable();
 }
 function pfRenderDirTable(){
   const box=document.getElementById('pf-dir-table'); if(!box) return;
@@ -6108,21 +6282,22 @@ function pfRenderDirTable(){
     if(st==='suspended'&&t.status!=='suspended') return false;
     if(st==='ready'&&!(r.ready&&!r.cert)) return false;
     if(st==='certified'&&!r.cert) return false;
+    if(st==='attn'&&!pfAttn(t.uid).length) return false;
     if(q){const blob=[t.name,t.email,t.employer,t.branch,t.city,t.jobTitle].join(' ').toLowerCase(); if(!blob.includes(q)) return false;}
     return true;
   });
   if(!list.length){box.innerHTML='<div class="iv-empty">'+(PF_TRAINEES.length?'لا متدربين مطابقين للتصفية':'لا متدربون مقبولون بعد — تظهر ملفاتهم هنا بعد قبول طلبات الانضمام من لوحة المدرب')+'</div>';return;}
-  box.innerHTML='<table class="pf-table"><thead><tr><th>المتدرب</th><th class="hm">جهة العمل</th><th>الوحدات</th><th class="hm">الحضور</th><th class="hm">التكليفات</th><th>التقييم النهائي</th><th class="hm">سجل 30 يومًا</th><th>الشهادة</th></tr></thead><tbody>'+
+  box.innerHTML='<table class="pf-table"><thead><tr><th>المتدرب</th><th class="hm">جهة العمل</th><th>الوحدات</th><th class="hm">الحضور</th><th class="hm">التكليفات</th><th>التقييم النهائي</th><th class="hm">سجل 30 يومًا</th><th>رحلة الاعتماد</th><th>الشهادة</th></tr></thead><tbody>'+
     list.map(t=>{
       const s=stats(t.scores||{}); const r=pfReadiness(t.uid); const susp=t.status==='suspended';
       const fin=r.final.has?('<span class="num" dir="ltr">'+r.final.total+'%</span> '+pfClsBadge(r.final.cls)):'<span class="badge tp">لم يُقيَّم</span>';
       const cert=r.cert?'<span class="badge ct-valid">🎓 '+escH(r.cert.serial||'معتمد')+'</span>':(r.ready?'<span class="badge st-review">جاهز للإصدار</span>':'<span class="badge ct-none">—</span>');
-      return '<tr class="clk" onclick="pfOpenTrainee(\''+t.uid+'\')"><td><b>'+escH(t.name||'—')+'</b>'+(susp?' <span class="badge st-suspended">موقوف</span>':'')+'<br><small dir="ltr" style="color:var(--ink-soft);display:inline-block">'+escH(t.email||'')+'</small></td>'+
+      return '<tr class="clk" onclick="pfOpenTrainee(\''+t.uid+'\')"><td><b>'+escH(t.name||'—')+'</b>'+(susp?' <span class="badge st-suspended">موقوف</span>':'')+(pfAttn(t.uid).length?' <span class="badge r-warn" title="'+escH(pfAttn(t.uid).join(' · '))+'">⚠ '+escH(pfAttn(t.uid)[0])+'</span>':'')+'<br><small dir="ltr" style="color:var(--ink-soft);display:inline-block">'+escH(t.email||'')+'</small></td>'+
         '<td class="hm">'+escH([t.employer,t.branch].filter(Boolean).join(' — ')||'—')+'</td>'+
         '<td class="num">'+s.done+' / '+MODS.length+'<br><small style="font-weight:400;color:var(--ink-soft)">متوسط '+s.avg+'%</small></td>'+
         '<td class="hm num">'+(r.att.pct==null?'—':r.att.pct+'%')+'</td>'+
         '<td class="hm num">'+(r.asg.total?(r.asg.total-r.asg.pending)+' / '+r.asg.total:'—')+'</td>'+
-        '<td>'+fin+'</td><td class="hm num">'+r.ojt.n+' / 30</td><td>'+cert+'</td></tr>';
+        '<td>'+fin+'</td><td class="hm num">'+r.ojt.n+' / 30</td><td>'+pfMini(t.uid)+'</td><td>'+cert+'</td></tr>';
     }).join('')+'</tbody></table>';
 }
 
@@ -6860,6 +7035,7 @@ async function pfOpenTrainee(uid,tab){
       '<button class="btn-approve" onclick="pfIssueCert(\''+uid+'\')">🎓 إصدار شهادة الاعتماد'+(r.units.ok?'':' (تجاوز يدوي)')+'</button></div>'
     :'')+
     (cert?'<div class="imod-actions" style="margin-top:12px"><button class="btn-ghost" onclick="pfOpenCert(\''+cert.id+'\')">فتح الشهادة</button></div>':'')+'</div>';
+  h+='<div class="imod-sec"><h3>🧭 رحلة الاعتماد</h3>'+pfJourneyHTML(uid)+(pfRadarHTML(uid)?'<h3 style="margin-top:16px">🕸️ محاور التقييم النهائي</h3>'+pfRadarHTML(uid):'')+'</div>';
   h+='<div class="imod-sec"><h3>تقدم الوحدات النظرية</h3>'+pfProgressChips(t.scores)+
     (MANUAL_GATE.enabled?('<div style="margin-top:14px"><b style="color:var(--red);font-size:13.5px">🔓 استثناء فتح مبكر</b>'+
       '<div class="unit-pick" style="margin-top:8px">'+pfManualUnlockChipsHTML(uid)+'</div>'+
@@ -6881,7 +7057,7 @@ async function pfOpenTrainee(uid,tab){
     (myAss.length?'<div class="iv-grid">'+myAss.map(x=>{const c=pfCalc(x.scores); return '<div class="scard pf-ass" onclick="pfClose();pfOpenAssess(\''+x.id+'\',null,\'tr:'+uid+'\')"><div class="sc-top"><span class="sc-date">'+escH(fmtD(x.date))+'</span>'+pfAssKindBadge(x.kind)+(x.status==='final'?'<span class="badge as-final">معتمد</span>':'<span class="badge as-draft">مسودة</span>')+'</div><b>'+(c.complete?c.total+'%':c.filled+'/'+PF_AXES.length)+'</b>'+(c.complete?pfClsBadge(c.cls):'')+'</div>';}).join('')+'</div>':'<div class="iv-empty">لا تقييمات بعد</div>')+'</details>';
   h+='<details class="pf-d"><summary><span>🗓️ سجل التطبيق العملي 30 يومًا <small>('+r.ojt.n+' / 30 معتمد)</small></span><span class="arr">▾</span></summary>'+pfOjtSignHTML(uid)+'</details>';
   h+='<div class="imod-actions" style="margin-top:16px"><button class="btn-ghost" onclick="pfClose()">إغلاق</button></div>';
-  pfModal(h);
+  pfModal(h); pfAnimRings(document.getElementById('imod-box'));
 }
 
 /* ==== مؤشرات ملف المتدرب في لوحة المدرب ==== */
