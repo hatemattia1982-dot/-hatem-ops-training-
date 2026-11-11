@@ -266,6 +266,73 @@ body:not(.locked) #content{padding-top:64px}
 .badge.fc-ok{background:#e8f3ec;color:#1d5a35}
 .badge.fc-hi{background:#fdf0ef;color:#9c231b}
 .iv-empty{text-align:center;color:var(--ink-soft);padding:60px 0}
+/* ===== تطوير مكتبة الأصناف والوصفات ===== */
+.iv-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.iv-stats .ks{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:12px 8px;text-align:center;animation:pcIn .5s both;transition:transform .2s,box-shadow .2s}
+.iv-stats .ks:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(11,53,60,.12)}
+.iv-stats .ks b{display:block;font-family:'Cairo',sans-serif;font-size:26px;font-weight:800;color:var(--red);line-height:1.3}
+.iv-stats .ks span{font-size:12px;color:var(--ink-soft)}
+.iv-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.iv-chips button{border:1.5px solid var(--line);background:var(--white);color:var(--ink);border-radius:22px;padding:6px 14px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;transition:all .18s}
+.iv-chips button i{font-style:normal;background:var(--beige-deep);border-radius:10px;padding:0 7px;font-size:11.5px;margin-inline-start:4px}
+.iv-chips button:hover{transform:translateY(-2px);border-color:var(--red)}
+.iv-chips button.on{background:var(--red);border-color:var(--red);color:#fff}
+.iv-chips button.on i{background:rgba(255,255,255,.25)}
+.iv-vt{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--white)}
+.iv-bar .iv-vt button{background:transparent;color:var(--ink-soft);border-radius:0;padding:9px 14px;font-size:16px}
+.iv-bar .iv-vt button.on{background:var(--red);color:#fff}
+.iv-grid{grid-template-columns:repeat(auto-fill,minmax(265px,1fr))}
+.icard{position:relative;animation:pcIn .5s both cubic-bezier(.2,.7,.2,1);transition:transform .22s,box-shadow .22s}
+.icard:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(11,53,60,.2)}
+.icard .im{position:relative;overflow:hidden;height:150px}
+.icard .im img{transition:transform .5s}
+.icard:hover .im img{transform:scale(1.07)}
+.icard .iph{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.icard .iph span{font-size:58px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.3));transition:transform .3s}
+.icard:hover .iph span{transform:scale(1.15) rotate(-6deg)}
+.icard .ist{position:absolute;top:10px;right:10px;font-size:11px;font-weight:800;border-radius:12px;padding:2px 10px;background:rgba(255,255,255,.92)}
+.icard .ist.st-approved{color:#1d5a35}.icard .ist.st-draft{color:#8a5a00}.icard .ist.st-review{color:#1c4e8a}.icard .ist.st-suspended{color:#9c231b}
+.icard .inew{position:absolute;bottom:10px;right:10px;font-size:11px;font-weight:800;background:#e0432f;color:#fff;border-radius:12px;padding:2px 10px}
+.ifav{position:absolute;top:8px;left:8px;width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:#999;font-size:18px;cursor:pointer;transition:transform .15s,color .15s;line-height:1}
+.ifav:hover{transform:scale(1.2)}.ifav.on{color:#e8a410}
+.icard .imeta{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--ink-soft);margin-top:6px}
+.icard .ialg{padding:0 14px 6px;font-size:17px;display:flex;gap:4px;flex-wrap:wrap;min-height:26px;align-items:center}
+.icard .ialg small{font-size:11px;color:#8a8079}
+.icard .ifc{padding:0 14px 8px}
+.fcg{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800}
+.fcg.nofc{font-weight:400;color:#8a8079}
+.fcb{position:relative;flex:1;height:8px;background:var(--beige-deep);border-radius:5px;overflow:visible;min-width:60px}
+.fcb i{display:block;height:100%;border-radius:5px;transition:width .8s cubic-bezier(.2,.7,.2,1)}
+.fcb u{position:absolute;top:-3px;bottom:-3px;inset-inline-start:70%;width:2px;background:var(--ink-soft);opacity:.55}
+.icard.sk .im,.icard.sk .ib b,.icard.sk .ib small{background:linear-gradient(90deg,var(--beige-deep) 25%,#f6efe3 50%,var(--beige-deep) 75%);background-size:200% 100%;animation:skl 1.2s infinite;border-radius:8px;color:transparent}
+.icard.sk .ib b{height:16px;width:70%}.icard.sk .ib small{height:12px;width:40%;margin-top:6px}
+@keyframes skl{to{background-position:-200% 0}}
+.iv-tblwrap{background:var(--white);border:1px solid var(--line);border-radius:14px;overflow:auto}
+.itbl{width:100%;border-collapse:collapse;font-size:13.5px;min-width:720px}
+.itbl th{background:var(--red);color:#fff;padding:10px 8px;font-size:12.5px;text-align:right}
+.itbl td{padding:8px;border-bottom:1px solid var(--beige-deep);vertical-align:middle}
+.itbl tbody tr{cursor:pointer;transition:background .15s}.itbl tbody tr:hover{background:var(--beige)}
+.itbl td small{display:block;color:var(--ink-soft)}
+.itbl .ifav{position:static;width:28px;height:28px;background:var(--beige)}
+.itbl .alg-ic{font-size:16px;white-space:nowrap}
+.itbl .fcg{min-width:110px}
+#cost-viz{margin-top:14px}
+.cv-t{font-size:13px;color:var(--ink-soft);margin-bottom:8px}.cv-t b{color:var(--red)}
+.cv-bar{display:flex;height:16px;border-radius:9px;overflow:hidden;background:var(--beige-deep)}
+.cv-bar i{display:block;height:100%;transition:width .5s;border-inline-end:2px solid var(--white)}
+.cv-l{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:12px}
+.cv-l span{display:inline-flex;align-items:center;gap:5px}.cv-l s{width:10px;height:10px;border-radius:3px;display:inline-block}.cv-l small{color:var(--ink-soft)}
+.sc-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:12px}
+.sc-bar label{font-size:12.5px;font-weight:700;color:var(--ink-soft);display:block;width:100%}
+.sc-bar input{width:140px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;font-family:inherit;font-size:15px;font-weight:800;text-align:center}
+.sc-bar button{border:1px solid var(--line);border-radius:9px;padding:9px 16px;font-family:inherit;font-weight:700;background:var(--beige-deep);cursor:pointer}
+.sc-t{width:100%;border-collapse:collapse;font-size:13.5px}
+.sc-t th{background:var(--beige-deep);padding:8px;text-align:right;font-size:12.5px}
+.sc-t td{padding:7px 8px;border-bottom:1px dashed var(--line)}
+.sc-t td b{color:var(--red)}
+.sc-t tfoot td{border-top:2px solid var(--line);font-weight:800;background:var(--beige)}
+@media print{.iv-stats,.iv-chips,.iv-vt{display:none!important}}
+
 /* ==== محرر الكارت ==== */
 #imodal{position:fixed;inset:0;background:rgba(11,40,46,.8);z-index:960;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:26px 12px}
 #imodal.on{display:flex}
@@ -2572,16 +2639,33 @@ function showView(v){
 }
 
 /* ==== تحميل وعرض المكتبة ==== */
+const IT_ICON={'طبق رئيسي':'🍛','مقبلات':'🥗','حلويات':'🍰','مشروبات':'🥤','صوص':'🫙','مكوّن':'🧂','منتج آخر':'📦'};
+const IT_GRAD={'طبق رئيسي':['#b4531a','#7a2f0a'],'مقبلات':['#3f8f58','#1f5a38'],'حلويات':['#c0507a','#7a2a4e'],'مشروبات':['#2b8fb0','#14546c'],'صوص':['#c98a14','#8a5a00'],'مكوّن':['#6b7a52','#3f4a2e'],'منتج آخر':['#5c6e78','#34444e']};
+const ALG_IC={'الحليب':'🥛','البيض':'🥚','القمح':'🌾','المكسرات':'🌰','الفول السوداني':'🥜','الصويا':'🫘','السمك':'🐟','القشريات':'🦐','السمسم':'⚪','الخردل':'🟡','الكرفس':'🥬','ثاني':'🧪'};
+function algIc(a){for(const k in ALG_IC){if(String(a).indexOf(k)===0)return ALG_IC[k];}return '⚠️';}
+let IT_TYPE='', IT_VIEW='grid', IT_FAV=[], IT_LOADED=false;
+try{IT_FAV=JSON.parse(localStorage.getItem('hops_ifav')||'[]');IT_VIEW=localStorage.getItem('hops_iview')||'grid';}catch(e){}
+function itFav(id){const k=IT_FAV.indexOf(id);if(k>-1)IT_FAV.splice(k,1);else IT_FAV.push(id);try{localStorage.setItem('hops_ifav',JSON.stringify(IT_FAV));}catch(e){}renderItems();}
+function itSetType(t){IT_TYPE=t;renderItems();}
+function itSetView(v){IT_VIEW=v;try{localStorage.setItem('hops_iview',v);}catch(e){}renderItems();}
+function itCountUp(el,to,dec){
+  const D=800,s=performance.now();
+  (function f(n){const p=Math.min(1,(n-s)/D),v=to*(1-Math.pow(1-p,3));el.textContent=(dec?v.toFixed(dec):Math.round(v));if(p<1)requestAnimationFrame(f);else el.textContent=dec?to.toFixed(dec):to;})(s);
+}
 async function loadItems(){
   const view=document.getElementById('items-view');
   if(!view.dataset.init){
     view.dataset.init='1';
-    view.innerHTML='<div class="iv-bar">'+
-      '<input id="iv-q" placeholder="ابحث بالاسم أو الكود…" oninput="renderItems()">'+
-      '<select id="iv-type" onchange="renderItems()"><option value="">كل الأنواع</option>'+IT_TYPES.map(t=>'<option>'+t+'</option>').join('')+'</select>'+
+    view.innerHTML='<div id="iv-stats" class="iv-stats"></div><div class="iv-bar">'+
+      '<input id="iv-q" placeholder="ابحث بالاسم أو الكود أو المكوّن أو التصنيف…" oninput="renderItems()">'+
       '<select id="iv-st" onchange="renderItems()"><option value="">كل الحالات</option><option value="approved">معتمدة</option><option value="review">قيد المراجعة</option><option value="draft">مسودة</option><option value="suspended">موقوفة</option></select>'+
+      '<select id="iv-alg" onchange="renderItems()"><option value="">كل الأصناف (حساسية)</option>'+ALLERGENS.map(a=>'<option value="'+a+'">بدون '+a+'</option>').join('')+'</select>'+
+      '<select id="iv-sort" onchange="renderItems()"><option value="new">الأحدث</option><option value="name">الاسم (أ‑ي)</option><option value="cost">الأعلى تكلفة</option><option value="fcd">الأعلى FC%</option><option value="fca">الأقل FC%</option></select>'+
+      '<span class="iv-vt"><button id="vt-grid" onclick="itSetView(\'grid\')" title="بطاقات">▦</button><button id="vt-tbl" onclick="itSetView(\'tbl\')" title="جدول">☰</button></span>'+
       '<button onclick="openItem(null)">+ كارت صنف جديد</button>'+
-      '</div><div class="iv-grid" id="iv-grid"></div><div class="iv-empty" id="iv-empty" style="display:none">لا توجد أصناف مطابقة</div>';
+      '</div><div class="iv-chips" id="iv-chips"></div><div class="iv-grid" id="iv-grid">'+
+      Array(8).join('<div class="icard sk"><div class="im"></div><div class="ib"><b></b><small></small></div></div>')+
+      '</div><div class="iv-empty" id="iv-empty" style="display:none">لا توجد أصناف مطابقة</div>';
   }
   try{
     const col=db.collection('items');
@@ -2599,6 +2683,7 @@ async function loadItems(){
       ITEMS=Object.values(map);
     }
     ITEMS.sort((a,b)=>(b.updatedAt&&b.updatedAt.seconds||0)-(a.updatedAt&&a.updatedAt.seconds||0));
+    IT_LOADED=true;
     renderItems();
   }catch(e){
     document.getElementById('iv-grid').innerHTML='<div class="iv-empty">تعذر التحميل: '+(e.code||e.message)+' — تأكد من نشر قواعد v4</div>';
@@ -2612,29 +2697,125 @@ function itemCosts(it){
   const fc=sp>0?(cpp/sp*100):null;
   return{total,cpp,fc,margin:sp>0?sp-cpp:null};
 }
+function fcGauge(fc){
+  if(fc==null)return '<div class="fcg nofc"><span>أدخل سعر البيع لحساب FC%</span></div>';
+  const col=fc<=30?'#2e9e62':(fc<=35?'#e0a020':'#d93a25');
+  return '<div class="fcg"><div class="fcb"><i style="width:'+Math.min(100,fc/50*100).toFixed(0)+'%;background:'+col+'"></i><u title="الحد المستهدف 35%"></u></div><span style="color:'+col+'">FC '+fc.toFixed(0)+'%</span></div>';
+}
+function itStats(){
+  const el=document.getElementById('iv-stats'); if(!el)return;
+  const ap=ITEMS.filter(i=>i.status==='approved').length, rv=ITEMS.filter(i=>i.status==='review').length;
+  const fcs=ITEMS.map(i=>itemCosts(i).fc).filter(x=>x!=null);
+  const avg=fcs.length?fcs.reduce((a,b)=>a+b,0)/fcs.length:null;
+  const hi=fcs.filter(x=>x>35).length;
+  const al=ITEMS.filter(i=>i.allergens&&i.allergens.length).length;
+  const k=(v,l,c,dec)=>'<div class="ks"><b data-v="'+(v==null?'':v)+'" data-d="'+(dec||0)+'"'+(c?' style="color:'+c+'"':'')+'>'+(v==null?'—':'0')+'</b><span>'+l+'</span></div>';
+  el.innerHTML=k(ITEMS.length,'إجمالي الأصناف')+k(ap,'معتمدة','#1d5a35')+k(rv,'قيد المراجعة','#1c4e8a')+
+    k(avg==null?null:+avg.toFixed(1),'متوسط FC%',avg==null?'':(avg<=35?'#1d5a35':'#9c231b'),1)+k(hi,'FC فوق 35%',hi?'#9c231b':'#1d5a35')+k(al,'تحتوي حساسية','#a3690f');
+  el.querySelectorAll('b[data-v]').forEach(b=>{const v=b.dataset.v; if(v!=='')itCountUp(b,+v,+b.dataset.d);});
+}
 function renderItems(){
-  const q=(document.getElementById('iv-q').value||'').trim().toLowerCase();
-  const ft=document.getElementById('iv-type').value;
-  const fs=document.getElementById('iv-st').value;
+  const qe=document.getElementById('iv-q'); if(!qe)return;
+  const q=(qe.value||'').trim().toLowerCase();
+  const fs=document.getElementById('iv-st').value, fa=document.getElementById('iv-alg').value, so=document.getElementById('iv-sort').value;
   const grid=document.getElementById('iv-grid');
-  const list=ITEMS.filter(it=>{
-    if(ft&&it.type!==ft)return false;
+  /* حالة الأزرار */
+  const tg=document.getElementById('vt-grid'),tt=document.getElementById('vt-tbl');
+  if(tg){tg.classList.toggle('on',IT_VIEW==='grid');tt.classList.toggle('on',IT_VIEW==='tbl');}
+  /* التصنيفات بعدّاد */
+  const cnt=t=>ITEMS.filter(i=>i.type===t).length;
+  document.getElementById('iv-chips').innerHTML=
+    '<button class="'+(IT_TYPE===''?'on':'')+'" onclick="itSetType(\'\')">الكل <i>'+ITEMS.length+'</i></button>'+
+    IT_TYPES.map(t=>(cnt(t)||IT_TYPE===t)?'<button class="'+(IT_TYPE===t?'on':'')+'" onclick="itSetType(\''+t+'\')">'+(IT_ICON[t]||'')+' '+t+' <i>'+cnt(t)+'</i></button>':'').join('')+
+    '<button class="'+(IT_TYPE==='★'?'on':'')+'" onclick="itSetType(\'★\')">★ المفضلة <i>'+IT_FAV.filter(id=>ITEMS.some(i=>i.id===id)).length+'</i></button>';
+  let list=ITEMS.filter(it=>{
+    if(IT_TYPE==='★'){if(IT_FAV.indexOf(it.id)<0)return false;}
+    else if(IT_TYPE&&it.type!==IT_TYPE)return false;
     if(fs&&it.status!==fs)return false;
-    if(q&&!((it.nameAr||'').toLowerCase().includes(q)||(it.nameEn||'').toLowerCase().includes(q)||(it.sku||'').toLowerCase().includes(q)))return false;
+    if(fa&&(it.allergens||[]).includes(fa))return false;
+    if(q){
+      const hay=[it.nameAr,it.nameEn,it.sku,it.cat,it.subcat,it.desc].concat((it.ing||[]).map(r=>r.name)).join(' ').toLowerCase();
+      if(!hay.includes(q))return false;
+    }
     return true;
   });
+  const cs=it=>itemCosts(it);
+  if(so==='name')list.sort((a,b)=>(a.nameAr||'').localeCompare(b.nameAr||'','ar'));
+  else if(so==='cost')list.sort((a,b)=>cs(b).cpp-cs(a).cpp);
+  else if(so==='fcd')list.sort((a,b)=>(cs(b).fc==null?-1:cs(b).fc)-(cs(a).fc==null?-1:cs(a).fc));
+  else if(so==='fca')list.sort((a,b)=>(cs(a).fc==null?999:cs(a).fc)-(cs(b).fc==null?999:cs(b).fc));
   document.getElementById('iv-empty').style.display=list.length?'none':'block';
-  grid.innerHTML=list.map(it=>{
-    const c=itemCosts(it);
-    const fcb=c.fc==null?'':'<span class="badge '+(c.fc<=35?'fc-ok':'fc-hi')+'">FC '+c.fc.toFixed(0)+'%</span>';
-    return '<div class="icard" onclick="openItem(\''+it.id+'\')">'+
-      '<div class="im">'+(it.img?'<img src="'+it.img+'">':'🍽️')+'</div>'+
-      '<div class="ib"><b>'+(it.nameAr||'بدون اسم')+'</b><small>'+(it.nameEn||'')+(it.sku?' · '+it.sku:'')+'</small></div>'+
-      '<div class="ift"><span class="badge tp">'+(it.type||'—')+'</span>'+
-      '<span class="badge st-'+(it.status||'draft')+'">'+(ST_LBL[it.status]||'مسودة')+'</span>'+
-      ((it.allergens&&it.allergens.length)?'<span class="badge alg">⚠️ حساسية</span>':'')+
-      '<span class="badge tp">'+c.cpp.toFixed(2)+' ر/حصة</span>'+fcb+'</div></div>';
+  if(!IT_LOADED)return;
+  itStats();
+  const now=Date.now()/1000;
+  if(IT_VIEW==='tbl'){
+    grid.className='iv-tblwrap';
+    grid.innerHTML='<table class="itbl"><thead><tr><th></th><th>الصنف</th><th>النوع</th><th>الحالة</th><th>تكلفة الحصة</th><th>سعر البيع</th><th>FC%</th><th>حساسية</th></tr></thead><tbody>'+
+      list.map(it=>{const c=cs(it),fv=IT_FAV.indexOf(it.id)>-1;
+        return '<tr onclick="openItem(\''+it.id+'\')"><td><button class="ifav'+(fv?' on':'')+'" onclick="event.stopPropagation();itFav(\''+it.id+'\')">'+(fv?'★':'☆')+'</button></td>'+
+        '<td><b>'+(it.nameAr||'بدون اسم')+'</b><small>'+(it.nameEn||'')+(it.sku?' · '+it.sku:'')+'</small></td>'+
+        '<td>'+(IT_ICON[it.type]||'')+' '+(it.type||'—')+'</td><td>'+stBadge(it.status)+'</td><td>'+c.cpp.toFixed(2)+'</td><td>'+(it.sellPrice?Number(it.sellPrice).toFixed(2):'—')+'</td>'+
+        '<td>'+fcGauge(c.fc)+'</td><td class="alg-ic">'+(it.allergens||[]).map(a=>'<span title="'+a+'">'+algIc(a)+'</span>').join('')+'</td></tr>';}).join('')+'</tbody></table>';
+    return;
+  }
+  grid.className='iv-grid';
+  grid.innerHTML=list.map((it,n)=>{
+    const c=cs(it), fv=IT_FAV.indexOf(it.id)>-1, g=IT_GRAD[it.type]||IT_GRAD['منتج آخر'];
+    const isNew=it.updatedAt&&it.updatedAt.seconds&&(now-it.updatedAt.seconds)<7*86400;
+    const tm=(Number(it.prepTime)||0)+(Number(it.cookTime)||0);
+    return '<div class="icard" style="animation-delay:'+Math.min(n,12)*40+'ms" onclick="openItem(\''+it.id+'\')">'+
+      '<div class="im">'+(it.img?'<img src="'+it.img+'" loading="lazy">':'<div class="iph" style="background:linear-gradient(135deg,'+g[0]+','+g[1]+')"><span>'+(IT_ICON[it.type]||'🍽️')+'</span></div>')+
+        '<span class="ist st-'+(it.status||'draft')+'">'+(ST_LBL[it.status]||'مسودة')+'</span>'+(isNew?'<span class="inew">جديد</span>':'')+
+        '<button class="ifav'+(fv?' on':'')+'" title="مفضلة" onclick="event.stopPropagation();itFav(\''+it.id+'\')">'+(fv?'★':'☆')+'</button></div>'+
+      '<div class="ib"><b>'+(it.nameAr||'بدون اسم')+'</b><small>'+(it.nameEn||'')+(it.sku?' · '+it.sku:'')+'</small>'+
+        '<div class="imeta">'+(tm?'<span>⏱ '+tm+' د</span>':'')+(it.serveTemp?'<span>🌡 '+it.serveTemp+'</span>':'')+(it.portionSize?'<span>⚖ '+it.portionSize+' '+(it.portionUnit||'')+'</span>':'')+'</div></div>'+
+      '<div class="ialg">'+((it.allergens&&it.allergens.length)?it.allergens.map(a=>'<span title="'+a+'">'+algIc(a)+'</span>').join(''):'<small>بدون مسببات حساسية مسجّلة</small>')+'</div>'+
+      '<div class="ifc">'+fcGauge(c.fc)+'</div>'+
+      '<div class="ift"><span class="badge tp">'+(it.type||'—')+'</span><span class="badge tp">'+c.cpp.toFixed(2)+' ر/حصة</span>'+(it.sellPrice?'<span class="badge tp">بيع '+Number(it.sellPrice).toFixed(2)+'</span>':'')+'</div></div>';
   }).join('');
+}
+
+/* ==== توزيع التكلفة وحاسبة الكميات داخل كارت الصنف ==== */
+let SC_N=null;
+function itViz(){
+  const box=document.getElementById('cost-viz'); if(!box)return;
+  const rows=Array.from(document.querySelectorAll('#ing-body tr')).map(tr=>({n:tr.querySelector('.g-name').value.trim()||'—',c:(Number(tr.querySelector('.g-qty').value)||0)*(Number(tr.querySelector('.g-price').value)||0)})).filter(r=>r.c>0).sort((a,b)=>b.c-a.c);
+  const tot=rows.reduce((s,r)=>s+r.c,0);
+  if(!tot){box.innerHTML='';return;}
+  const pal=['#14545c','#2b93a0','#7a9a4f','#e8c98f','#c98a14','#b4531a','#8a2a5b','#5c6e78'];
+  const top=rows.slice(0,7), rest=rows.slice(7).reduce((s,r)=>s+r.c,0);
+  const segs=top.concat(rest>0?[{n:'أخرى',c:rest}]:[]);
+  box.innerHTML='<div class="cv-t">توزيع تكلفة المكونات'+(rows[0]?' — الأعلى: <b>'+rows[0].n+'</b> ('+(rows[0].c/tot*100).toFixed(0)+'%)':'')+'</div>'+
+    '<div class="cv-bar">'+segs.map((r,i)=>'<i style="width:'+(r.c/tot*100).toFixed(2)+'%;background:'+pal[i%pal.length]+'" title="'+r.n+': '+(r.c/tot*100).toFixed(1)+'%"></i>').join('')+'</div>'+
+    '<div class="cv-l">'+segs.map((r,i)=>'<span><s style="background:'+pal[i%pal.length]+'"></s>'+r.n+' <small>'+(r.c/tot*100).toFixed(0)+'%</small></span>').join('')+'</div>';
+}
+function itScale(){
+  const box=document.getElementById('scale-out'); if(!box)return;
+  const y=Number((document.getElementById('it-yield')||{}).value)||1;
+  const inp=document.getElementById('sc-n'); const n=Number(inp&&inp.value)||y; SC_N=n;
+  const f=n/y;
+  const fmt=v=>{const r=Math.round(v*100)/100;return String(r);};
+  const rows=Array.from(document.querySelectorAll('#ing-body tr')).map(tr=>({
+    n:tr.querySelector('.g-name').value.trim(),q:Number(tr.querySelector('.g-qty').value)||0,u:tr.querySelector('.g-unit').value.trim(),p:Number(tr.querySelector('.g-price').value)||0
+  })).filter(r=>r.n);
+  if(!rows.length){box.innerHTML='<div class="np-empty">أضف مكونات للوصفة أولًا</div>';return;}
+  const tot=rows.reduce((s,r)=>s+r.q*f*r.p,0);
+  box.innerHTML='<table class="sc-t"><thead><tr><th>المكوّن</th><th>الكمية للأصل</th><th>الكمية المطلوبة ×'+fmt(f)+'</th><th>التكلفة</th></tr></thead><tbody>'+
+    rows.map(r=>'<tr><td>'+r.n+'</td><td>'+fmt(r.q)+' '+r.u+'</td><td><b>'+fmt(r.q*f)+'</b> '+r.u+'</td><td>'+(r.p?(r.q*f*r.p).toFixed(2):'—')+'</td></tr>').join('')+
+    '</tbody><tfoot><tr><td colspan="3">إجمالي تكلفة '+fmt(n)+' حصة</td><td><b>'+tot.toFixed(2)+'</b></td></tr></tfoot></table>';
+}
+function itScaleCopy(){
+  const y=Number((document.getElementById('it-yield')||{}).value)||1, n=SC_N||y, f=n/y;
+  const name=(document.getElementById('it-nameAr')||{}).value||'';
+  const lines=Array.from(document.querySelectorAll('#ing-body tr')).map(tr=>{
+    const nm=tr.querySelector('.g-name').value.trim(); if(!nm)return '';
+    const q=(Number(tr.querySelector('.g-qty').value)||0)*f;
+    return '• '+nm+': '+(Math.round(q*100)/100)+' '+tr.querySelector('.g-unit').value.trim();
+  }).filter(Boolean);
+  const txt=name+' — '+n+' حصة\n'+lines.join('\n');
+  const b=document.getElementById('sc-copy');
+  const ok=()=>{if(b){const o=b.textContent;b.textContent='✓ تم النسخ';setTimeout(()=>b.textContent=o,1600);}};
+  try{navigator.clipboard.writeText(txt).then(ok,()=>{});}catch(e){}
 }
 
 /* ==== ضغط الصورة ==== */
@@ -2703,7 +2884,8 @@ function openItem(id){
   htm+='<div class="imod-sec"><h3>التكلفة والتسعير</h3><div class="fgrid" style="margin-bottom:12px">'+
     F('it-yield','عدد الحصص من الوصفة',it.yieldPortions||1,'number')+
     F('it-sellPrice','سعر بيع الحصة (ريال)',it.sellPrice,'number')+
-    '</div><div class="cost-grid" id="cost-grid"></div></div>';
+    '</div><div class="cost-grid" id="cost-grid"></div><div id="cost-viz"></div></div>'+
+    '<div class="imod-sec"><h3>🧮 حاسبة الكميات</h3><div class="sc-bar"><label>عدد الحصص المطلوب تحضيرها</label><input id="sc-n" type="number" min="1" step="any" value="'+(it.yieldPortions||1)+'" oninput="itScale()"><button id="sc-copy" class="btn-ghost" type="button" onclick="itScaleCopy()">📋 نسخ قائمة المكونات</button></div><div id="scale-out"></div></div>';
 
   htm+='<div class="imod-sec"><h3>طريقة التحضير</h3><div id="steps-list"></div>'+
     (editable?'<button class="ing-add" onclick="addStep()">+ إضافة خطوة</button>':'')+'</div>';
@@ -2718,7 +2900,7 @@ function openItem(id){
 
   const alg=it.allergens||[];
   htm+='<div class="imod-sec"><h3>مسببات الحساسية Allergens</h3><div class="alg-grid" id="alg-grid">'+
-    ALLERGENS.map(a=>'<label class="'+(alg.includes(a)?'on':'')+'"><input type="checkbox" value="'+a+'"'+(alg.includes(a)?' checked':'')+(editable?'':' disabled')+' onchange="this.parentNode.classList.toggle(\'on\',this.checked)">'+a+'</label>').join('')+
+    ALLERGENS.map(a=>'<label class="'+(alg.includes(a)?'on':'')+'"><input type="checkbox" value="'+a+'"'+(alg.includes(a)?' checked':'')+(editable?'':' disabled')+' onchange="this.parentNode.classList.toggle(\'on\',this.checked)">'+algIc(a)+' '+a+'</label>').join('')+
     '</div><div class="alg-alert" id="alg-alert" style="display:'+(alg.length?'block':'none')+'">⚠️ هذا الصنف يحتوي على مسببات حساسية — يجب إبلاغ العميل عند الطلب</div></div>';
 
   htm+='<div class="imod-sec"><h3>تعليمات السلامة الغذائية Food Safety</h3><div class="fgrid">'+
@@ -2832,6 +3014,7 @@ function calcCosts(){
     '<div class="cbox"><b>'+cpp.toFixed(2)+'</b><span>تكلفة الحصة (ريال)</span></div>'+
     (sp>0?'<div class="cbox"><b style="color:'+(fc<=35?'#1d5a35':'#9c231b')+'">'+fc.toFixed(1)+'%</b><span>Food Cost %</span></div>'+
     '<div class="cbox"><b>'+(sp-cpp).toFixed(2)+'</b><span>هامش تقريبي للحصة (ريال)</span></div>':'<div class="cbox"><b>—</b><span>أدخل سعر البيع لحساب FC%</span></div>');
+  try{itViz();itScale();}catch(e){}
 }
 
 /* ==== الحفظ والاعتماد والإصدارات والطباعة ==== */
