@@ -6319,4 +6319,209 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.body.classL
 
 function unitVideo(btn,id){var box=btn.closest('.vid');if(!box)return;box.querySelectorAll('.vbtn').forEach(function(b){b.classList.remove('on')});btn.classList.add('on');var f=box.querySelector('iframe');if(f)f.src='https://www.youtube-nocookie.com/embed/'+id+'?rel=0&modestbranding=1&autoplay=1';}
 </script>
+<!-- ============ طبقة التحسينات التفاعلية (حيوية وتفاعل) ============ -->
+<style>
+#x-read{position:fixed;top:52px;right:0;left:0;height:3px;z-index:921;background:transparent;pointer-events:none;display:none}
+#x-read i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2b93a0,#7a9a4f,#e8c98f);transition:width .12s linear}
+.x-fab{position:fixed;left:16px;z-index:890;width:44px;height:44px;border-radius:50%;border:0;cursor:pointer;background:var(--red);color:#fff;font-size:19px;box-shadow:0 6px 18px rgba(0,0,0,.28);display:none;align-items:center;justify-content:center;transition:transform .2s,opacity .25s,background .2s;font-family:inherit}
+.x-fab:hover{transform:translateY(-3px) scale(1.06);background:var(--red-dark)}
+body:not(.locked) #x-search{display:flex;bottom:122px}
+#x-top{bottom:70px;opacity:0;pointer-events:none}
+#x-top.on{opacity:1;pointer-events:auto}
+body:not(.locked) #x-top{display:flex}
+.module.x-pre{opacity:0;transform:translateY(26px)}
+.module.x-in{opacity:1;transform:none;transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.h-grid .cbox{animation:xUp .6s both cubic-bezier(.2,.7,.2,1);transition:transform .2s,box-shadow .2s}
+.h-grid .cbox:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(20,84,92,.16)}
+.h-grid .cbox:nth-child(2){animation-delay:.06s}.h-grid .cbox:nth-child(3){animation-delay:.12s}.h-grid .cbox:nth-child(4){animation-delay:.18s}.h-grid .cbox:nth-child(5){animation-delay:.24s}.h-grid .cbox:nth-child(n+6){animation-delay:.3s}
+.h-sec{animation:xUp .6s .15s both cubic-bezier(.2,.7,.2,1);transition:box-shadow .25s}
+.h-sec:hover{box-shadow:0 8px 26px rgba(43,35,32,.09)}
+.h-links button{transition:transform .18s,background .18s,box-shadow .18s}
+.h-links button:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,.1)}
+@keyframes xUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.pbar i{position:relative;overflow:hidden}
+.pbar i::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(120%);animation:xShine 2.8s infinite}
+@keyframes xShine{to{transform:translateX(-120%)}}
+/* بطاقة البداية السريعة */
+#x-hero{display:flex;gap:20px;align-items:center;flex-wrap:wrap;background:linear-gradient(135deg,var(--red-dark),var(--red) 65%,#2b93a0);color:#fff;border-radius:18px;padding:22px 26px;margin-bottom:18px;box-shadow:0 14px 34px rgba(11,53,60,.28);position:relative;overflow:hidden;animation:xUp .6s both}
+#x-hero::before,#x-hero::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none}
+#x-hero::before{width:220px;height:220px;top:-90px;left:-60px;animation:xFloat 9s ease-in-out infinite}
+#x-hero::after{width:140px;height:140px;bottom:-60px;right:30%;animation:xFloat 12s ease-in-out infinite reverse}
+@keyframes xFloat{50%{transform:translate(18px,14px) scale(1.08)}}
+#x-hero .ring{position:relative;width:104px;height:104px;flex-shrink:0}
+#x-hero .ring svg{transform:rotate(-90deg)}
+#x-hero .ring circle{fill:none;stroke-width:9;stroke-linecap:round}
+#x-hero .ring .bg{stroke:rgba(255,255,255,.18)}
+#x-hero .ring .fg{stroke:#e8c98f;stroke-dasharray:289;stroke-dashoffset:289;transition:stroke-dashoffset 1.4s cubic-bezier(.2,.7,.2,1)}
+#x-hero .ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Cairo',sans-serif;font-size:24px;font-weight:800}
+#x-hero .hx{flex:1;min-width:230px;position:relative;z-index:1}
+#x-hero h2{font-size:20px;font-weight:800;margin:0 0 4px}
+#x-hero .nx{font-size:13.5px;opacity:.92;margin-bottom:10px}
+#x-hero .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+#x-hero button{background:#e8c98f;color:#0b353c;border:0;border-radius:10px;padding:9px 18px;font-family:inherit;font-weight:800;font-size:13.5px;cursor:pointer;transition:transform .18s}
+#x-hero button:hover{transform:translateY(-2px)}
+#x-hero .st{background:rgba(255,255,255,.14);border-radius:20px;padding:5px 13px;font-size:12.5px;font-weight:700}
+#x-hero .tip{margin-top:12px;font-size:12.5px;opacity:.88;border-top:1px dashed rgba(255,255,255,.3);padding-top:9px;transition:opacity .4s}
+/* البحث السريع */
+#x-pal{position:fixed;inset:0;background:rgba(11,40,46,.72);z-index:990;display:none;align-items:flex-start;justify-content:center;padding:12vh 14px 0;backdrop-filter:blur(3px)}
+#x-pal.on{display:flex}
+#x-pal .pb{width:100%;max-width:560px;background:var(--white);border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.45);overflow:hidden;animation:xUp .25s both}
+#x-pal input{width:100%;border:0;border-bottom:1px solid var(--line);padding:16px 20px;font-family:inherit;font-size:16px;background:transparent;outline:none;color:var(--ink)}
+#x-pal ul{list-style:none;max-height:50vh;overflow:auto;margin:0;padding:6px}
+#x-pal li{padding:10px 14px;border-radius:10px;cursor:pointer;font-size:14px;display:flex;gap:10px;align-items:center}
+#x-pal li small{margin-inline-start:auto;color:var(--ink-soft);font-size:11px}
+#x-pal li.on,#x-pal li:hover{background:var(--beige-deep)}
+#x-pal .hint{padding:8px 16px;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line);background:var(--beige)}
+#x-conf{position:fixed;inset:0;pointer-events:none;z-index:995}
+#x-toast{position:fixed;top:70px;left:50%;transform:translate(-50%,-20px);background:var(--red-dark);color:#fff;padding:12px 22px;border-radius:30px;font-weight:800;font-size:14px;z-index:996;opacity:0;transition:all .4s;box-shadow:0 10px 30px rgba(0,0,0,.3);pointer-events:none;max-width:92vw;text-align:center}
+#x-toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.module.x-pre{opacity:1;transform:none}}
+@media print{#x-read,.x-fab,#x-pal,#x-conf,#x-toast,#x-hero{display:none!important}.module.x-pre{opacity:1!important;transform:none!important}}
+</style>
+<div id="x-read"><i></i></div>
+<button class="x-fab" id="x-search" title="بحث سريع (Ctrl+K)" aria-label="بحث سريع">🔍</button>
+<button class="x-fab" id="x-top" title="للأعلى" aria-label="للأعلى">↑</button>
+<div id="x-pal"><div class="pb"><input id="x-q" placeholder="ابحث عن وحدة أو قسم…" autocomplete="off"><ul id="x-list"></ul><div class="hint">↑ ↓ للتنقل · Enter للفتح · Esc للإغلاق</div></div></div>
+<canvas id="x-conf"></canvas><div id="x-toast"></div>
+<script>
+(function(){
+'use strict';
+var $=function(i){return document.getElementById(i);};
+var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){}return null;}
+function toast(t){var e=$('x-toast');e.textContent=t;e.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(function(){e.classList.remove('on');},3200);}
+
+/* شريط القراءة + زر الأعلى */
+var rd=$('x-read'),rdi=rd.firstChild,topb=$('x-top');
+function onScroll(){
+  var c=$('content'),manual=c&&c.style.display!=='none'&&!document.body.classList.contains('locked');
+  rd.style.display=manual?'block':'none';
+  if(manual){var h=document.documentElement.scrollHeight-innerHeight;rdi.style.width=(h>0?Math.min(100,scrollY/h*100):0)+'%';}
+  topb.classList.toggle('on',scrollY>600);
+}
+addEventListener('scroll',onScroll,{passive:true});
+topb.onclick=function(){scrollTo({top:0,behavior:RM?'auto':'smooth'});};
+
+/* ظهور الوحدات تدريجيًا عند التمرير */
+if('IntersectionObserver' in window&&!RM){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('x-in');io.unobserve(e.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:.04});
+  document.querySelectorAll('.module').forEach(function(m){m.classList.add('x-pre');io.observe(m);});
+}
+
+/* عدّاد متحرك للأرقام في الرئيسية */
+function countUp(el){
+  var t=el.textContent,m=t.match(/^(\d+)(.*)$/);
+  if(!m||el.dataset.xa||el.dataset.xd===t||RM)return;
+  var to=+m[1],rest=m[2],s=performance.now(),D=900;
+  el.dataset.xd=t;
+  if(to===0)return;
+  el.dataset.xa='1';
+  (function f(n){var p=Math.min(1,(n-s)/D),v=Math.round(to*(1-Math.pow(1-p,3)));el.textContent=p<1?v+rest:t;if(p<1)requestAnimationFrame(f);else setTimeout(function(){delete el.dataset.xa;},0);})(s);
+}
+var TIPS=['ابدأ كل وردية بجولة افتتاح موثّقة — ما لا يُسجَّل لم يحدث.','اسأل «لماذا؟» خمس مرات قبل أن تُحمّل أحدًا المسؤولية.','المعيار الذي لا يُقاس لا يتحسّن — اربط كل إجراء بمؤشر.','درّب موظفًا واحدًا اليوم على مهارة جديدة.','الاجتماع القصير قبل الذروة يوفّر ساعة من الفوضى أثناءها.','راجع الانحرافات الأسبوعية وابحث عن النمط لا عن الحادثة.','النظافة وسلامة الغذاء ليستا بندًا — بل شرط البقاء.','التوثيق الجيد يجعل غيابك لا يوقف التشغيل.'];
+var tipI=Math.floor(Math.random()*TIPS.length),tipT=null;
+function streak(){
+  var d=new Date().toISOString().slice(0,10),o;
+  try{o=JSON.parse(ls('x_streak')||'{}');}catch(e){o={};}
+  if(o.last!==d){var y=new Date(Date.now()-864e5).toISOString().slice(0,10);o.n=(o.last===y?(o.n||0):0)+1;o.last=d;ls('x_streak',JSON.stringify(o));}
+  return o.n||1;
+}
+function hero(body){
+  if(body.querySelector('#x-hero')||typeof MYDOC==='undefined'||!MYDOC||typeof MODS==='undefined'||typeof stats!=='function')return;
+  if(typeof isAdminUser==='function'&&isAdminUser())return;
+  var s=stats(MYDOC.scores||{}),sc=MYDOC.scores||{},total=MODS.length,pct=Math.round(s.done/total*100);
+  var nxt=null;for(var i=0;i<MODS.length;i++){var r=sc[MODS[i]];if(!r||r.pct<80){nxt=MODS[i];break;}}
+  var h=new Date().getHours(),g=h<12?'صباح الخير':(h<18?'مساء الخير':'مساء النور');
+  var nm=((MYDOC.name||'').trim().split(/\s+/)[0])||'';
+  var nt=nxt?('وحدتك التالية: <b>'+(typeof unitTitle==='function'?unitTitle(nxt):nxt)+'</b>'):'🏅 أنجزت كل الوحدات — مبروك! راجع ملفك لاستخراج الشهادة.';
+  var e=document.createElement('div');e.id='x-hero';
+  e.innerHTML='<div class="ring"><svg width="104" height="104" viewBox="0 0 104 104"><circle class="bg" cx="52" cy="52" r="46"/><circle class="fg" cx="52" cy="52" r="46"/></svg><b>'+pct+'%</b></div>'+
+   '<div class="hx"><h2>'+g+' '+nm+' 👋</h2><div class="nx">'+nt+'</div><div class="row">'+
+   (nxt?'<button id="x-go">تابع التعلّم ←</button>':'<button id="x-go">فتح ملفي</button>')+
+   '<span class="st">🔥 '+streak()+' يوم متواصل</span><span class="st">✅ '+s.done+' / '+total+' وحدة</span></div>'+
+   '<div class="tip" id="x-tip">💡 '+TIPS[tipI]+'</div></div>';
+  body.insertBefore(e,body.firstChild);
+  $('x-go').onclick=function(){if(nxt&&typeof goUnit==='function')goUnit(nxt);else if(typeof showView==='function')showView('profile');};
+  setTimeout(function(){var fg=e.querySelector('.fg');if(fg)fg.style.strokeDashoffset=289*(1-pct/100);},120);
+  clearInterval(tipT);tipT=setInterval(function(){var t=$('x-tip');if(!t)return;t.style.opacity=0;setTimeout(function(){tipI=(tipI+1)%TIPS.length;t.textContent='💡 '+TIPS[tipI];t.style.opacity=.88;},400);},9000);
+}
+var hv=$('home-view');
+if(hv&&window.MutationObserver){
+  var busy=false;
+  new MutationObserver(function(){
+    if(busy)return;busy=true;
+    try{
+      var b=$('home-body');if(b){hero(b);b.querySelectorAll('.cbox b').forEach(countUp);}
+    }finally{setTimeout(function(){busy=false;},0);}
+  }).observe(hv,{childList:true,subtree:true,characterData:true});
+}
+
+/* بحث سريع */
+var pal=$('x-pal'),q=$('x-q'),lst=$('x-list'),cur=0,items=[];
+var VIEWS=[['home','🏠','الرئيسية'],['manual','📘','الدليل التدريبي'],['items','🍽️','مكتبة الأصناف والوصفات'],['ops','📋','الإجراءات التشغيلية'],['posters','🪧','مكتبة الملصقات'],['practice','🧪','التطبيق العملي'],['support','🎫','الدعم والاستفسارات'],['profile','🎓','ملف المتدرب']];
+function build(){
+  var a=VIEWS.map(function(v){return{t:v[1]+' '+v[2],k:'قسم',f:function(){showView(v[0]);}};});
+  if(typeof MODS!=='undefined')MODS.forEach(function(m){var t=typeof unitTitle==='function'?unitTitle(m):m;a.push({t:'📖 '+t,k:'وحدة',f:function(){goUnit(m);}});});
+  return a;
+}
+function norm(s){return s.replace(/[ً-ٟ]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').toLowerCase();}
+function draw(){
+  var v=norm(q.value.trim());
+  var f=items.filter(function(i){return!v||norm(i.t).indexOf(v)>-1;}).slice(0,40);
+  f.forEach(function(i,n){i.n=n;});
+  draw.f=f;if(cur>=f.length)cur=0;
+  lst.innerHTML='';
+  if(!f.length){lst.innerHTML='<li style="cursor:default">لا نتائج مطابقة</li>';return;}
+  f.forEach(function(i,n){var li=document.createElement('li');li.className=n===cur?'on':'';li.innerHTML='<span></span><small>'+i.k+'</small>';li.firstChild.textContent=i.t;li.onclick=function(){go(i);};lst.appendChild(li);});
+}
+function go(i){close();try{i.f();}catch(e){}}
+function open(){if(document.body.classList.contains('locked'))return;items=build();cur=0;q.value='';pal.classList.add('on');draw();q.focus();}
+function close(){pal.classList.remove('on');}
+$('x-search').onclick=open;
+pal.onclick=function(e){if(e.target===pal)close();};
+q.oninput=function(){cur=0;draw();};
+addEventListener('keydown',function(e){
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();pal.classList.contains('on')?close():open();return;}
+  if(!pal.classList.contains('on'))return;
+  var n=(draw.f||[]).length;
+  if(e.key==='Escape')close();
+  else if(e.key==='ArrowDown'){e.preventDefault();cur=(cur+1)%Math.max(n,1);draw();}
+  else if(e.key==='ArrowUp'){e.preventDefault();cur=(cur-1+Math.max(n,1))%Math.max(n,1);draw();}
+  else if(e.key==='Enter'&&draw.f&&draw.f[cur]){e.preventDefault();go(draw.f[cur]);}
+});
+
+/* احتفال عند اجتياز اختبار */
+function confetti(){
+  if(RM)return;
+  var c=$('x-conf'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
+  var cols=['#e8c98f','#2b93a0','#7a9a4f','#ffffff','#14545c','#e0432f'],P=[];
+  for(var i=0;i<140;i++)P.push({x:innerWidth/2+(Math.random()-.5)*160,y:innerHeight*.55,vx:(Math.random()-.5)*14,vy:-Math.random()*15-4,w:6+Math.random()*6,h:4+Math.random()*6,r:Math.random()*6,vr:(Math.random()-.5)*.4,c:cols[i%cols.length]});
+  var t0=performance.now();
+  (function f(n){
+    x.clearRect(0,0,c.width,c.height);
+    P.forEach(function(p){p.vy+=.34;p.x+=p.vx;p.y+=p.vy;p.vx*=.992;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.w/2,-p.h/2,p.w,p.h);x.restore();});
+    if(n-t0<3200)requestAnimationFrame(f);else x.clearRect(0,0,c.width,c.height);
+  })(t0);
+}
+function wrapGrade(){
+  if(typeof window.grade!=='function'||window.grade._x)return;
+  var o=window.grade;
+  var w=async function(mid){
+    var r=await o.apply(this,arguments);
+    try{
+      var el=$('qr-'+mid);
+      if(el&&el.classList.contains('pass')){
+        confetti();
+        var d=(typeof stats==='function'&&typeof MYDOC!=='undefined')?stats(MYDOC.scores||{}).done:0;
+        toast(typeof MODS!=='undefined'&&d===MODS.length?'🏆 أنجزت جميع الوحدات — مبروك الاعتماد!':'🎉 أحسنت! اجتزت الوحدة'+(d?' — '+d+' من '+MODS.length:''));
+      }
+    }catch(e){}
+    return r;
+  };
+  w._x=1;window.grade=w;
+}
+wrapGrade();
+onScroll();
+})();
+</script>
 </body></html>
