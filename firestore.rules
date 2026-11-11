@@ -20,7 +20,7 @@ service cloud.firestore {
         || (isOwner(uid)
             && request.resource.data.status == 'pending'
             && (!('scores' in request.resource.data) || request.resource.data.scores.size() == 0));
-      allow update: if isAdmin() || (isOwner(uid) && changedOnly(['scores', 'phone', 'jobTitle', 'employer', 'branch', 'city', 'updatedAt']));
+      allow update: if isAdmin() || (isOwner(uid) && changedOnly(['scores', 'phone', 'jobTitle', 'employer', 'branch', 'city', 'avatar', 'updatedAt']));
       allow delete: if isAdmin();
     }
     // بيانات خاصة بالمتدرب يطّلع عليها المدرب فقط
