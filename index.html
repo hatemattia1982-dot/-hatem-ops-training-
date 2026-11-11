@@ -603,6 +603,36 @@ body:not(.locked) #content{padding-top:64px}
 .badge.sev-1{background:#eef3f3;color:#4a5a5a}.badge.sev-2{background:#fff3e0;color:#8a5a00}.badge.sev-3{background:#fdf0ef;color:#9c231b}.badge.sev-4{background:#9c231b;color:#fff}
 .badge.dv-open{background:#fdf0ef;color:#9c231b}.badge.dv-progress{background:#e7effb;color:#1c4e8a}.badge.dv-closed{background:#e8f3ec;color:#1d5a35}
 .scard.ex-chk{border-top-color:#2b93a0}.scard.ex-dev{border-top-color:#9c231b}.scard.ex-kpi{border-top-color:#7a9a4f}
+/* ===== تطوير التطبيق العملي ===== */
+.scard.ex-chk,.scard.ex-dev,.scard.ex-kpi{padding-top:16px}
+.sc-ring{position:absolute;top:12px;left:12px;width:50px;height:50px}
+.sc-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.sc-ring circle{fill:none;stroke-width:4.5}
+.sc-ring .bg{stroke:var(--beige-deep)}
+.sc-ring .fg{stroke-linecap:round;transition:stroke-dashoffset 1s cubic-bezier(.2,.7,.2,1)}
+.sc-ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Cairo',sans-serif;font-size:14px;font-weight:800}
+.scard.ex-chk .sc-top{padding-left:58px}
+.sc-step{display:flex;gap:4px;margin:2px 0}
+.sc-step span{flex:1;text-align:center;font-size:10.5px;font-weight:700;padding:3px 2px;border-radius:6px;background:var(--beige-deep);color:#8a8079}
+.sc-step span.on{background:#e7effb;color:#1c4e8a}.sc-step span.cur{background:#1c4e8a;color:#fff}
+.sc-dots{display:flex;gap:5px;flex-wrap:wrap;margin:2px 0}
+.sc-dots i{width:13px;height:13px;border-radius:50%;background:#c3cacc;display:block;transition:transform .15s}
+.sc-dots i.ok{background:#2e9e62}.sc-dots i.bad{background:#d93a25}
+.sc-dots i:hover{transform:scale(1.5)}
+#pr-stats .ks em{font-style:normal;font-size:13px;color:var(--ink-soft);margin-inline-start:2px}
+#pr-stats .ks b{display:inline-block}
+#pr-stats .ks{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;column-gap:2px}
+#pr-stats .ks span{flex-basis:100%}
+#ck-prog{position:sticky;top:0;z-index:5;background:var(--white);padding:10px 0 8px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+.ckp-bar{height:10px;background:var(--beige-deep);border-radius:6px;overflow:hidden}
+.ckp-bar i{display:block;height:100%;width:0;border-radius:6px;transition:width .4s,background .3s}
+.ckp-row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:13px;color:var(--ink-soft)}
+.ckp-row b{color:var(--red);font-size:15px}
+.chk-sec.done{background:#e8f3ec;color:#1d5a35}
+.chk-item.flash{animation:annflash 1.5s ease;border-radius:10px}
+.chk-item[data-res="ok"]{background:linear-gradient(90deg,transparent,rgba(46,158,98,.07))}
+.chk-item[data-res="no"]{background:linear-gradient(90deg,transparent,rgba(217,58,37,.08))}
+
 .scard .sc-date{font-family:'Tajawal';font-weight:800;color:var(--red);font-size:13px}
 .chk-sec{background:var(--beige);border-radius:10px;padding:8px 12px;font-weight:800;color:var(--red);margin:14px 0 4px;font-size:13.5px;display:flex;justify-content:space-between;gap:8px}
 .chk-sec small{font-weight:400;color:var(--ink-soft)}
@@ -4602,7 +4632,7 @@ function renderPractice(){
     note='ورقة المؤشرات تمرين قياس: يسجّل المتدرب أرقام فترة (يوم/أسبوع/شهر) — Food Cost، الهدر، زمن الخدمة… — ويقارنها بالمستهدف ويكتب تحليله وإجراءاته. الرسم البياني أعلاه يتتبع أي مؤشر عبر الأوراق المسجلة.';
   }
   bar+='</div><div class="h-note" style="margin:-6px 0 14px">'+note+'</div>';
-  let h=bar;
+  let h='<div id="pr-stats" class="iv-stats"></div>'+bar+'<div class="iv-chips" id="pr-chips"></div>';
   if(PR_TAB==='kpi') h+='<div class="kchart" id="kchart"></div>';
   h+='<div class="iv-grid" id="pr-grid"></div><div class="iv-empty" id="pr-empty" style="display:none">لا سجلات مطابقة</div>';
   document.getElementById('pr-body').innerHTML=h;
@@ -4625,24 +4655,25 @@ function renderPrGrid(){
     const by='<div class="sc-by">'+exByName(r)+(r.review&&r.review.score!=null?' · تقييم المدرب: <b>'+r.review.score+'</b>/100':'')+'</div>';
     if(PR_TAB==='chk'){
       const sm=chkSummary(r.items);
-      return '<div class="scard ex-chk" onclick="openChk(\''+r.id+'\')"><div class="sc-top"><span class="badge tp">'+escH(r.type||'—')+'</span>'+exBadge(r.status)+'</div>'+
+      return '<div class="scard ex-chk" onclick="openChk(\''+r.id+'\')">'+prRing(sm,(r.items||[]).length)+'<div class="sc-top"><span class="badge tp">'+escH(r.type||'—')+'</span>'+exBadge(r.status)+'</div>'+
         '<b>'+escH(r.tplTitle||'قائمة فحص')+'</b><div class="sc-date">📅 '+fmtD(r.date)+(r.shift?' · '+escH(r.shift):'')+(r.branch?' · '+escH(r.branch):'')+'</div>'+
         '<div class="sc-meta"><span>'+chkResBadge(sm)+'</span>'+(sm.no?'<span>✗ '+sm.no+' غير مطابق'+(sm.crit?' (🔴 '+sm.crit+' حرج)':'')+'</span>':'')+(sm.un?'<span>'+sm.un+' بلا إجابة</span>':'')+'</div>'+by+'</div>';
     }
     if(PR_TAB==='dev'){
       const si=DEV_SEV.indexOf(r.severity)+1;
-      return '<div class="scard ex-dev" onclick="openDev(\''+r.id+'\')"><div class="sc-top"><span class="badge sev-'+(si||1)+'">'+escH(r.severity||'—')+'</span><span class="badge dv-'+(r.devStatus||'open')+'">'+(DEV_ST[r.devStatus]||'مفتوح')+'</span>'+exBadge(r.status)+'</div>'+
+      return '<div class="scard ex-dev" onclick="openDev(\''+r.id+'\')"><div class="sc-top"><span class="badge sev-'+(si||1)+'">'+escH(r.severity||'—')+'</span><span class="badge dv-'+(r.devStatus||'open')+'">'+(DEV_ST[r.devStatus]||'مفتوح')+'</span>'+exBadge(r.status)+prOverdue(r)+'</div>'+
         '<div class="sc-code">'+escH(r.code||'')+'</div><b>'+escH((r.description||'بدون وصف').slice(0,90))+'</b>'+
         '<div class="sc-date">📅 '+fmtD(r.date)+(r.branch?' · '+escH(r.branch):'')+'</div>'+
-        '<div class="sc-meta"><span>🏷️ '+escH(r.cat||'—')+'</span>'+(r.sop&&r.sop.code?'<span>📋 '+escH(r.sop.code)+'</span>':'')+(r.srcChk?'<span>✅ من قائمة فحص</span>':'')+(r.owner?'<span>👤 '+escH(r.owner)+'</span>':'')+'</div>'+by+'</div>';
+        '<div class="sc-meta"><span>🏷️ '+escH(r.cat||'—')+'</span>'+(r.sop&&r.sop.code?'<span>📋 '+escH(r.sop.code)+'</span>':'')+(r.srcChk?'<span>✅ من قائمة فحص</span>':'')+(r.owner?'<span>👤 '+escH(r.owner)+'</span>':'')+'</div>'+prStepper(r)+by+'</div>';
     }
     const defs=allKpiDefs(); const vals=r.values||{}; let n=0,bad=0;
     Object.keys(vals).forEach(k=>{const x=vals[k]; if(x&&x.v!=null){n++; const dd=defs.find(z=>z.key===k)||{target:x.target,dir:x.dir}; if(kpiEval(dd,x.v)==='bad') bad++;}});
     const end=periodEnd(r.period,r.date);
     return '<div class="scard ex-kpi" onclick="openKpi(\''+r.id+'\')"><div class="sc-top"><span class="badge tp">'+escH(r.period||'—')+'</span>'+exBadge(r.status)+'</div>'+
       '<b>ورقة مؤشرات '+escH(r.period||'')+'</b><div class="sc-date">📅 '+fmtD(r.date)+(end?' ← '+fmtD(end):'')+(r.branch?' · '+escH(r.branch):'')+'</div>'+
-      '<div class="sc-meta"><span>📈 '+n+' مؤشر</span>'+(bad?'<span style="color:#9c231b;font-weight:700">⬇ '+bad+' خارج المستهدف</span>':(n?'<span style="color:#1d5a35;font-weight:700">✓ ضمن المستهدف</span>':''))+'</div>'+by+'</div>';
+      '<div class="sc-meta"><span>📈 '+n+' مؤشر</span>'+(bad?'<span style="color:#9c231b;font-weight:700">⬇ '+bad+' خارج المستهدف</span>':(n?'<span style="color:#1d5a35;font-weight:700">✓ ضمن المستهدف</span>':''))+'</div>'+prDots(r)+by+'</div>';
   }).join('');
+  prDecor();
 }
 function exOpen(col,id){
   const t=EX_TAB[col]; if(!t) return;
@@ -4766,6 +4797,98 @@ function devFromChk(i){
   const it=(r.items||[])[i]||{};
   openDev(null,{srcChk:{id:PCUR_ID,title:r.tplTitle||'',date:r.date||''},date:r.date,shift:r.shift,branch:r.branch,description:'بند غير مطابق في '+(r.tplTitle||'قائمة الفحص')+': '+(it.text||'')+(it.note?'\nالملاحظة: '+it.note:''),severity:it.critical?'جسيم':'متوسط',sopCode:r.sopCode||''});
 }
+
+/* ==== تطوير التطبيق العملي: مؤشرات وبطاقات ومتابعة مباشرة داخل قائمة الفحص ==== */
+function prRing(sm,total){
+  const inc=sm.un>0&&total;
+  const col=inc?'#2b93a0':(sm.res==='ok'?'#2e9e62':sm.res==='warn'?'#e0a020':sm.res==='bad'?'#d93a25':'#9aa5a8');
+  const pc=inc?Math.round((total-sm.un)/total*100):sm.pct;
+  const C=2*Math.PI*16;
+  return '<div class="sc-ring" title="'+(inc?'نسبة الإجابة (القائمة غير مكتملة)':'نسبة المطابقة')+'"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" class="bg"/><circle cx="20" cy="20" r="16" class="fg" style="stroke:'+col+';stroke-dasharray:'+C.toFixed(1)+';stroke-dashoffset:'+(C*(1-pc/100)).toFixed(1)+'"/></svg><b style="color:'+col+'">'+pc+'</b></div>';
+}
+function prStepper(r){
+  const o=['open','progress','closed'], cur=o.indexOf(r.devStatus||'open');
+  return '<div class="sc-step">'+o.map((k,i)=>'<span class="'+(i<=cur?'on':'')+(i===cur?' cur':'')+'">'+DEV_ST[k]+'</span>').join('')+'</div>';
+}
+function prOverdue(r){return (r.devStatus!=='closed'&&r.dueDate&&r.dueDate<todayISO())?'<span class="badge sev-4">⏰ متأخر</span>':'';}
+function prDots(r){
+  const defs=allKpiDefs(), vals=r.values||{};
+  const dots=Object.keys(vals).map(k=>{const x=vals[k]; if(!x||x.v==null)return ''; const dd=defs.find(z=>z.key===k)||{target:x.target,dir:x.dir}; const e=kpiEval(dd,x.v); const nm=(dd.name||dd.title||k); return '<i class="'+(e==='bad'?'bad':(e==='ok'?'ok':''))+'" title="'+escH(nm)+': '+escH(String(x.v))+'"></i>';}).join('');
+  return dots?'<div class="sc-dots">'+dots+'</div>':'';
+}
+function prStats(){
+  const el=document.getElementById('pr-stats'); if(!el)return;
+  const list=prList().filter(r=>!PR_FILTER_UID||(r.createdBy&&r.createdBy.uid===PR_FILTER_UID));
+  const k=(v,l,c,suf)=>'<div class="ks"><b data-v="'+v+'"'+(c?' style="color:'+c+'"':'')+'>0</b>'+(suf?'<em>'+suf+'</em>':'')+'<span>'+l+'</span></div>';
+  const avgScore=()=>{const a=list.filter(r=>r.review&&r.review.score!=null).map(r=>Number(r.review.score));return a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):null;};
+  const sc=avgScore();
+  let h='';
+  if(PR_TAB==='chk'){
+    const sm=list.map(r=>chkSummary(r.items)), done=sm.filter(x=>!x.un);
+    const avg=done.length?Math.round(done.reduce((s,x)=>s+x.pct,0)/done.length):0;
+    h=k(list.length,'قوائم منفّذة')+k(avg,'متوسط المطابقة','#1d5a35','%')+k(sm.filter(x=>x.crit>0).length,'بها بند حرج مخالف',sm.some(x=>x.crit>0)?'#9c231b':'#1d5a35')+k(list.filter(r=>r.status==='review').length,'بانتظار التقييم','#1c4e8a')+(sc!=null?k(sc,'متوسط تقييم المدرب','#a3690f','/100'):'');
+  }else if(PR_TAB==='dev'){
+    const open=list.filter(r=>r.devStatus!=='closed'), od=list.filter(r=>r.devStatus!=='closed'&&r.dueDate&&r.dueDate<todayISO());
+    const hi=open.filter(r=>DEV_SEV.indexOf(r.severity)>=2);
+    const closedPct=list.length?Math.round((list.length-open.length)/list.length*100):0;
+    h=k(list.length,'انحرافات مسجّلة')+k(open.length,'مفتوحة / قيد المعالجة','#a3690f')+k(od.length,'متأخرة عن موعدها',od.length?'#9c231b':'#1d5a35')+k(hi.length,'جسيمة / حرجة مفتوحة',hi.length?'#9c231b':'#1d5a35')+k(closedPct,'نسبة الإغلاق','#1d5a35','%');
+  }else{
+    const defs=allKpiDefs(); let n=0,bad=0;
+    list.forEach(r=>Object.keys(r.values||{}).forEach(kk=>{const x=r.values[kk]; if(x&&x.v!=null){n++; const dd=defs.find(z=>z.key===kk)||{target:x.target,dir:x.dir}; if(kpiEval(dd,x.v)==='bad')bad++;}}));
+    h=k(list.length,'أوراق مؤشرات')+k(n,'قراءات مسجّلة')+k(bad,'خارج المستهدف',bad?'#9c231b':'#1d5a35')+k(n?Math.round((n-bad)/n*100):0,'ضمن المستهدف','#1d5a35','%')+(sc!=null?k(sc,'متوسط تقييم المدرب','#a3690f','/100'):'');
+  }
+  el.innerHTML=h;
+  el.querySelectorAll('b[data-v]').forEach(b=>itCountUp(b,+b.dataset.v,0));
+}
+function prSetSt(v){const s=document.getElementById('pr-st'); if(s)s.value=v; renderPrGrid();}
+function prDecor(){
+  prStats();
+  const ch=document.getElementById('pr-chips'); if(!ch)return;
+  const base=prList().filter(r=>!PR_FILTER_UID||(r.createdBy&&r.createdBy.uid===PR_FILTER_UID));
+  const cur=gv('pr-st');
+  const c=s=>s===''?base.length:base.filter(r=>(r.status||'draft')===s).length;
+  ch.innerHTML=[['','الكل'],['draft','✏️ مسودات'],['review','📤 بانتظار التقييم'],['graded','🎯 مُقيَّمة']].map(x=>'<button class="'+(cur===x[0]?'on':'')+'" onclick="prSetSt(\''+x[0]+'\')">'+x[1]+' <i>'+c(x[0])+'</i></button>').join('');
+}
+/* ==== تقدّم مباشر أثناء تنفيذ قائمة الفحص ==== */
+function ckProgress(){
+  const bar=document.getElementById('ck-prog'); if(!bar)return;
+  const rows=Array.from(document.querySelectorAll('#ck-items .chk-item'));
+  const tot=rows.length, ans=rows.filter(r=>r.dataset.res).length, left=tot-ans;
+  const sm=chkSummary(ckItemsFromDom());
+  const f=document.getElementById('ckp-fill'); if(f){f.style.width=(tot?ans/tot*100:0)+'%';f.style.background=sm.crit?'#d93a25':(sm.no?'#e0a020':'#2e9e62');}
+  const t=document.getElementById('ckp-txt'); if(t)t.innerHTML='<b>'+ans+'</b> من '+tot+' بند'+(sm.crit?' — <span style="color:#d93a25;font-weight:800">🔴 '+sm.crit+' حرج مخالف</span>':'');
+  const nx=document.getElementById('ckp-next'); if(nx)nx.style.display=left?'':'none';
+  const al=document.getElementById('ckp-all'); if(al)al.style.display=left?'':'none';
+  /* عدّاد كل قسم */
+  const secs={}; rows.forEach(r=>{const i=Number(r.dataset.i); const sec=((CK_ITEMS||[])[i]||{}).sec||'بنود عامة'; (secs[sec]=secs[sec]||{t:0,a:0}); secs[sec].t++; if(r.dataset.res)secs[sec].a++;});
+  document.querySelectorAll('#ck-items .chk-sec').forEach(h=>{const nm=h.querySelector('span').textContent; const x=secs[nm]; const sm2=h.querySelector('small'); if(x&&sm2){sm2.textContent=x.a+'/'+x.t+(x.a===x.t?' ✓':''); h.classList.toggle('done',x.a===x.t);}});
+  /* احتفال عند الإكمال بنتيجة مطابقة */
+  if(tot&&!left&&sm.res==='ok'&&!window._ckCel){window._ckCel=1;try{window.xConfetti&&window.xConfetti();window.xToast&&window.xToast('🎉 قائمة مكتملة وفرع مطابق '+sm.pct+'%');}catch(e){}}
+  if(left)window._ckCel=0;
+}
+function ckNext(){
+  const r=Array.from(document.querySelectorAll('#ck-items .chk-item')).find(x=>!x.dataset.res); if(!r)return;
+  r.scrollIntoView({behavior:'smooth',block:'center'}); r.classList.add('flash'); setTimeout(()=>r.classList.remove('flash'),1500);
+}
+function ckAllOk(){
+  document.querySelectorAll('#ck-items .chk-item').forEach(r=>{
+    if(r.dataset.res)return; const b=r.querySelector('.res-btns .ok'); if(!b||b.disabled)return;
+    r.dataset.res='ok'; r.querySelectorAll('.res-btns button').forEach(x=>x.classList.toggle('on',x.classList.contains('ok')));
+  });
+  ckSum();
+}
+function ckEnhance(){
+  const box=document.getElementById('ck-items'); if(!box||document.getElementById('ck-prog'))return;
+  const edit=!!box.querySelector('.res-btns button:not([disabled])');
+  const p=document.createElement('div'); p.id='ck-prog';
+  p.innerHTML='<div class="ckp-bar"><i id="ckp-fill"></i></div><div class="ckp-row"><span id="ckp-txt"></span>'+(edit?'<span><button class="mbtn" id="ckp-next" onclick="ckNext()">⏭ أول بند بلا إجابة</button> <button class="mbtn" id="ckp-all" onclick="ckAllOk()">✓ طابِق المتبقي</button></span>':'')+'</div>';
+  box.parentNode.insertBefore(p,box);
+  window._ckCel=0; ckProgress();
+}
+const _openChk0=openChk;
+openChk=function(){_openChk0.apply(this,arguments);try{ckEnhance();}catch(e){}};
+const _ckSum0=ckSum;
+ckSum=function(){_ckSum0.apply(this,arguments);try{ckProgress();}catch(e){}};
 
 /* ==== سجل الانحرافات: المحرر ==== */
 async function openDev(id,pre){
