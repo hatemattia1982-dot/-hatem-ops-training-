@@ -700,6 +700,22 @@ body:not(.locked) #content{padding-top:64px}
 .rem-sw{display:flex;gap:8px;align-items:center;font-weight:700;font-size:13.5px;cursor:pointer}
 .rem-sw input{width:auto}
 @media print{#rem-card,#rem-admin{display:none!important}}
+/* ===== مركز التقارير ===== */
+.rp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.rp-card{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:6px;animation:pcIn .5s both;transition:transform .2s,box-shadow .2s}
+.rp-card:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(11,53,60,.14)}
+.rp-i{width:46px;height:46px;border-radius:13px;background:var(--beige-deep);display:flex;align-items:center;justify-content:center;font-size:24px}
+.rp-card b{font-size:16px;color:var(--red)}
+.rp-card p{font-size:12.5px;color:var(--ink-soft);line-height:1.8;flex:1;margin:0}
+.rp-card select{padding:8px 10px;border:1px solid var(--line);border-radius:9px;font-family:inherit;font-size:13px;background:#fff}
+.rp-b{display:flex;gap:8px;margin-top:6px}
+.rp-b button{flex:1;border:0;border-radius:10px;padding:9px 12px;font-family:inherit;font-weight:800;font-size:13.5px;cursor:pointer;transition:transform .15s}
+.rp-b button:hover{transform:translateY(-2px)}
+.rp-b .pdf{background:#c0392b;color:#fff}.rp-b .xls{background:#1d6f42;color:#fff}
+#rp-stats .ks{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;column-gap:2px}
+#rp-stats .ks b{display:inline-block}
+#rp-stats .ks span{flex-basis:100%}
+@media print{.rp-grid,#rp-stats{display:none!important}}
 .scard.ex-chk{border-top-color:#2b93a0}.scard.ex-dev{border-top-color:#9c231b}.scard.ex-kpi{border-top-color:#7a9a4f}
 /* ===== تطوير التطبيق العملي ===== */
 .scard.ex-chk,.scard.ex-dev,.scard.ex-kpi{padding-top:16px}
@@ -6492,6 +6508,7 @@ async function loadProfile(){
       '<button id="pft-asg" onclick="pfTab(\'asg\')">📝 التكليفات<span class="c" id="pfc-asg"></span></button>'+
       '<button id="pft-ass" onclick="pfTab(\'ass\')">🎯 التقييم العملي<span class="c" id="pfc-ass"></span></button>'+
       (admin?'':'<button id="pft-ojt" onclick="pfTab(\'ojt\')">🗓️ سجل الـ30 يومًا<span class="c" id="pfc-ojt"></span></button>')+
+      (admin?'<button id="pft-rep" onclick="pfTab(\'rep\')">📊 التقارير</button>':'')+
       '<button id="pft-cert" onclick="pfTab(\'cert\')">🎓 '+(admin?'الشهادات':'شهادتي')+'<span class="c" id="pfc-cert"></span></button>'+
       '</div><div id="pf-body"><div class="iv-empty">جارٍ التحميل…</div></div>';
   }
@@ -6501,7 +6518,7 @@ async function loadProfile(){
 function pfTab(t){PF_TAB=t; pfRender();}
 function pfRender(){
   const admin=isAdminUser(); if(!PF_LOADED) return;
-  ['dir','sess','asg','ass','ojt','cert'].forEach(t=>{const b=document.getElementById('pft-'+t); if(b) b.classList.toggle('on',PF_TAB===t);});
+  ['dir','sess','asg','ass','ojt','rep','cert'].forEach(t=>{const b=document.getElementById('pft-'+t); if(b) b.classList.toggle('on',PF_TAB===t);});
   const setC=(id,n)=>{const c=document.getElementById(id); if(c) c.textContent=n?String(n):'';};
   if(admin){
     setC('pfc-dir',pfActive().length);
@@ -6518,7 +6535,7 @@ function pfRender(){
     setC('pfc-cert',pfValidCert(uid)?1:0);
     pfRenderMe();
   }
-  if(PF_TAB==='dir') pfRenderDir(); else if(PF_TAB==='sess') pfRenderSess(); else if(PF_TAB==='asg') pfRenderAsg(); else if(PF_TAB==='ass') pfRenderAss(); else if(PF_TAB==='ojt') pfRenderOjt(); else pfRenderCert();
+  if(PF_TAB==='dir') pfRenderDir(); else if(PF_TAB==='sess') pfRenderSess(); else if(PF_TAB==='asg') pfRenderAsg(); else if(PF_TAB==='ass') pfRenderAss(); else if(PF_TAB==='ojt') pfRenderOjt(); else if(PF_TAB==='rep'&&admin) pfRenderRep(); else pfRenderCert();
   pfBadge();
 }
 
@@ -6686,6 +6703,228 @@ function pfDirStats(){
   const k=(v,l,c,suf)=>'<div class="ks"><b data-v="'+v+'"'+(c?' style="color:'+c+'"':'')+'>0</b>'+(suf?'<em>'+suf+'</em>':'')+'<span>'+l+'</span></div>';
   el.innerHTML=k(act.length,'متدربون نشطون')+k(avg,'متوسط إكمال المتطلبات','#14545c','%')+k(ready,'جاهزون للاعتماد',ready?'#1d5a35':'','')+k(cert,'حاصلون على الشهادة','#a3690f')+k(attn,'يحتاجون متابعة',attn?'#9c231b':'#1d5a35');
   el.querySelectorAll('b[data-v]').forEach(b=>itCountUp(b,+b.dataset.v,0));
+}
+
+/* ==== مركز التقارير (المدرب): PDF وExcel ==== */
+let REP_STATUS='active', REP_Q='';
+function repTrainees(){
+  const q=REP_Q.trim().toLowerCase();
+  return PF_TRAINEES.filter(t=>{
+    if(REP_STATUS==='active'&&(t.status||'active')!=='active') return false;
+    if(q&&![t.name,t.employer,t.branch,t.city].join(' ').toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+function repMeta(){return {date:new Date().toLocaleDateString('ar-SA')+' ('+todayISO()+')',scope:(REP_STATUS==='active'?'المتدربون النشطون':'كل المتدربين')+(REP_Q.trim()?' — فلتر: '+REP_Q.trim():'')};}
+function repAvg(a){a=a.filter(x=>x!=null&&!isNaN(x));return a.length?Math.round(a.reduce((s,x)=>s+Number(x),0)/a.length):null;}
+function repSessSorted(){return SESSIONS.slice().sort((a,b)=>((a.date||'').localeCompare(b.date||''))||((a.time||'').localeCompare(b.time||'')));}
+function repAttLbl(uid,sid){const r=ATT.find(a=>a.uid===uid&&a.sessionId===sid); return r&&r.st?(ATT_ST[r.st]||r.st):'—';}
+function repLateN(uid){return ASGS.filter(a=>a.status!=='closed'&&pfAsgTargeted(a,uid)&&pfAsgState(a,uid)==='late').length;}
+function repNote(uid){
+  const r=pfReadiness(uid), n=[]; if(r.cert) n.push('حاصل على الشهادة'); else if(r.ready) n.push('جاهز للاعتماد');
+  return n.concat(pfAttn(uid)).join(' · ');
+}
+/* ---- بناة الأوراق ---- */
+function repShSummary(T){
+  const J=T.map(t=>pfJourney(t.uid)), R=J.map(j=>j.r);
+  const attAvg=repAvg(R.map(r=>r.att.pct)), unitAvg=repAvg(T.map(t=>{const s=stats(t.scores||{});return s.attempted?s.avg:null;}));
+  const fin=T.map(t=>{const f=pfLatestFinal(t.uid);return f?pfCalc(f.scores).total:null;});
+  const asgTot=R.reduce((s,r)=>s+r.asg.total,0), asgDone=R.reduce((s,r)=>s+(r.asg.total-r.asg.pending),0), late=T.reduce((s,t)=>s+repLateN(t.uid),0);
+  const rows=[
+    ['عدد المتدربين',T.length],['جاهزون للاعتماد (لم تصدر شهادتهم)',R.filter(r=>r.ready&&!r.cert).length],['حاصلون على الشهادة',R.filter(r=>r.cert).length],
+    ['متوسط إكمال متطلبات الاعتماد %',repAvg(J.map(j=>j.overall))],['متوسط درجات اختبارات الوحدات %',unitAvg],['متوسط نسبة الحضور %',attAvg],
+    ['متوسط التقييم النهائي % (لمن قُيِّم)',repAvg(fin)],['التكليفات المُسندة (إجمالي)',asgTot],['التكليفات المُنجزة',asgDone],['التكليفات المتأخرة الآن',late],
+    ['متدربون يحتاجون متابعة',T.filter(t=>pfAttn(t.uid).length).length]
+  ];
+  return {name:'ملخص الدفعة',head:['المؤشر','القيمة'],rows,widths:[44,16],kpis:rows.slice(0,6).map(r=>({l:r[0],v:r[1]==null?'—':r[1]}))};
+}
+function repShUnitsPerf(T){
+  const rows=MODS.map((m,i)=>{
+    const sc=T.map(t=>(t.scores||{})[m]).filter(Boolean);
+    return [i+1,unitTitle(m).replace(/^\d+\s*/,''),sc.length,sc.length?Math.round(sc.filter(x=>x.pct>=80).length/sc.length*100):null,repAvg(sc.map(x=>x.pct))];
+  });
+  return {name:'أداء الوحدات',head:['#','الوحدة','عدد المحاولين','نسبة الاجتياز %','متوسط الدرجة %'],rows,pct:[3,4],widths:[6,46,14,16,16]};
+}
+function repShClasses(T){
+  const c={}; T.forEach(t=>{const f=pfLatestFinal(t.uid); const k=f?pfCalc(f.scores).cls.name:'لم يُقيَّم بعد'; c[k]=(c[k]||0)+1;});
+  return {name:'التصنيفات',head:['التصنيف','عدد المتدربين'],rows:Object.keys(c).map(k=>[k,c[k]]),widths:[52,16]};
+}
+function repShTrainees(T){
+  const rows=T.map((t,i)=>{
+    const r=pfReadiness(t.uid), s=stats(t.scores||{}), j=pfJourney(t.uid), f=pfLatestFinal(t.uid), fc=f?pfCalc(f.scores):null;
+    return [i+1,t.name||'',t.email||'',t.employer||'',t.branch||'',t.city||'',(t.status||'active')==='active'?'نشط':'موقوف',s.done,MODS.length,s.attempted?s.avg:null,r.att.pct,
+      r.asg.total-r.asg.pending,r.asg.total,repLateN(t.uid),r.ojt.n,fc?fc.total:null,fc?fc.cls.name:'',j.overall,r.cert?(r.cert.serial||'صادرة'):'',repNote(t.uid)];
+  });
+  return {name:'المتدربون',head:['#','الاسم','البريد','جهة العمل','الفرع','المدينة','الحالة','وحدات مجتازة','من','متوسط الاختبارات %','الحضور %','تكليفات منجزة','تكليفات مُسندة','متأخرة','أيام ميدانية /30','التقييم النهائي %','التصنيف','رحلة الاعتماد %','الشهادة','ملاحظات'],
+    rows,pct:[9,10,15,17],widths:[5,22,26,18,14,12,9,10,6,12,10,10,10,8,11,12,26,12,16,36],freezeCol:2};
+}
+function repShUnitMatrix(T){
+  const rows=T.map(t=>{const sc=t.scores||{}; return [t.name||''].concat(MODS.map(m=>sc[m]?sc[m].pct:null)).concat([stats(sc).done]);});
+  return {name:'درجات الوحدات',head:['المتدرب'].concat(MODS.map((m,i)=>String(i+1))).concat(['مجتازة']),rows,pctRange:[1,MODS.length],widths:[22].concat(MODS.map(()=>6)).concat([9]),freezeCol:1};
+}
+function repShLegend(){return {name:'دليل الوحدات',head:['#','الوحدة'],rows:MODS.map((m,i)=>[i+1,unitTitle(m).replace(/^\d+\s*/,'')]),widths:[6,60]};}
+function repShAttMatrix(T){
+  const S=repSessSorted();
+  const rows=T.map(t=>[t.name||''].concat(S.map(s=>repAttLbl(t.uid,s.id))).concat([pfAttRate(t.uid)]));
+  return {name:'الحضور',head:['المتدرب'].concat(S.map(s=>fmtD(s.date)+'\n'+String(s.title||'').slice(0,16))).concat(['نسبة الحضور %']),rows,pct:[S.length+1],widths:[22].concat(S.map(()=>13)).concat([12]),freezeCol:1,attCols:true};
+}
+function repShAsgMatrix(T){
+  const A=ASGS.slice().sort((a,b)=>(a.dueDate||'9999').localeCompare(b.dueDate||'9999'));
+  const rows=T.map(t=>[t.name||''].concat(A.map(a=>{
+    if(!pfAsgTargeted(a,t.uid)) return '—';
+    const st=pfAsgState(a,t.uid), s=pfSubOf(a.id,t.uid);
+    return (st==='graded'&&s&&s.review&&s.review.score!=null)?Number(s.review.score):(AS_LBL[st]||st);
+  })));
+  return {name:'التكليفات',head:['المتدرب'].concat(A.map(a=>String(a.title||'').slice(0,18)+(a.dueDate?'\n'+fmtD(a.dueDate):''))),rows,pctRange:[1,A.length],widths:[22].concat(A.map(()=>15)),freezeCol:1};
+}
+function repSheetsSingle(uid){
+  const t=pfTr(uid)||{}, r=pfReadiness(uid), s=stats(t.scores||{}), j=pfJourney(uid), f=pfLatestFinal(uid), fc=f?pfCalc(f.scores):null, sc=t.scores||{};
+  const kv=[['الاسم',t.name||''],['البريد',t.email||''],['الجوال',t.phone||''],['المسمى الوظيفي',t.jobTitle||''],['جهة العمل',t.employer||''],['الفرع',t.branch||''],['المدينة',t.city||''],
+    ['تاريخ الانضمام',t.createdAt?new Date(tsMs(t.createdAt)).toLocaleDateString('ar-SA'):''],['الحالة',(t.status||'active')==='active'?'نشط':'موقوف'],
+    ['إكمال متطلبات الاعتماد %',j.overall],['الوحدات المجتازة',s.done+' من '+MODS.length],['متوسط الاختبارات %',s.attempted?s.avg:''],['نسبة الحضور %',r.att.pct==null?'':r.att.pct],
+    ['التكليفات (منجزة / مُسندة)',(r.asg.total-r.asg.pending)+' / '+r.asg.total],['الأيام الميدانية المعتمدة',r.ojt.n+' / 30'],['التقييم النهائي',fc?fc.total+'% — '+fc.cls.name:'لم يُقيَّم بعد'],
+    ['شهادة الاعتماد',r.cert?(r.cert.serial||'صادرة'):'لم تصدر']];
+  const out=[{name:'بيانات المتدرب',head:['البند','القيمة'],rows:kv,widths:[30,44]}];
+  out.push({name:'الوحدات',head:['#','الوحدة','الدرجة %','الحالة'],rows:MODS.map((m,i)=>[i+1,unitTitle(m).replace(/^\d+\s*/,''),sc[m]?sc[m].pct:null,sc[m]?(sc[m].pct>=80?'مجتازة':'تحتاج إعادة'):'لم تُختبر']),pct:[2],widths:[6,50,12,14]});
+  out.push({name:'الحضور',head:['الجلسة','التاريخ','الحالة'],rows:repSessSorted().filter(x=>ATT.some(a=>a.uid===uid&&a.sessionId===x.id)||(x.date||'')<=todayISO()).map(x=>[x.title||'',fmtD(x.date),repAttLbl(uid,x.id)]),widths:[40,14,14]});
+  out.push({name:'التكليفات',head:['التكليف','الموعد','الحالة','الدرجة'],rows:ASGS.filter(a=>pfAsgTargeted(a,uid)).map(a=>{const st=pfAsgState(a,uid),sb=pfSubOf(a.id,uid);return [a.title||'',a.dueDate?fmtD(a.dueDate):'',AS_LBL[st]||st,(sb&&sb.review&&sb.review.score!=null)?Number(sb.review.score):null];}),pct:[3],widths:[40,14,18,10]});
+  if(fc) out.push({name:'التقييم النهائي',head:['المحور','الوزن %','الدرجة %'],rows:PF_AXES.map(a=>[a.name,a.w,f.scores[a.k]!=null&&f.scores[a.k]!==''?Number(f.scores[a.k]):null]).concat([['الإجمالي',100,fc.total]]),pct:[2],widths:[40,10,12]});
+  return out;
+}
+function repSpec(kind,uid){
+  const m=repMeta(), T=repTrainees();
+  if(kind==='single'){const t=pfTr(uid)||{}; return {title:'تقرير المتدرب: '+(t.name||''),meta:m.date,sheets:repSheetsSingle(uid),file:'trainee-report-'+(String(uid).slice(0,6)),signature:true};}
+  const map={
+    summary:{title:'ملخص الدفعة التدريبية',sheets:()=>[repShSummary(T),repShUnitsPerf(T),repShClasses(T)],file:'batch-summary'},
+    trainees:{title:'تقرير المتدربين الشامل',sheets:()=>[repShTrainees(T)],file:'trainees-report',landscape:true},
+    units:{title:'درجات اختبارات الوحدات (%)',sheets:()=>[repShUnitMatrix(T),repShLegend()],file:'unit-scores',landscape:true},
+    attendance:{title:'الحضور والجلسات',sheets:()=>[repShAttMatrix(T)],file:'attendance',landscape:true},
+    assignments:{title:'التكليفات والتسليمات',sheets:()=>[repShAsgMatrix(T)],file:'assignments',landscape:true},
+    all:{title:'التقرير الشامل للدفعة',sheets:()=>[repShSummary(T),repShUnitsPerf(T),repShClasses(T),repShTrainees(T),repShUnitMatrix(T),repShAttMatrix(T),repShAsgMatrix(T),repShLegend()],file:'full-report',landscape:true}
+  }[kind];
+  return {title:map.title,meta:m.date+' — '+m.scope,sheets:map.sheets(),file:map.file,landscape:!!map.landscape};
+}
+/* ---- مساعدات العرض ---- */
+function repIsPct(sh,ci,v){
+  if(typeof v!=='number') return false;
+  if(sh.pct&&sh.pct.includes(ci)) return true;
+  if(sh.pctRange&&ci>=sh.pctRange[0]&&ci<=sh.pctRange[1]) return true;
+  return false;
+}
+function repCls(v){return v<60?'low':(v<80?'mid':'ok');}
+/* ---- PDF (طباعة منسّقة تُحفظ PDF) ---- */
+function repPdf(spec){
+  const w=window.open('','_blank'); if(!w){alert('اسمح بالنوافذ المنبثقة لهذا الموقع ثم أعد المحاولة');return;}
+  const P=v=>escH(v==null?'':String(v)).replace(/\n/g,'<br>');
+  let d='<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>'+escH(spec.title)+'</title>';
+  d+='<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">';
+  d+='<style>*{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box}@page{size:'+(spec.landscape?'A4 landscape':'A4')+';margin:10mm}body{font-family:Tajawal,sans-serif;margin:0;padding:6px;color:#2b2320;font-size:'+(spec.landscape?'10.5':'12')+'px;line-height:1.6}';
+  d+='.hd{background:#14545c;color:#fff;border-radius:10px;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px}.hd h1{margin:0;font-size:19px}.hd small{opacity:.88;display:block;font-size:11.5px}.hd .br{font-weight:800;font-size:12.5px;text-align:left}';
+  d+='.kp{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:10px 0}.kp div{border:1px solid #dfe8e8;border-radius:8px;padding:7px 4px;text-align:center;background:#f7fafa}.kp b{display:block;font-size:19px;color:#14545c}.kp span{font-size:10.5px;color:#5c534e}';
+  d+='h2{color:#14545c;font-size:14px;border-bottom:2px solid #dfe8e8;padding-bottom:3px;margin:14px 0 6px}';
+  d+='table{width:100%;border-collapse:collapse;margin-bottom:6px}thead{display:table-header-group}tr{page-break-inside:avoid}th{background:#14545c;color:#fff;padding:5px 4px;font-size:'+(spec.landscape?'9.5':'11')+'px;font-weight:700}td{border:1px solid #dfe8e8;padding:3px 5px;text-align:center}td.f{text-align:right;font-weight:700}tbody tr:nth-child(even) td{background:#f8fbfb}';
+  d+='td.ok{background:#e3f3e8!important;color:#1d5a35;font-weight:700}td.mid{background:#fff3d6!important;color:#8a5a00;font-weight:700}td.low{background:#fde2de!important;color:#9c231b;font-weight:700}td.t-bad{color:#9c231b;font-weight:700}td.t-ok{color:#1d5a35}';
+  d+='.sig{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:30px}.sig div{border-top:2px solid #14545c;padding-top:5px;font-size:11.5px}.ft{margin-top:14px;border-top:1px dashed #cdd9d9;padding-top:5px;font-size:10.5px;color:#5c534e;display:flex;justify-content:space-between}<'+'/style></head><body>';
+  d+='<div class="hd"><div><h1>'+escH(spec.title)+'</h1><small>'+escH(spec.meta||'')+'</small></div><div class="br">برنامج تأهيل مديري التشغيل<small>Operations Training</small></div></div>';
+  const kp=(spec.sheets[0]&&spec.sheets[0].kpis)||null;
+  if(kp) d+='<div class="kp">'+kp.map(k=>'<div><b>'+escH(String(k.v))+'</b><span>'+escH(k.l)+'</span></div>').join('')+'</div>';
+  spec.sheets.forEach(sh=>{
+    d+='<h2>'+escH(sh.name)+'</h2><table><thead><tr>'+sh.head.map(h=>'<th>'+P(h)+'</th>').join('')+'</tr></thead><tbody>'+
+      sh.rows.map(r=>'<tr>'+r.map((v,ci)=>{
+        let c=ci===0||(sh.freezeCol&&ci<sh.freezeCol)?'f':'';
+        if(repIsPct(sh,ci,v)) c=repCls(v);
+        else if(sh.attCols&&typeof v==='string'){if(v==='غائب')c='t-bad';else if(v==='حاضر')c='t-ok';}
+        else if(typeof v==='string'&&/^(متأخر عن الموعد|مطلوب)$/.test(v)) c='t-bad';
+        const txt=v==null||v===''?'—':(repIsPct(sh,ci,v)?v+'%':v);
+        return '<td'+(c?' class="'+c+'"':'')+'>'+P(txt)+'</td>';
+      }).join('')+'</tr>').join('')+'</tbody></table>';
+  });
+  if(spec.signature) d+='<div class="sig"><div><b>المدرب</b><br>&nbsp;</div><div><b>التوقيع</b><br>&nbsp;</div><div><b>التاريخ</b><br>'+new Date().toLocaleDateString('ar-SA')+'</div></div>';
+  d+='<div class="ft"><span>وثيقة تدريبية — برنامج تأهيل مديري التشغيل</span><span>'+new Date().toLocaleDateString('ar-SA')+'</span></div><'+'/body><'+'/html>';
+  w.document.write(d); w.document.close();
+  setTimeout(()=>{try{w.print();}catch(e){}},900);
+}
+/* ---- Excel (ExcelJS تُحمَّل عند أول تصدير) ---- */
+function repLoadXlsx(){
+  if(window.ExcelJS) return Promise.resolve();
+  return new Promise(res=>{const s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js'; s.onload=()=>res(); s.onerror=()=>res(); document.head.appendChild(s);});
+}
+function repDownload(blob,name){
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},1500);
+}
+function repCsv(spec){
+  const sh=spec.sheets[0], q=v=>'"'+String(v==null?'':v).replace(/"/g,'""').replace(/\n/g,' ')+'"';
+  const csv='\ufeff'+[sh.head].concat(sh.rows).map(r=>r.map(q).join(',')).join('\r\n');
+  repDownload(new Blob([csv],{type:'text/csv;charset=utf-8'}),spec.file+'-'+todayISO()+'.csv');
+}
+async function repExcel(spec){
+  await repLoadXlsx();
+  if(!window.ExcelJS){repCsv(spec); try{window.xToast&&window.xToast('تعذر تحميل مكتبة Excel — نُزِّل ملف CSV بدلًا منه');}catch(e){} return;}
+  const wb=new ExcelJS.Workbook(); wb.creator='برنامج تأهيل مديري التشغيل'; wb.created=new Date();
+  const thin={style:'thin',color:{argb:'FFD5DEDE'}}, bd={top:thin,left:thin,bottom:thin,right:thin};
+  spec.sheets.forEach(sh=>{
+    const ws=wb.addWorksheet(String(sh.name).slice(0,31),{views:[{rightToLeft:true,state:'frozen',xSplit:sh.freezeCol||0,ySplit:4}]});
+    const n=sh.head.length;
+    ws.mergeCells(1,1,1,Math.max(n,2)); const t=ws.getCell(1,1); t.value=spec.title+' — '+sh.name; t.font={bold:true,size:14,color:{argb:'FF14545C'}}; t.alignment={horizontal:'right',vertical:'middle'};
+    ws.mergeCells(2,1,2,Math.max(n,2)); const m=ws.getCell(2,1); m.value=spec.meta||''; m.font={size:10,color:{argb:'FF5C534E'}}; m.alignment={horizontal:'right'};
+    ws.getRow(1).height=24;
+    const hr=ws.getRow(4); hr.height=34;
+    sh.head.forEach((h,i)=>{const c=hr.getCell(i+1); c.value=String(h); c.font={bold:true,color:{argb:'FFFFFFFF'}}; c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF14545C'}}; c.alignment={horizontal:'center',vertical:'middle',wrapText:true}; c.border=bd;});
+    sh.rows.forEach((r,ri)=>{
+      const row=ws.getRow(5+ri);
+      r.forEach((v,ci)=>{
+        const c=row.getCell(ci+1); c.value=(v===''||v==null)?null:v; c.border=bd;
+        c.alignment={horizontal:(ci===0||(sh.freezeCol&&ci<sh.freezeCol)||typeof v==='string')&&!(typeof v==='string'&&v.length<8)?'right':'center',vertical:'middle',wrapText:true};
+        if(ri%2) c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFF8FBFB'}};
+        if(repIsPct(sh,ci,v)){
+          c.numFmt='0"%"'; const k=repCls(v);
+          c.fill={type:'pattern',pattern:'solid',fgColor:{argb:k==='low'?'FFFDE2DE':(k==='mid'?'FFFFF3D6':'FFE3F3E8')}};
+          c.font={bold:true,color:{argb:k==='low'?'FF9C231B':(k==='mid'?'FF8A5A00':'FF1D5A35')}};
+        }else if(sh.attCols&&v==='غائب') c.font={bold:true,color:{argb:'FF9C231B'}};
+      });
+    });
+    sh.widths.forEach((w,i)=>{ws.getColumn(i+1).width=w;});
+    if(sh.rows.length) ws.autoFilter={from:{row:4,column:1},to:{row:4+sh.rows.length,column:n}};
+  });
+  const buf=await wb.xlsx.writeBuffer();
+  repDownload(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),spec.file+'-'+todayISO()+'.xlsx');
+}
+async function repExport(fmt,kind,uid){
+  if(!isAdminUser()) return;
+  const spec=repSpec(kind,uid);
+  if(kind!=='single'&&!repTrainees().length){alert('لا متدربين ضمن الفلتر الحالي');return;}
+  try{
+    if(fmt==='pdf') repPdf(spec); else {try{window.xToast&&window.xToast('⏳ جارٍ تجهيز ملف Excel…');}catch(e){} await repExcel(spec); try{window.xToast&&window.xToast('✅ نُزِّل ملف Excel');}catch(e){}}
+  }catch(e){alert('تعذر التصدير: '+(e.message||e));}
+}
+/* ---- واجهة التبويب ---- */
+const REP_CARDS=[
+  ['summary','📋','ملخص الدفعة','مؤشرات عامة: الجاهزون، الحاصلون على الشهادة، متوسطات الاختبارات والحضور والتكليفات، وأداء كل وحدة.'],
+  ['trainees','👥','تقرير المتدربين الشامل','جدول بكل متدرب: الوحدات، الاختبارات، الحضور، التكليفات، الأيام الميدانية، التقييم النهائي، رحلة الاعتماد، والملاحظات.'],
+  ['units','📘','درجات اختبارات الوحدات','مصفوفة متدرب × وحدة بدرجاتها وألوان تُبرز الضعيف (أحمر) والمجتاز (أخضر).'],
+  ['attendance','📅','الحضور والجلسات','مصفوفة متدرب × جلسة (حاضر / متأخر / غائب / معتذر) مع نسبة الحضور.'],
+  ['assignments','📝','التكليفات والتسليمات','مصفوفة متدرب × تكليف: الدرجة أو حالة التسليم (متأخر، مطلوب، بانتظار التقييم…).']
+];
+function pfRenderRep(){
+  const body=document.getElementById('pf-body'); if(!body) return;
+  const T=repTrainees();
+  let h='<div id="rp-stats" class="iv-stats"></div>'+
+    '<div class="iv-bar"><select id="rp-st" onchange="REP_STATUS=this.value;pfRenderRep()"><option value="active"'+(REP_STATUS==='active'?' selected':'')+'>المتدربون النشطون</option><option value="all"'+(REP_STATUS==='all'?' selected':'')+'>كل المتدربين</option></select>'+
+    '<input id="rp-q" placeholder="فلتر بجهة العمل أو الفرع أو المدينة أو الاسم…" value="'+escH(REP_Q)+'" onchange="REP_Q=this.value;pfRenderRep()">'+
+    '<button onclick="repExport(\'xlsx\',\'all\')">📦 تصدير كل التقارير في ملف Excel واحد</button></div>'+
+    '<div class="h-note" style="margin:-6px 0 14px">اختر التقرير ثم <b>PDF</b> (يفتح نافذة طباعة منسّقة: اختر منها «حفظ بصيغة PDF») أو <b>Excel</b> (ملف منسّق باللغة العربية من اليمين لليسار مع ألوان الأداء). التقارير تشمل <b>'+T.length+'</b> متدرب حسب الفلتر أعلاه.</div>'+
+    '<div class="rp-grid">'+REP_CARDS.map(c=>'<div class="rp-card"><div class="rp-i">'+c[1]+'</div><b>'+c[2]+'</b><p>'+c[3]+'</p><div class="rp-b"><button class="pdf" onclick="repExport(\'pdf\',\''+c[0]+'\')">📄 PDF</button><button class="xls" onclick="repExport(\'xlsx\',\''+c[0]+'\')">📊 Excel</button></div></div>').join('')+
+    '<div class="rp-card"><div class="rp-i">🧾</div><b>تقرير متدرب فردي</b><p>ملف متدرب كامل: بياناته، كل وحدة بدرجتها، حضوره، تكليفاته، تقييمه النهائي — مناسب لتسليمه لجهة عمله.</p>'+
+    '<select id="rp-one">'+PF_TRAINEES.map(t=>'<option value="'+t.uid+'">'+escH(t.name||t.email||t.uid)+'</option>').join('')+'</select>'+
+    '<div class="rp-b"><button class="pdf" onclick="repExport(\'pdf\',\'single\',gv(\'rp-one\'))">📄 PDF</button><button class="xls" onclick="repExport(\'xlsx\',\'single\',gv(\'rp-one\'))">📊 Excel</button></div></div></div>';
+  body.innerHTML=h;
+  const J=T.map(t=>pfJourney(t.uid)), k=(v,l,c,suf)=>'<div class="ks"><b data-v="'+v+'"'+(c?' style="color:'+c+'"':'')+'>0</b>'+(suf?'<em style="font-style:normal;font-size:13px">'+suf+'</em>':'')+'<span>'+l+'</span></div>';
+  const el=document.getElementById('rp-stats');
+  if(el){
+    el.innerHTML=k(T.length,'متدربون ضمن التقرير')+k(J.filter(j=>j.r.ready&&!j.r.cert).length,'جاهزون للاعتماد','#1d5a35')+k(J.filter(j=>j.r.cert).length,'حاصلون على الشهادة','#a3690f')+k(J.length?Math.round(J.reduce((s,j)=>s+j.overall,0)/J.length):0,'متوسط إكمال المتطلبات','#14545c','%')+k(SESSIONS.length,'جلسات مسجّلة')+k(ASGS.length,'تكليفات');
+    el.querySelectorAll('b[data-v]').forEach(b=>itCountUp(b,+b.dataset.v,0));
+  }
 }
 
 /* ==== رأس صفحة «ملفي» (المتدرب) ==== */
@@ -7526,7 +7765,7 @@ async function pfOpenTrainee(uid,tab){
     '<div class="imod-actions" style="margin:0 0 10px"><button class="mbtn" onclick="pfClose();pfNewAssess(\''+uid+'\')">+ تقييم جديد</button></div>'+
     (myAss.length?'<div class="iv-grid">'+myAss.map(x=>{const c=pfCalc(x.scores); return '<div class="scard pf-ass" onclick="pfClose();pfOpenAssess(\''+x.id+'\',null,\'tr:'+uid+'\')"><div class="sc-top"><span class="sc-date">'+escH(fmtD(x.date))+'</span>'+pfAssKindBadge(x.kind)+(x.status==='final'?'<span class="badge as-final">معتمد</span>':'<span class="badge as-draft">مسودة</span>')+'</div><b>'+(c.complete?c.total+'%':c.filled+'/'+PF_AXES.length)+'</b>'+(c.complete?pfClsBadge(c.cls):'')+'</div>';}).join('')+'</div>':'<div class="iv-empty">لا تقييمات بعد</div>')+'</details>';
   h+='<details class="pf-d"><summary><span>🗓️ سجل التطبيق العملي 30 يومًا <small>('+r.ojt.n+' / 30 معتمد)</small></span><span class="arr">▾</span></summary>'+pfOjtSignHTML(uid)+'</details>';
-  h+='<div class="imod-actions" style="margin-top:16px"><button class="btn-ghost" onclick="pfClose()">إغلاق</button></div>';
+  h+='<div class="imod-actions" style="margin-top:16px"><button class="btn-save" onclick="repExport(\'pdf\',\'single\',\''+uid+'\')">📄 تقرير PDF</button><button class="btn-approve" onclick="repExport(\'xlsx\',\'single\',\''+uid+'\')">📊 تقرير Excel</button><button class="btn-ghost" onclick="pfClose()">إغلاق</button></div>';
   pfModal(h); pfAnimRings(document.getElementById('imod-box'));
 }
 
